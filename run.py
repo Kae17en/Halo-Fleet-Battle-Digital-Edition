@@ -50,6 +50,7 @@ class MainGame():
         self.turn = 0
         self.currentPhase = 0
         self.phaseOrder = [self.wing_movement, self.wing_attack, self.battle_moovement, self.battle_attack, self.turn_end]
+        self.toResolveWings = []
 
     def startGameFromSituation(self, UNSC, Covenant):
         self.UNSC = UNSC
@@ -76,43 +77,55 @@ class MainGame():
         moved = []
         while(len(moved) != len(toMoveUNSC) + len(toMoveCovenant)):
             if(UNSCstart):
-                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveUNSC if unit not in moved], "MAPSELECT")
+                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveUNSC if unit not in moved and not unit.locked], "MAPSELECT")
                 mooveLocation = self.UI.posRequest(choosedUnit)
-                while(!choosedUnit.moove_unit(mooveLocation)){
+
+                while(not choosedUnit.moove_unit(mooveLocation)):
                     self.UI.error("Invalid Location")
                     mooveLocation = self.UI.posRequest(choosedUnit)
-                }
+                #Unit Have been mooved
+                choosedUnit.engage(Covenant.tokens)
+                #Engagement dealed
                 self.UI.UpdateGameState()
                 moved.append(choosedUnit)
-                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveCovenant if unit not in moved], "MAPSELECT")
+
+                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveCovenant if unit not in moved and not unit.locked], "MAPSELECT")
                 mooveLocation = self.UI.posRequest(choosedUnit)
-                while (!choosedUnit.moove_unit(mooveLocation)){
-                self.UI.error("Invalid Location")
-                mooveLocation = self.UI.posRequest(choosedUnit)
-                }
+                while (not choosedUnit.moove_unit(mooveLocation)):
+                    self.UI.error("Invalid Location")
+                    mooveLocation = self.UI.posRequest(choosedUnit)
+                # Unit Have been mooved
+                choosedUnit.engage(UNSC.tokens)
+                # Engagement dealed
                 self.UI.UpdateGameState()
                 moved.append(choosedUnit)
             else:
-                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveCovenant if unit not in moved], "MAPSELECT")
+                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveCovenant if unit not in moved and not unit.locked], "MAPSELECT")
                 mooveLocation = self.UI.posRequest(choosedUnit)
-                while (!choosedUnit.moove_unit(mooveLocation)){
+                while (not choosedUnit.moove_unit(mooveLocation)):
                     self.UI.error("Invalid Location")
                     mooveLocation = self.UI.posRequest(choosedUnit)
-                }
+                # Unit Have been mooved
+                choosedUnit.engage(UNSC.tokens)
+                # Engagement dealed
                 moved.append(choosedUnit)
                 self.UI.UpdateGameState()
-                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveUNSC if unit not in moved], "MAPSELECT")
-                while (!choosedUnit.moove_unit(mooveLocation)){
+                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveUNSC if unit not in moved and not unit.locked], "MAPSELECT")
+                while (not choosedUnit.moove_unit(mooveLocation)):
                     self.UI.error("Invalid Location")
                     mooveLocation = self.UI.posRequest(choosedUnit)
-                }
+                # Unit Have been mooved
+                choosedUnit.engage(Covenant.tokens)
+                # Engagement dealed
                 self.UI.UpdateGameState()
                 moved.append(choosedUnit)
 
         self.nextPhase()
 
     def wing_attack(self):
-        toResolve = [unit for unit in self.UNSC.tokens if issubclass(type(unit), Spacecraft)]
+        toResolve = []
+        [(toResolve.append((unit, unit.opponent)) for opponent in unit.engagements if ((unit, unit.opponent) not in toResolve and (unit.opponent, unit) not in toResolve)) for unit in self.UNSC.tokens if issubclass(type(unit), Spacecraft)]
+
         self.nextPhase()
 
     def battle_moovement(self):
