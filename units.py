@@ -265,7 +265,7 @@ class Spacecraft():
 
     @property
     def pos(self):
-        returnself.xpos,self.ypos
+        return self.xpos,self.ypos
 
     @pos.setter
     def set_pos(self,L):
