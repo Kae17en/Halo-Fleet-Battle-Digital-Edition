@@ -151,7 +151,7 @@ class UNSC_Supported_Marathon_Heavy_Cruiser(TheoryElement):
 
 class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[6,6,3],Hangars=2,BR=2,Movement=8,Tag="UNSC Marathon Heavy Cruiser",Capital=True,Size="Medium",
+        super().__init__(DT=[6,6,3],CDT=[6,6,3],Hangars=2,BR=2,Movement=8,Tag="UNSC Marathon Heavy Cruiser",Capital=True,Size="Medium",
                  BC=95,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
                                            loads.Titanium_Armor(3)])
 
@@ -160,7 +160,7 @@ class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
 
 class UNSC_Paris_Frigate_Arrow(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
+        super().__init__(DT=[3,3,3],CDT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive])
 
@@ -169,7 +169,7 @@ class UNSC_Paris_Frigate_Arrow(TheoryElement):
 
 class UNSC_Paris_Frigate_Trident(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[4,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Trident Formation)",Capital=False,Size="Small",
+        super().__init__(DT=[4,3,3],CDT=[4,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Trident Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive])
 
@@ -181,7 +181,7 @@ class UNSC_Paris_Frigate_Trident(TheoryElement):
 
 class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[11,10,6],Hangars=6,BR=5,Movement=5,Tag="Covenant Supported ORS Heavy Cruiser",Capital=True,Size="Large",
+        super().__init__(DT=[11,10,6],CDT=[11,10,6],Hangars=6,BR=5,Movement=5,Tag="Covenant Supported ORS Heavy Cruiser",Capital=True,Size="Large",
                  BC=220,faction="Covenant",ld=[loads.Cloaking_System,loads.Defence_Array(5),loads.Glide(3),loads.Point_Defence(6),loads.Elusive])
 
         self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
@@ -191,7 +191,7 @@ class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
 
 class Covenant_ORS_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[11,10,5],Hangars=5,BR=4,Movement=5,Tag="Covenant Heavy Cruiser",Capital=True,Size="Large",
+        super().__init__(DT=[11,10,5],CDT=[11,10,5],Hangars=5,BR=4,Movement=5,Tag="Covenant Heavy Cruiser",Capital=True,Size="Large",
                  BC=25,faction="UNSC",ld=[loads.Cloaking_System(),loads.Defence_Array(4),loads.Glide(3),loads.Point_Defence(5)])
 
 
@@ -201,7 +201,7 @@ class Covenant_ORS_Heavy_Cruiser(TheoryElement):
 
 class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[8,7,4],Hangars=3,BR=4,Movement=7,Tag="Covenant Supported CCS BattleCruiser",Capital=True,Size="Medium",
+        super().__init__(DT=[8,7,4],CDT=[8,7,4],Hangars=3,BR=4,Movement=7,Tag="Covenant Supported CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=170,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(5),loads.Glide(4),loads.Point_Defence(4),
                                                loads.Carrier_Action(1)])
 
@@ -211,7 +211,7 @@ class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
 
 class Covenant_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[8,7,3],Hangars=2,BR=3,Movement=8,Tag="Covenant CCS BattleCruiser",Capital=True,Size="Medium",
+        super().__init__(DT=[8,7,3],CDT=[8,7,3],Hangars=2,BR=3,Movement=8,Tag="Covenant CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=150,faction="Covenant",ld=[loads.Defence_Array(4),loads.Glide(4),loads.Point_Defence(3),
                                                loads.Carrier_Action(1)])
 
@@ -220,7 +220,7 @@ class Covenant_CCS_Battlecruiser(TheoryElement):
 
 class Covenant_SDV_Heavy_Corvette_Line(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[4,4,3],Hangars=1,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Line Formation)",Capital=False,Size="Small",
+        super().__init__(DT=[4,4,3],CDT=[6,6,3],Hangars=1,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Line Formation)",Capital=False,Size="Small",
                  BC=40,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
                                                loads.Cloaking_System()])
 
@@ -229,7 +229,7 @@ class Covenant_SDV_Heavy_Corvette_Line(TheoryElement):
 
 class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[4,3,3],Hangars=1,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Oblique Formation)",
+        super().__init__(DT=[4,3,3],CDT=[4,3,3],Hangars=1,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Oblique Formation)",
                          Capital=False,Size="Small",BC=40,faction="Covenant",
                          ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
                              loads.Cloaking_System()])
@@ -279,6 +279,15 @@ class Spacecraft():
     @property
     def __str__(self):
         return self.Tag
+
+    def move_unit(self,x,y):
+        if np.sqrt((self.xpos-x)**2+(self.ypos-y)**2)<=self._MoveRange:
+            L=[x,y]
+            self.set_pos(L)
+            return True
+        else:
+            return False
+
 
 
 class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
