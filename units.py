@@ -39,6 +39,9 @@ class TheoryElement(metaclass=ABCMeta):
         self.__secondary=0                                       #Arme Secondaire
         self.__primarybis=0                                      #En cas d'arme primaire double
         self.__secondarybis=0                                    #En cas d'arme secondaire double
+        self.activated=False
+        self.locked=False
+        self.engagements=[]
 
     #Gestion de la Damage Track---------------------------
 
@@ -117,6 +120,32 @@ class TheoryElement(metaclass=ABCMeta):
     @property
     def loadouts(self):
         return self.loadouts
+
+    @property
+    def locked(self):
+        return self.locked
+
+    @property
+    def activated(self):
+        return self.activated
+
+    @property
+    def engagements(self):
+        return self.engagements
+
+    def add_engagement(self,opp):
+        self.engagements.append(opp)
+        if len(self.engagements)==0:
+            self.locked=False
+    def del_engagement(self,opp):
+        if len(self.engagements)==0:
+            pass
+        elif opp in engagements:
+            n=engagements.index(opp)
+            self.engagements.pop(n)
+
+
+
 
 
 #-------------------------------Core Elements: UNSC----------------------------#
@@ -253,7 +282,44 @@ class Spacecraft():
         self.__Flight_Slot=FS
         self.__vs_wing_dice=vswing
         self.__vs_elem_dice=vselement
+        self.dock_unit=[]
+        self.activated=False
+        self.locked=False
+        self.engagements=[]
+        self.WingType=None
+        self.attacked=False
         wingnumber+=1
+
+
+    @property
+    def engagements(self):
+        return self.engagements
+
+    def add_engagement(self,opp):
+        self.engagements.append(opp)
+        if len(self.engagements)==0:
+            self.locked=False
+
+    def del_engagement(self,opp):
+        if len(self.engagements)==0:
+            pass
+        elif opp in engagements:
+            n=engagements.index(opp)
+            self.engagements.pop(n)
+        if len(self.engagements)==0:
+            self.locked=False
+            self.attacked=False
+
+    @property
+    def WingType(self):
+        return self.WingType
+
+    @property
+    def locked(self):
+        return self.locked
+    @property
+    def activated(self):
+        return self.activated
 
     @property
     def vs_wing_dice(self):
@@ -277,6 +343,11 @@ class Spacecraft():
         return self._MoveRange
 
     @property
+    def Dock_Unit(self):
+        return self.dock_unit
+
+
+    @property
     def __str__(self):
         return self.Tag
 
@@ -289,6 +360,31 @@ class Spacecraft():
             return False
 
 
+    def engage(self,ennemies):
+        P=[]
+        for e in ennemies:
+            if np.sqrt((self.xpos-e.xpos)**2+(self.ypos-e.ypos)**2)<=2:
+                P.append(e)
+        target=P[0]
+        d=np.sqrt((self.xpos-P[0].xpos)**2+(self.ypos-P[0].ypos)**2)
+        for i in range(1,len(P)+1):
+            b=np.sqrt((self.xpos-P[i].xpos)**2+(self.ypos-P[i].ypos)**2)
+            if b<d:
+                target=P[i]
+        target.attacked=True
+        self.add_engagements(target)
+        target.add_engagement(self)
+        for e in target.engagements:
+            if e.WingType=="Bomber":
+                e.del_engagement(target)
+                target.del_engagement(e)
+            elif e.attacked==True:
+                e.del_engagement(target)
+                target.del_engagement(e)
+
+
+
+
 
 class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
     def __init__(self,pos,n):
@@ -296,6 +392,11 @@ class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
+        self.WingType="Interceptor"
+
+    @property
+    def WingType(self):
+        return self.WingType
 
     @property
     def FlightSize(self):
@@ -318,6 +419,7 @@ class UNSC_Longsword_Bomber_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
+        self.WingType = "Bomber"
 
     @property
     def FlightSize(self):
@@ -340,6 +442,7 @@ class Covenant_Seraph_Interceptor_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
+        self.WingType = "Interceptor"
 
     @property
     def FlightSize(self):
@@ -357,12 +460,13 @@ class Covenant_Seraph_Interceptor_Flight(Spacecraft):
         self.UnitNumber=n
 
 
-class Covenant_Tarrasque_Interceptor_Flight(Spacecraft):
+class Covenant_Tarrasque_Bomber_Flight(Spacecraft):
     def __init__(self,pos,n):
-        super().__init__(DT=2,Movement=16,Tag="Covenant Tarrasque Interceptor Flight",faction="Covenant",FS=1,vselement=2,vswing=1)
+        super().__init__(DT=2,Movement=16,Tag="Covenant Tarrasque Bomber Flight",faction="Covenant",FS=1,vselement=2,vswing=1)
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
+        self.WingType = "Interceptor"
 
     @property
     def FlightSize(self):
