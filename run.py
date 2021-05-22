@@ -7,6 +7,9 @@ class interface():
     def dialog(self, req):
         pass
 
+    def error(self, err):
+        print(err)
+
     def multipleChoice(self, req, type = None):
         print("Ships to move :")
         for i in range(len(req)):

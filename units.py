@@ -277,8 +277,8 @@ class Spacecraft():
         self._MoveRange=Movement
         self.Tag=Tag
         self._Faction=faction
-        self.xpos=pos[0]
-        self.ypos=pos[1]
+        self.xpos=0
+        self.ypos=0
         self.__Flight_Slot=FS
         self.__vs_wing_dice=vswing
         self.__vs_elem_dice=vselement
@@ -288,38 +288,7 @@ class Spacecraft():
         self.engagements=[]
         self.WingType=None
         self.attacked=False
-        wingnumber+=1
 
-
-    @property
-    def engagements(self):
-        return self.engagements
-
-    def add_engagement(self,opp):
-        self.engagements.append(opp)
-        if len(self.engagements)==0:
-            self.locked=False
-
-    def del_engagement(self,opp):
-        if len(self.engagements)==0:
-            pass
-        elif opp in engagements:
-            n=engagements.index(opp)
-            self.engagements.pop(n)
-        if len(self.engagements)==0:
-            self.locked=False
-            self.attacked=False
-
-    @property
-    def WingType(self):
-        return self.WingType
-
-    @property
-    def locked(self):
-        return self.locked
-    @property
-    def activated(self):
-        return self.activated
 
     @property
     def vs_wing_dice(self):
@@ -333,7 +302,7 @@ class Spacecraft():
     def pos(self):
         return self.xpos,self.ypos
 
-    @pos.setter
+
     def set_pos(self,L):
         self.xpos=L[0]
         self.ypos=L[1]
@@ -350,6 +319,21 @@ class Spacecraft():
     @property
     def __str__(self):
         return self.Tag
+
+    def add_engagement(self, opp):
+        self.engagements.append(opp)
+        if len(self.engagements)==0:
+            self.locked=False
+
+    def del_engagement(self,opp):
+        if len(self.engagements)==0:
+            pass
+        elif opp in self.engagements:
+            n= self.engagements.index(opp)
+            self.engagements.pop(n)
+        if len(self.engagements)==0:
+            self.locked=False
+            self.attacked=False
 
     def move_unit(self,x,y):
         if np.sqrt((self.xpos-x)**2+(self.ypos-y)**2)<=self._MoveRange:
@@ -394,9 +378,6 @@ class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
         self.UnitNumber=n
         self.WingType="Interceptor"
 
-    @property
-    def WingType(self):
-        return self.WingType
 
     @property
     def FlightSize(self):
@@ -405,11 +386,6 @@ class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
     def vs_wing_dice(self):
         return self.vs_wing_dice
 
-    @property
-    def UnitNumber(self):
-        return self.UnitNumber
-
-    @UnitNumber.setter
     def setFlightSize(self,n):
         self.UnitNumber=n
 
