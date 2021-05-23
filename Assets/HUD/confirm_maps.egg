@@ -1,0 +1,59 @@
+<Comment> {
+  "egg-texture-cards -o confirm_maps.egg '.\Confirm.png' '.\Confirm.png' '.\ConfirmHover.png' '.\Confirm.png'"
+}
+<Texture> ConfirmHover {
+  "./ConfirmHover.png"
+}
+<Texture> Confirm {
+  "./Confirm.png"
+}
+<Group> {
+  <Switch> { 1 }
+  <Scalar> fps { 2 }
+  <VertexPool> vpool {
+    <Vertex> 0 {
+      -0.5 0.5 0
+      <UV> { 0 1 }
+    }
+    <Vertex> 1 {
+      -0.5 -0.5 0
+      <UV> { 0 0 }
+    }
+    <Vertex> 2 {
+      0.5 -0.5 0
+      <UV> { 1 0 }
+    }
+    <Vertex> 3 {
+      0.5 0.5 0
+      <UV> { 1 1 }
+    }
+  }
+  <Group> Confirm {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { Confirm }
+      <VertexRef> { 0 1 2 3 <Ref> { vpool } }
+    }
+  }
+  <Group> Confirm {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { Confirm }
+      <VertexRef> { 0 1 2 3 <Ref> { vpool } }
+    }
+  }
+  <Group> ConfirmHover {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { ConfirmHover }
+      <VertexRef> { 0 1 2 3 <Ref> { vpool } }
+    }
+  }
+  <Group> Confirm {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { Confirm }
+      <VertexRef> { 0 1 2 3 <Ref> { vpool } }
+    }
+  }
+}

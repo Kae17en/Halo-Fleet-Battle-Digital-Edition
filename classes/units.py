@@ -21,7 +21,7 @@ class TheoryElement(metaclass=ABCMeta):
     (Liste taille 3,Liste taille 3,entier,entier,entier,string,Booléen,entier,string,entier,sprite,pg.rect,
     string,liste de ref au dico equipement,liste de ref dico armes)
     """
-    def __init__(self,DT,CDT,Hangars,BR,Movement,Tag,Capital,Size,BC,faction,ld):
+    def __init__(self,pos,DT,CDT,Hangars,BR,Movement,Tag,Capital,Size,BC,faction,ld):
         self.__DamageTrack=DT        #liste contenant 3 entiers positifs,damage track initiale
         self._CDamageTrack=CDT       #Damage track actuelle, relative à l'attribut
         self.__Hangars=Hangars       #entier représentant le nombre de hangars de l'élément
@@ -33,8 +33,8 @@ class TheoryElement(metaclass=ABCMeta):
         self._BuildCost=BC           #Cout d'ajout à la flotte
         self._Faction=faction        #Faction à laquelle appartient l'élément. Aussi joueur controleur
         self.__Loadouts=ld           #Liste d'équipements
-        self.xpos = 0                #Position en x
-        self.ypos = 0                #Position en y
+        self.xpos = pos[0]                #Position en x
+        self.ypos = pos[1]            #Position en y
         self.set_aim((0,0))                       #Direction pointée par l'unité
         self.__primary=0             #Arme primaire
         self.__secondary=0           #Arme Secondaire
@@ -156,10 +156,9 @@ class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
 
 class UNSC_Paris_Frigate_Arrow(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[3,3,3],CDT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
+        super().__init__(pos,DT=[3,3,3],CDT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive])
-
         self.__primary=weapons.Weapons("MAC",10,20,4,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,2,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -207,7 +206,7 @@ class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
 
 class Covenant_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(DT=[8,7,3],CDT=[8,7,3],Hangars=2,BR=3,Movement=8,Tag="Covenant CCS BattleCruiser",Capital=True,Size="Medium",
+        super().__init__(pos,DT=[8,7,3],CDT=[8,7,3],Hangars=2,BR=3,Movement=8,Tag="Covenant CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=150,faction="Covenant",ld=[loads.Defence_Array(4),loads.Glide(4),loads.Point_Defence(3),
                                                loads.Carrier_Action(1)])
 
@@ -244,12 +243,11 @@ class Spacecraft():
         self._MoveRange=Movement
         self.Tag=Tag
         self._Faction=faction
-        self.xpos=pos[0]
-        self.ypos=pos[1]
+        self.xpos=0
+        self.ypos=0
         self.__Flight_Slot=FS
         self.__vs_wing_dice=vswing
         self.__vs_elem_dice=vselement
-        wingnumber +=1
 
     @property
     def vs_wing_dice(self):

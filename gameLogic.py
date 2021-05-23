@@ -4,40 +4,6 @@ import random as rd
 from classes.misc import *
 import pickle
 
-class interface():
-    def dialog(self, req):
-        pass
-
-    def error(self, err):
-        print(err)
-
-    def multipleChoice(self, req, type = None):
-        print("Ships to move :")
-        for i in range(len(req)):
-            print(req[i] + " [" + str(i) + "]\r\n")
-        i = -1;
-        while(not int(i) and i not in range(len(req))):
-            i = input("Choisissez une entree")
-        return req[i]
-
-    def posRequest(self, object):
-        t = -1
-        while(not tuple(t) and  np.sqrt((t[0] - object.xpos) ** 2 + (t[1] - object.ypos) ** 2) > object.MoveRange):
-            t = tuple([eval(x) for x in input("Chose a new position for : " + object + " in range : " + str(object.MoveRange)).split(',')])
-        return t
-
-    def UpdateGameState(self):
-        for object in self.UNSC.tokens:
-            toprint = "UNSC has " + str(object) + " at position (" + str(object.xpos) + "," + str(object.ypos) + ")\r\n"
-            print(toprint)
-        for object in self.Covenant.tokens:
-            toprint = "Covenant has " + str(object) + " at position (" + str(object.xpos) + "," + str(object.ypos) + ")\r\n"
-            print(toprint)
-
-    def setGameState(self, UNSC, Covenant):
-        self.UNSC = UNSC
-        self.Covenant = Covenant
-
 class Player():
     def __init__(self, type):
         self.tokens = []
@@ -59,19 +25,18 @@ class MainGame():
         self.UNSC = UNSC
         self.Covenant = Covenant
         self.UI.setGameState(self.UNSC, self.Covenant)
-        self.UI.UpdateGameState()
         self.prepare()
 
     def prepare(self):
         #do preparation
-        self.phaseOrder[self.currentPhase]()
+        return None
 
     def nextPhase(self):
         self.currentPhase += 1
         if self.currentPhase == 5:
             self.turn += 1
             self.currentPhase = 0
-        self.phaseOrder[self.currentPhase]()
+
 
     def wing_movement(self):
         UNSCstart = rd.randint(0,1)
@@ -89,7 +54,7 @@ class MainGame():
                 #Unit Have been mooved
                 choosedUnit.engage(Covenant.tokens)
                 #Engagement dealed
-                self.UI.UpdateGameState()
+
                 moved.append(choosedUnit)
 
                 choosedUnit = self.UI.multipleChoice([unit for unit in toMoveCovenant if unit not in moved and not unit.locked], "MAPSELECT")
@@ -100,7 +65,7 @@ class MainGame():
                 # Unit Have been mooved
                 choosedUnit.engage(UNSC.tokens)
                 # Engagement dealed
-                self.UI.UpdateGameState()
+
                 moved.append(choosedUnit)
             else:
                 choosedUnit = self.UI.multipleChoice([unit for unit in toMoveCovenant if unit not in moved and not unit.locked], "MAPSELECT")
