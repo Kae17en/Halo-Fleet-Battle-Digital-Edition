@@ -37,7 +37,6 @@ class interface():
         self.UNSC = UNSC
         self.Covenant = Covenant
 
-
 class Player():
     def __init__(self, type):
         self.tokens = []

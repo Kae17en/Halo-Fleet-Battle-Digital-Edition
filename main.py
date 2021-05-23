@@ -8,7 +8,7 @@ import sys, os
 from panda3d.core import loadPrcFileData
 from direct.filter.CommonFilters import CommonFilters
 from DirectGuiExtension.DirectBoxSizer import DirectBoxSizer
-from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion
+from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib
 
 mydir = os.path.abspath(sys.path[0])
 
@@ -80,15 +80,14 @@ class MyApp(ShowBase):
     def handle_mouse_nav(self, task):
         reg = self.MouseNav.getOverRegion(self.mouseWatcherNode.getMouseX(), self.mouseWatcherNode.getMouseY())
         if(reg):
-            if(reg.getName() == "top" and (self.cam.getZ() + self.lens.film_size[0]/2) < (self.bg.getTexture().getYSize()/1.5)):
+            if(reg.getName() == "top" and (self.cam.getZ() + self.lens.film_size[0]/2) < (self.bg.getTexture().getYSize()/1.6)):
                 self.cam.setZ(self.cam.getZ()+ 400 * globalClock.getDt())
-            elif(reg.getName() == "bot" and (self.cam.getZ() - self.lens.film_size[0]/2) > (-self.bg.getTexture().getYSize()/1.5)):
+            elif(reg.getName() == "bot" and (self.cam.getZ() - self.lens.film_size[0]/2) > (-self.bg.getTexture().getYSize()/1.6)):
                 self.cam.setZ(self.cam.getZ() - 400 * globalClock.getDt())
-            elif(reg.getName() == "left" and (self.cam.getX() - self.lens.film_size[1]/2) > (-self.bg.getTexture().getXSize()/1.5)):
+            elif(reg.getName() == "left" and (self.cam.getX() - self.lens.film_size[1]/2) > (-self.bg.getTexture().getXSize()/1.6)):
                 self.cam.setX(self.cam.getX() - 400 * globalClock.getDt())
-            elif(reg.getName() == "right" and (self.cam.getX() + self.lens.film_size[1]/2) < (self.bg.getTexture().getXSize()/1.5)):
+            elif(reg.getName() == "right" and (self.cam.getX() + self.lens.film_size[1]/2) < (self.bg.getTexture().getXSize()/1.6)):
                 self.cam.setX(self.cam.getX() + 400 * globalClock.getDt())
-
         return task.cont
 
 
@@ -156,11 +155,58 @@ class HUD(DirectObject):
         self.Frame = []
         self.app = app
 
-        self.Bar = DirectFrame(frameColor=(1, 1, 0, 0.3),
-                              frameSize=(-1.2, 1.2, 0, 0.2))
-        self.Frame.append(self.Bar)
+        self.Bar = DirectFrame(frameColor=(0, 0, 0, 0), frameSize=(-1.2, 1.2, 0, 0.2))
+        bg = OnscreenImage('Assets/HUD/Bar.png', scale=(1, 1, 0.1), pos=(0, 0, 0.095))
+        bg.setTransparency(TransparencyAttrib.MAlpha)
+        bg.reparentTo(self.Bar)
 
         self.Bar.setPos(0, 0, -1)
+        self.SideMenu = DirectFrame(frameColor=(1, 1, 0, 0.3),
+                              frameSize=(-0.3, 0, -0.6, 0.6))
+
+        self.SideMenu.setPos(1.8, 0, 0)
+        self.TopBar = DirectFrame(frameColor=(0, 0, 0, 0),
+                                    frameSize=(-1.8, 1.8, -0.1, 0))
+        bg = OnscreenImage('Assets/HUD/TopBar.png', scale=(1.8, 1, 0.05), pos=(0, 0, -0.05))
+        bg.setTransparency(TransparencyAttrib.MAlpha)
+        bg.reparentTo(self.TopBar)
+
+        Quit = DirectButton(text="",
+                            command=app.quit,
+                            pos=(-1.7, 0, -0.05),
+                            parent=self.TopBar,
+                            scale=0.018,
+                            image='Assets/HUD/quit-squared.png',
+                            frameSize=(-1, 1, -1, 1),
+                            relief=None)
+
+        Quit.setTransparency(True)
+
+        Pause = DirectButton(text="",
+                            command='',
+                            pos=(-1.63, 0, -0.05),
+                            parent=self.TopBar,
+                            scale=0.02,
+                            image='Assets/HUD/pause-squared.png',
+                            frameSize=(-1, 1, -1, 1),
+                            relief=None)
+
+        Pause.setTransparency(True)
+
+
+        self.TopBar.setPos(0, 0, 1)
+
+        self.ExpandedSideMenu = DirectFrame(frameColor=(1, 1, 0, 0.3),
+                              frameSize=(-0.3, 0, -0.6, 0.6))
+
+        self.ExpandedSideMenu.setPos(1.5, 0, 0)
+
+        self.Frame.append(self.Bar)
+        self.Frame.append(self.SideMenu)
+        self.Frame.append(self.TopBar)
+        self.Frame.append(self.ExpandedSideMenu)
+
+
 
 
     def show(self):
