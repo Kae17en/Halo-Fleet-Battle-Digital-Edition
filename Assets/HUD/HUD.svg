@@ -22,6 +22,18 @@
      id="defs2">
     <linearGradient
        inkscape:collect="always"
+       id="linearGradient933">
+      <stop
+         style="stop-color:#0063ff;stop-opacity:0.15646258"
+         offset="0"
+         id="stop929" />
+      <stop
+         style="stop-color:#00b7ff;stop-opacity:1"
+         offset="1"
+         id="stop931" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
        id="linearGradient1099">
       <stop
          style="stop-color:#0063ff;stop-opacity:0;"
@@ -259,6 +271,16 @@
        y2="278.004"
        gradientUnits="userSpaceOnUse"
        gradientTransform="translate(-1.5724531e-6)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient933"
+       id="linearGradient1093-0"
+       x1="449.84869"
+       y1="278.31659"
+       x2="526.65143"
+       y2="278.004"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-1.8888811e-6,-19.591894)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -267,9 +289,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="1551.7242"
-     inkscape:cy="914.29913"
+     inkscape:zoom="0.7"
+     inkscape:cx="939.99349"
+     inkscape:cy="591.40663"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -393,17 +415,51 @@
     <path
        style="fill:url(#linearGradient1093);fill-opacity:1;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 507.99999,285.75 v -14.86681 h -42.9651 L 450.16808,285.75 Z"
-       id="path1085" />
+       id="path1085"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:5.6556px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.14139"
-       x="469.17981"
-       y="280.57623"
-       id="text1105"><tspan
+       style="font-style:normal;font-weight:normal;font-size:8.31033px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.207758"
+       x="644.87701"
+       y="205.42056"
+       id="text1105"
+       transform="scale(0.72870231,1.3723025)"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
          sodipodi:role="line"
          id="tspan1103"
-         x="469.17981"
-         y="280.57623"
-         style="stroke-width:0.14139">Next Phase</tspan></text>
+         x="644.87701"
+         y="205.42056"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.207758">Confirm</tspan></text>
+    <path
+       style="fill:url(#linearGradient1093-0);fill-opacity:1;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 508,266.15811 V 251.2913 h -42.9651 l -14.86681,14.86681 z"
+       id="path1085-7"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:8.31032px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.207758"
+       x="644.87701"
+       y="191.14391"
+       id="text1105-9"
+       transform="scale(0.72870231,1.3723025)"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
+         sodipodi:role="line"
+         id="tspan1103-9"
+         x="644.87701"
+         y="191.14391"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.207758">Confirm</tspan></text>
+    <circle
+       style="fill:#00b7ff;fill-opacity:0;stroke:#00c91f;stroke-width:0.529167;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.945578"
+       id="path939"
+       cx="254.35281"
+       cy="143.55019"
+       r="112.19473"
+       inkscape:export-filename="C:\Users\Théo\Desktop\HFB2\Assets\Drawable\Range.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
   </g>
 </svg>

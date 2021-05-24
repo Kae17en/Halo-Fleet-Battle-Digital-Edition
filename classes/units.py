@@ -68,6 +68,9 @@ class TheoryElement(metaclass=ABCMeta):
     def aim(self):
         return self._aim
 
+    def get_angle(self):
+        return ((np.arctan(self.aim[0]/self.aim[1]))*180/np.pi)
+
 
     def set_aim(self,CursorPos):
        self._aim = vct.vector_from_dots(CursorPos,(self.xpos,self.ypos))
@@ -102,7 +105,7 @@ class TheoryElement(metaclass=ABCMeta):
     def MoveRange(self):
         return self._MoveRange
     @MoveRange.setter
-    def MoveRangeAlter(self,d):
+    def MoveRange(self,d):
         self._MoveRange=d
     #---------------------------Autres------------------------
 
@@ -156,9 +159,10 @@ class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
 
 class UNSC_Paris_Frigate_Arrow(TheoryElement):
     def __init__(self,pos,aim):
-        super().__init__(pos,DT=[3,3,3],CDT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
+        super().__init__(pos=pos,DT=[3,3,3],CDT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive])
+        self.set_aim(aim)
         self.__primary=weapons.Weapons("MAC",10,20,4,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,2,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -209,7 +213,7 @@ class Covenant_CCS_Battlecruiser(TheoryElement):
         super().__init__(pos,DT=[8,7,3],CDT=[8,7,3],Hangars=2,BR=3,Movement=8,Tag="Covenant CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=150,faction="Covenant",ld=[loads.Defence_Array(4),loads.Glide(4),loads.Point_Defence(3),
                                                loads.Carrier_Action(1)])
-
+        self.set_aim(aim)
         self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__secondary=weapons.Weapons("Plasma",10,20,9,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
 

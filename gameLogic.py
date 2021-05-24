@@ -20,16 +20,21 @@ class MainGame():
         self.currentPhase = 0
         self.phaseOrder = [self.wing_movement, self.wing_attack, self.battle_moovement, self.battle_attack, self.turn_end]
         self.toResolveWings = []
+        self.moved = []
 
     def startGameFromSituation(self, UNSC, Covenant):
         self.UNSC = UNSC
         self.Covenant = Covenant
         self.UI.setGameState(self.UNSC, self.Covenant)
-        self.prepare()
+        UNSCstart = rd.randint(0, 1)
+        self.currentPhase = 0
+        if(UNSCstart == 1):
+            self.UI.HUD.setPlayer("UNSC")
+            self.CurrentPlayer = UNSC
+        else:
+            self.UI.HUD.setPlayer("Covenant")
+            self.CurrentPlayer = Covenant
 
-    def prepare(self):
-        #do preparation
-        return None
 
     def nextPhase(self):
         self.currentPhase += 1
@@ -38,57 +43,29 @@ class MainGame():
             self.currentPhase = 0
 
 
-    def wing_movement(self):
-        UNSCstart = rd.randint(0,1)
-        toMoveUNSC = [unit for unit in self.UNSC.tokens if issubclass(type(unit), Spacecraft)]
-        toMoveCovenant = [unit for unit in self.Covenant.tokens if issubclass(type(unit), Spacecraft)]
-        moved = []
-        while(len(moved) != len(toMoveUNSC) + len(toMoveCovenant)):
-            if(UNSCstart):
-                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveUNSC if unit not in moved and not unit.locked], "MAPSELECT")
-                mooveLocation = self.UI.posRequest(choosedUnit)
-
-                while(not choosedUnit.moove_unit(mooveLocation)):
+    def wing_movement(self, object, mooveLocation):
+        if(self.currentPhase == 0 and object in self.CurrentPlayer.Token and object not in self.moved and not object.locked):
+            toMoveUNSC = [unit for unit in self.UNSC.tokens if issubclass(type(unit), Spacecraft)]
+            toMoveCovenant = [unit for unit in self.Covenant.tokens if issubclass(type(unit), Spacecraft)]
+            if(len(self.moved) != len(toMoveUNSC) + len(toMoveCovenant)):
+                if(not object.moove_unit(mooveLocation)):
                     self.UI.error("Invalid Location")
-                    mooveLocation = self.UI.posRequest(choosedUnit)
+                    return False
                 #Unit Have been mooved
-                choosedUnit.engage(Covenant.tokens)
+                object.engage(self.CurrentPlayer.tokens)
                 #Engagement dealed
-
-                moved.append(choosedUnit)
-
-                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveCovenant if unit not in moved and not unit.locked], "MAPSELECT")
-                mooveLocation = self.UI.posRequest(choosedUnit)
-                while (not choosedUnit.moove_unit(mooveLocation)):
-                    self.UI.error("Invalid Location")
-                    mooveLocation = self.UI.posRequest(choosedUnit)
-                # Unit Have been mooved
-                choosedUnit.engage(UNSC.tokens)
-                # Engagement dealed
-
-                moved.append(choosedUnit)
+                self.moved.append(choosedUnit)
+                self.CurrentPlayer = self.nextPlayer()
             else:
-                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveCovenant if unit not in moved and not unit.locked], "MAPSELECT")
-                mooveLocation = self.UI.posRequest(choosedUnit)
-                while (not choosedUnit.moove_unit(mooveLocation)):
-                    self.UI.error("Invalid Location")
-                    mooveLocation = self.UI.posRequest(choosedUnit)
-                # Unit Have been mooved
-                choosedUnit.engage(UNSC.tokens)
-                # Engagement dealed
-                moved.append(choosedUnit)
-                self.UI.UpdateGameState()
-                choosedUnit = self.UI.multipleChoice([unit for unit in toMoveUNSC if unit not in moved and not unit.locked], "MAPSELECT")
-                while (not choosedUnit.moove_unit(mooveLocation)):
-                    self.UI.error("Invalid Location")
-                    mooveLocation = self.UI.posRequest(choosedUnit)
-                # Unit Have been mooved
-                choosedUnit.engage(Covenant.tokens)
-                # Engagement dealed
-                self.UI.UpdateGameState()
-                moved.append(choosedUnit)
+                self.nextPhase()
 
-        self.nextPhase()
+    def nextPlayer(self):
+        if(self.CurrentPlayer.type == "UNSC"):
+            self.CurrentPlayer = self.Covenant
+            self.UI.HUD.setPlayer("UNSC")
+        else:
+            self.CurrentPlayer = self.UNSC
+            self.UI.HUD.setPlayer("Covenant")
 
     def wing_attack(self):
         toResolve = []

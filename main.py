@@ -8,7 +8,7 @@ import sys, os
 from panda3d.core import loadPrcFileData
 from direct.filter.CommonFilters import CommonFilters
 from DirectGuiExtension.DirectBoxSizer import DirectBoxSizer
-from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue
+from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs
 from gameLogic import *
 import ctypes
 
@@ -80,17 +80,20 @@ class MyApp(ShowBase):
         #self.MouseNav.showRegions(render2d, 'gui-popup', 0)
 
         self.taskMgr.add(self.handle_mouse_nav, "mouse-nav")
+        self.taskMgr.add(self.show_moving_object, "move-range")
         self.taskMgr.add(self.UpdateGameState, "update-state")
+
 
         self.HUD.show()
 
         self.Game = MainGame(self)
         UNSC = Player("UNSC")
         Covenant = Player("Covenant")
-        UNSC.addToken(UNSC_Paris_Frigate_Arrow((0, 0), vct.vector_from_dots((11.8, 11.6), (0, 0))))
-        Covenant.addToken(Covenant_CCS_Battlecruiser((300, 300), vct.vector_from_dots((12.7, 1.3), (300, 300))))
+        UNSC.addToken(UNSC_Paris_Frigate_Arrow((0, 0), (2.8, 11.6)))
+        Covenant.addToken(Covenant_CCS_Battlecruiser((300, 300), (12.7, 1.3)))
         self.setGameState(UNSC,Covenant)
-        # Game.startGameFromSituation(UNSC, Covenant)
+
+        self.Game.startGameFromSituation(UNSC, Covenant)
 
     def UpdateGameState(self, task):
         for object in self.UNSC.tokens:
@@ -103,6 +106,7 @@ class MyApp(ShowBase):
                 self.Frames[1][i].reparentTo(render)
                 self.Frames[1][i].setTag('clickable', str(id(self.Frames[0][i])))
             self.Frames[1][i].setPos(object.xpos, -1, object.ypos)
+            self.Frames[1][i].setHpr(0, 0, object.get_angle())
         for object in self.Covenant.tokens:
             if (object in self.Frames[0]):
                 i = self.Frames[0].index(object)
@@ -113,12 +117,13 @@ class MyApp(ShowBase):
                 self.Frames[1][i].reparentTo(render)
                 self.Frames[1][i].setTag('clickable', str(id(self.Frames[0][i])))
             self.Frames[1][i].setPos(object.xpos, -2, object.ypos)
+            self.Frames[1][i].setHpr(0, 0, object.get_angle())
         for i in range(len(self.Frames[0])):
             if (self.Frames[0][i] not in self.UNSC.tokens and self.Frames[0][i] not in self.Covenant.tokens):
                 self.Frames[1][i].destroy()
                 self.Frames[0].pop(i)
                 self.Frames[1].pop(i)
-        task.cont
+        return task.cont
 
     def handle_element_click(self):
         mpos = self.mouseWatcherNode.getMouse()
@@ -132,15 +137,34 @@ class MyApp(ShowBase):
             pickedObj = pickedObj.getTag('clickable')
             if pickedObj and pickedObj != "":
                 if pickedObj == "fond":
-                    if(self.detailed):
+                    if(hasattr(self, "detailed")):
                         del self.detailed
+                elif pickedObj == "range":
+
+                    NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
+                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0],
+                               NewPos[2]) < 10 * self.detailed.object.MoveRange):
+                        self.detailed.object.set_pos((NewPos[0], NewPos[2]))
+                    del self.detailed
                 else:
                     element = ctypes.cast(int(pickedObj), ctypes.py_object).value
                     self.detailed = objectDetails(element)
 
+    def show_moving_object(self, task):
+        if(hasattr(self, "detailed")):
+            mpos = self.mouseWatcherNode.getMouse()
+            self.pickerRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
+            self.clickonObjectTrav.traverse(render)
+            # Assume for simplicity's sake that myHandler is a CollisionHandlerQueue.
+            if self.clickonObject.getNumEntries() > 0:
+                # This is so we get the closest object.
+                self.clickonObject.sortEntries()
+                pickedObj = self.clickonObject.getEntry(self.clickonObject.getNumEntries()-1).getSurfacePoint(NodePath(self.camNode))
+                pickedObj[0] += self.cam.getX()
+                pickedObj[2] += self.cam.getZ()
+                self.detailed.drawRangeLine(pickedObj)
 
-
-
+        return task.cont
 
 
     def handle_zoom_in(self):
@@ -240,7 +264,6 @@ class HUD(DirectObject):
         self.app = app
 
         self.Bar = DirectFrame(frameColor=(0, 0, 0, 0), frameSize=(-1.2, 1.2, 0, 0.2))
-        self.loadImageRealScale('Assets/HUD/Bar.png', self.Bar)
 
         self.Bar.setPos(0, 0, -0.95)
         self.SideMenu = DirectFrame(frameColor=(0, 0, 0, 0),
@@ -313,6 +336,7 @@ class HUD(DirectObject):
         np.setScale(Vec3(iH.getXSize(), 1, yS) / self.app.win.getYSize())
         np.setTransparency(TransparencyAttrib.MAlpha)
         np.reparentTo(parent)
+        return np
 
 
     def show(self):
@@ -320,15 +344,47 @@ class HUD(DirectObject):
             frame.show()
         self.ExpandedSideMenu.hide()
 
+    def setPlayer(self,name):
+        if(name == "UNSC"):
+            if(hasattr(self, "BarImage")):
+                self.BarImage.destroy()
+            self.BarImage = self.loadImageRealScale('Assets/HUD/Bar.png', self.Bar)
+        else:
+            if (hasattr(self, "BarImage")):
+                self.BarImage.destroy()
+            self.BarImage = self.loadImageRealScale('Assets/HUD/CovBar.png', self.Bar)
+
+
 class objectDetails():
     def __init__(self, object):
-        print("loadinfg")
+        self.object = object
         self.range = OnscreenImage('Assets/Drawable/Range.png', pos=(object.xpos,-4,object.ypos), scale=(10*object.MoveRange, 1, 10*object.MoveRange), parent=render)
+        self.range.setTag('clickable', "range")
         self.range.setTransparency(TransparencyAttrib.MAlpha)
+
 
     def __del__(self):
         self.range.destroy()
+        if(hasattr(self, "np")):
+            self.np.removeNode()
 
+    def drawRangeLine(self, mpos):
+        tx, ty = 0, 0
+        if (hasattr(self, "np")):
+            self.np.removeNode()
+        lines = LineSegs()
+        lines.reset()
+        lines.moveTo(self.object.xpos,-2, self.object.ypos)
+        lines.drawTo(1*mpos[0], -2, 1*mpos[2])
+        lines.setThickness(4)
+        lines.setColor(1,1,0,1)
+        node = lines.create()
+        self.np = NodePath(node)
+        self.np.reparentTo(render)
+
+
+def distAB(ax,ay,bx,by):
+    return np.sqrt((ax-bx)**2+(ay-by)**2)
 
 app = MyApp()
 app.run()
