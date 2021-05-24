@@ -34,6 +34,7 @@ class MyApp(ShowBase):
         self.menu = MainMenu(self)
         self.menu.show()
         self.Frames = [[],[]]
+        self.movable = []
 
         self.clickonObjectTrav = CollisionTraverser()
         self.clickonObject = CollisionHandlerQueue()
@@ -91,7 +92,7 @@ class MyApp(ShowBase):
         Covenant = Player("Covenant")
         UNSC.addToken(UNSC_Paris_Frigate_Arrow((0, 0), (2.8, 11.6)))
         Covenant.addToken(Covenant_CCS_Battlecruiser((300, 300), (12.7, 1.3)))
-        self.setGameState(UNSC,Covenant)
+
 
         self.Game.startGameFromSituation(UNSC, Covenant)
 
@@ -123,6 +124,7 @@ class MyApp(ShowBase):
                 self.Frames[1][i].destroy()
                 self.Frames[0].pop(i)
                 self.Frames[1].pop(i)
+        self.HUD.setGameInfo(self.GlobalState)
         return task.cont
 
     def handle_element_click(self):
@@ -140,24 +142,25 @@ class MyApp(ShowBase):
                     if(hasattr(self, "detailed")):
                         del self.detailed
                 elif pickedObj == "range":
-
                     NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
-                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0],
-                               NewPos[2]) < 10 * self.detailed.object.MoveRange):
-                        self.detailed.object.set_pos((NewPos[0], NewPos[2]))
+                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.object.MoveRange):
+                        self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2]))
                     del self.detailed
                 else:
                     element = ctypes.cast(int(pickedObj), ctypes.py_object).value
-                    self.detailed = objectDetails(element)
+                    if(element in self.movable and element in self.GlobalState[2].tokens): #Movable for actual Phase and Actual Player
+                        if(hasattr(self, "detailed")):
+                            del self.detailed
+                        self.detailed = objectDetails(element, self.HUD)
 
     def show_moving_object(self, task):
         if(hasattr(self, "detailed")):
             mpos = self.mouseWatcherNode.getMouse()
             self.pickerRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
             self.clickonObjectTrav.traverse(render)
-            # Assume for simplicity's sake that myHandler is a CollisionHandlerQueue.
+
             if self.clickonObject.getNumEntries() > 0:
-                # This is so we get the closest object.
+
                 self.clickonObject.sortEntries()
                 pickedObj = self.clickonObject.getEntry(self.clickonObject.getNumEntries()-1).getSurfacePoint(NodePath(self.camNode))
                 pickedObj[0] += self.cam.getX()
@@ -166,6 +169,8 @@ class MyApp(ShowBase):
 
         return task.cont
 
+    def setMovable(self, objects):
+        self.movable = objects
 
     def handle_zoom_in(self):
         if(min(self.lens.film_size - (5000 * globalClock.getDt() * self.getAspectRatio(), 5000 * globalClock.getDt())) > 0):
@@ -191,9 +196,10 @@ class MyApp(ShowBase):
             pass
         return task.cont
 
-    def setGameState(self, UNSC, Covenant):
+    def setGameState(self, UNSC, Covenant, State):
         self.UNSC = UNSC
         self.Covenant = Covenant
+        self.GlobalState = State #(PHASE, TURN, ACTUAL_PLAYER)
 
 
 
@@ -275,6 +281,12 @@ class HUD(DirectObject):
                                     frameSize=(-1.8, 1.8, -0.1, 0))
         self.TopBar.setPos(0, 0, 0.95)
         self.loadImageRealScale('Assets/HUD/TopBar.png', self.TopBar)
+        self.SelectedName = OnscreenText('', pos=(-0.57, -0.98), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+
+        self.Phase = OnscreenText('', pos=(0, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+        self.Turn = OnscreenText('', pos=(-0.4, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+        self.Player = OnscreenText('', pos=(0.4, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+
 
 
         Quit = DirectButton(text="",
@@ -288,8 +300,28 @@ class HUD(DirectObject):
 
         Quit.setTransparency(True)
 
+        self.PauseScreen = DirectDialog(frameSize=(-0.7, 0.7, -0.7, 0.7),
+                                        fadeScreen=0.4,
+                                        pos = (0,-2,0),
+                                        relief=DGG.FLAT,
+                                        parent=render2d,
+                                        frameTexture = "Assets/PauseMenu/Background.png",
+                                        dialogName="PauseDialog",
+                                        )
+        self.PauseScreen.setTransparency(True)
+        self.PauseScreen.hide()
+
+        PScreenResume = DirectButton(text="",
+                                     command=self.PauseScreen.hide,
+                                     pos=(0, 0, 0),
+                                     scale=(0.08 * app.getAspectRatio(), 1, 0.08),
+                                     image='Assets/PauseMenu/Resume.png',
+                                     relief=None)
+        PScreenResume.setTransparency(True)
+        PScreenResume.reparentTo(self.PauseScreen)
+
         Pause = DirectButton(text="",
-                            command='',
+                            command=self.PauseScreen.show,
                             pos=(-1.67, 0, -0.005),
                             parent=self.TopBar,
                             scale=0.02,
@@ -311,22 +343,15 @@ class HUD(DirectObject):
         self.Frame.append(self.SideMenu)
         self.Frame.append(self.TopBar)
 
-        buttonImages = ((
-            loader.loadTexture('Assets/HUD/Confirm.png'),
-            loader.loadTexture('Assets/HUD/ConfirmHover.png'),
-            loader.loadTexture('Assets/HUD/ConfirmHover.png'),
-            loader.loadTexture('Assets/HUD/ConfirmHover.png'))
-        )
 
-        self.Confirm = DirectButton(text="",
-                            pos=(0.9, 0, -0.95),
-                            parent=render2d,
-                            scale=(0.1,1,0.05),
-                            frameTexture=buttonImages,
-                            frameSize=(-1, 1, -1, 1),
-                            relief=DGG.FLAT)
+    def setGameInfo(self, State):
+        Dict = ["Wing Movement", "Wing Attack", "Battle Movement", 'Battle Atack']
+        self.Phase.setText(Dict[State[0]])
+        self.Turn.setText("Turn " + str(State[1]))
+        self.Player.setText("Playing " + State[2].type)
+        self.setPlayer(State[2].type)
 
-        self.Confirm.setTransparency(True)
+
 
     def loadImageRealScale(self, name, parent):
         iH = PNMImageHeader()
@@ -356,17 +381,21 @@ class HUD(DirectObject):
 
 
 class objectDetails():
-    def __init__(self, object):
+    def __init__(self, object, HUD):
+        self.HUD = HUD
         self.object = object
         self.range = OnscreenImage('Assets/Drawable/Range.png', pos=(object.xpos,-4,object.ypos), scale=(10*object.MoveRange, 1, 10*object.MoveRange), parent=render)
         self.range.setTag('clickable', "range")
         self.range.setTransparency(TransparencyAttrib.MAlpha)
+        self.HUD.SelectedName.setText(str(object))
 
 
     def __del__(self):
         self.range.destroy()
         if(hasattr(self, "np")):
             self.np.removeNode()
+        self.HUD.SelectedName.setText('')
+
 
     def drawRangeLine(self, mpos):
         tx, ty = 0, 0

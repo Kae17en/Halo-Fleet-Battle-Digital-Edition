@@ -21,19 +21,19 @@ class MainGame():
         self.phaseOrder = [self.wing_movement, self.wing_attack, self.battle_moovement, self.battle_attack, self.turn_end]
         self.toResolveWings = []
         self.moved = []
+        self.movable = []
 
     def startGameFromSituation(self, UNSC, Covenant):
         self.UNSC = UNSC
         self.Covenant = Covenant
-        self.UI.setGameState(self.UNSC, self.Covenant)
         UNSCstart = rd.randint(0, 1)
-        self.currentPhase = 0
+        self.currentPhase = -1
+        self.nextPhase()
         if(UNSCstart == 1):
-            self.UI.HUD.setPlayer("UNSC")
             self.CurrentPlayer = UNSC
         else:
-            self.UI.HUD.setPlayer("Covenant")
             self.CurrentPlayer = Covenant
+        self.UI.setGameState(self.UNSC, self.Covenant, (self.currentPhase, self.turn, self.CurrentPlayer))
 
 
     def nextPhase(self):
@@ -41,31 +41,39 @@ class MainGame():
         if self.currentPhase == 5:
             self.turn += 1
             self.currentPhase = 0
+        if(self.currentPhase == 0):
+            self.movable = [unit for unit in self.UNSC.tokens if issubclass(type(unit), Spacecraft)] + [unit for unit in self.Covenant.tokens if issubclass(type(unit), Spacecraft)]
+        if(self.currentPhase == 2):
+            self.movable = [unit for unit in self.UNSC.tokens if issubclass(type(unit), TheoryElement)] + [unit for unit in self.Covenant.tokens if issubclass(type(unit),TheoryElement)]
+        else:
+            self.movable = []
+        self.UI.setMovable = self.movable
 
 
     def wing_movement(self, object, mooveLocation):
-        if(self.currentPhase == 0 and object in self.CurrentPlayer.Token and object not in self.moved and not object.locked):
-            toMoveUNSC = [unit for unit in self.UNSC.tokens if issubclass(type(unit), Spacecraft)]
-            toMoveCovenant = [unit for unit in self.Covenant.tokens if issubclass(type(unit), Spacecraft)]
-            if(len(self.moved) != len(toMoveUNSC) + len(toMoveCovenant)):
-                if(not object.moove_unit(mooveLocation)):
-                    self.UI.error("Invalid Location")
-                    return False
+        if(self.currentPhase == 0 and object in self.CurrentPlayer.tokens and object not in self.moved and not object.locked):
+            object.set_pos(mooveLocation)
                 #Unit Have been mooved
-                object.engage(self.CurrentPlayer.tokens)
+            object.engage(self.CurrentPlayer.tokens)
                 #Engagement dealed
-                self.moved.append(choosedUnit)
-                self.CurrentPlayer = self.nextPlayer()
-            else:
-                self.nextPhase()
+            self.moved.append(choosedUnit)
+            self.CurrentPlayer = self.nextPlayer()
+        if (len(self.moved) == len(self.movable)):
+            self.moved = []
+            self.movable = []
+            self.nextPhase()
+
+
+    def requestMove(self, unit, pos):
+        if(issubclass(type(unit), Spacecraft)):
+            self.wing_movement(unit, pos)
 
     def nextPlayer(self):
         if(self.CurrentPlayer.type == "UNSC"):
             self.CurrentPlayer = self.Covenant
-            self.UI.HUD.setPlayer("UNSC")
         else:
             self.CurrentPlayer = self.UNSC
-            self.UI.HUD.setPlayer("Covenant")
+        self.UI.setGameState(self.UNSC, self.Covenant, (self.currentPhase, self.turn, self.CurrentPlayer))
 
     def wing_attack(self):
         toResolve = []
