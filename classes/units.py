@@ -262,6 +262,7 @@ class Spacecraft():
         self.__vs_elem_dice=vselement
         self.image = ""
         self.icon = ""
+        self.locked = False
 
     @property
     def vs_wing_dice(self):

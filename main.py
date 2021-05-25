@@ -148,12 +148,12 @@ class MyApp(ShowBase):
                     if(hasattr(self, "detailed")):
                         del self.detailed
                 elif pickedObj == "range":
-                    NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
-                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.object.MoveRange): #Request Move To Game logic
-                        if self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2])):
-                            loader.loadSfx("Assets/Sounds/ShipMove.mp3").play()
-                    del self.detailed
-                #Todo object menu click
+                    if(not self.detailed.rangeOnly):
+                        NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
+                        if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.object.MoveRange): #Request Move To Game logic
+                            if self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2])):
+                                loader.loadSfx("Assets/Sounds/ShipMove.mp3").play()
+                        del self.detailed
                 elif pickedObj == "moveObject":
                     loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
                     self.detailed.drawMove()
@@ -162,7 +162,7 @@ class MyApp(ShowBase):
                 elif pickedObj == "deploySelectedWing":
                     self.detailed.deploy(ctypes.cast(int(pickedObjG.getTag("wingId")), ctypes.py_object).value)
                 elif pickedObj == "WDeployrange":
-                    self.Game.deployWing(self.detailed.DepWing, self.detailed.object) #Deploiment du wing
+                    self.Game.deployWing(self.detailed.wing, self.detailed.object) #Deploiment du wing
                     NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
                     if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.wing.MoveRange): #deplacement du wing
                         if self.Game.requestMove(self.detailed.wing, (NewPos[0], NewPos[2])):
@@ -170,12 +170,11 @@ class MyApp(ShowBase):
                     del self.detailed
                 else:
                     element = ctypes.cast(int(pickedObj), ctypes.py_object).value
-                    isSelectable, isMovable, canDeploy = self.Game.requestObjectSelect(element)
-                    if(isSelectable):
-                        if(hasattr(self, "detailed")):
-                            del self.detailed
-                        loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
-                        self.detailed = objectDetails(element, self.HUD, isMovable, canDeploy)
+                    isSelectableForAction, isMovable, canDeploy = self.Game.requestObjectSelect(element)
+                    if(hasattr(self, "detailed")):
+                        del self.detailed
+                    loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
+                    self.detailed = objectDetails(element, self.HUD, isMovable, canDeploy, aspectRatio=self.getAspectRatio(), rangeOnly=(not isSelectableForAction))
 
     def show_moving_object(self, task):
         if(hasattr(self, "detailed")):
@@ -422,12 +421,14 @@ class HUD(DirectObject):
 
 
 class objectDetails():
-    def __init__(self, object, HUD, isMovable, canDeploy):
+    def __init__(self, object, HUD, isMovable, canDeploy, aspectRatio, rangeOnly = False):
         self.HUD = HUD
         self.object = object
         self.HUD.SelectedName.setText(str(object))
         self.moving = False
-        if issubclass(type(object), Spacecraft):
+        self.ratio = aspectRatio
+        self.rangeOnly = rangeOnly
+        if issubclass(type(object), Spacecraft) or rangeOnly:
             self.drawMove()
         else:
             self.ObjectMenu = OnscreenImage('Assets/ObjectMenu/Background.png', scale=(100, 1, 75),
@@ -508,21 +509,28 @@ class objectDetails():
         self.moveShipButton.destroy()
         self.deployButton.destroy()
 
-        self.WMenuBackgrounf = OnscreenImage('Assets/ObjectMenu/WingMenuBackground.png', pos=(self.object.xpos, -4, self.object.ypos),
-                                    scale=(100, 1, 300), parent=render)
+        self.WMenuBackgrounf = OnscreenImage('Assets/ObjectMenu/WingMenuBackground.png', pos=(self.object.xpos - 130, -4, self.object.ypos - 100),
+                                    scale=(100, 1, 250), parent=render)
+        self.WMenuBackgrounf.setTransparency(TransparencyAttrib.MAlpha)
         self.DeployOptionsFrames = []
         for i in range(len(self.object.docked)):
-            option = OnscreenImage(self.object.docked[i].icon, pos=(-0.9 + 0.5*i%3, -6, 0.9 - 0.2*int(i/3)), scale=(0.01,1,0.01), parent=self.WMenuBackgrounf)
-            option.setTag("wingId", str(id(self.object.docked[i].icon)))
+            option = OnscreenImage(self.object.docked[i].icon, pos=(-0.5 + 0.3*i%3, -6, 0.55 - 0.2*int(i/3)), scale=(0.2*self.ratio,1,0.2), parent=self.WMenuBackgrounf)
+            option.setTag("wingId", str(id(self.object.docked[i])))
+            option.setTag("clickable", "deploySelectedWing")
             option.setTransparency(TransparencyAttrib.MAlpha)
             self.DeployOptionsFrames.append(option)
 
     def deploy(self, wing):
+        self.moving = True
+        if (hasattr(self, "WMenuBackgrounf")):
+            for image in self.DeployOptionsFrames:
+                image.destroy()
+            self.WMenuBackgrounf.destroy()
         self.Wrange = OnscreenImage('Assets/Drawable/Range.png', pos=(self.object.xpos, -4, self.object.ypos),
-                                   scale=(10 * self.object.MoveRange, 1, 10 * self.wing.MoveRange), parent=render)
+                                   scale=(10 * self.object.MoveRange * self.ratio, 1, 10 * wing.MoveRange), parent=render)
         self.Wrange.setTag('clickable', "WDeployrange")
         self.Wrange.setTransparency(TransparencyAttrib.MAlpha)
-        self.DepWing = wing
+        self.wing = wing
 
 def distAB(ax,ay,bx,by):
     return np.sqrt((ax-bx)**2+(ay-by)**2)

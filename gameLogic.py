@@ -26,7 +26,7 @@ class MainGame():
     def startGameFromSituation(self, UNSC, Covenant):
         self.UNSC = UNSC
         self.Covenant = Covenant
-        UNSCstart = rd.randint(0, 1)
+        UNSCstart = 0#rd.randint(0, 1)
         self.currentPhase = -1
         self.nextPhase()
         if(UNSCstart == 1):
@@ -81,7 +81,7 @@ class MainGame():
         return isSelectable, movable, canDeploy
 
     def deployWing(self, wing, fromShip):
-        self.fromShip.deployWing(wing)
+        fromShip.deployWing(wing)
         self.UNSC.tokens.append(wing)
 
     def nextPlayer(self):
