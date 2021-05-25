@@ -77,8 +77,12 @@ class MainGame():
         canDeploy = False
         if isSelectable:
             movable = (unit in self.movable and unit not in self.moved)
-            canDeploy = (issubclass(type(unit), TheoryElement) and unit.Hangars > 0 and self.currentPhase == 0)
+            canDeploy = (issubclass(type(unit), TheoryElement) and unit.Hangars > 0 and self.currentPhase == 0 and len(unit.docked) > 0)
         return isSelectable, movable, canDeploy
+
+    def deployWing(self, wing, fromShip):
+        self.fromShip.deployWing(wing)
+        self.UNSC.tokens.append(wing)
 
     def nextPlayer(self):
         if(self.CurrentPlayer.type == "UNSC"):

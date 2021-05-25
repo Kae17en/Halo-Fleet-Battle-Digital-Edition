@@ -93,7 +93,7 @@ class MyApp(ShowBase):
         UNSC = Player("UNSC")
         Covenant = Player("Covenant")
         UNSC.addToken(UNSC_Paris_Frigate_Arrow((0, 0), (2.8, 11.6)))
-        Covenant.addToken(Covenant_CCS_Battlecruiser((300, 300), (12.7, 1.3)))
+        Covenant.addToken(Covenant_CCS_Battlecruiser((300, 300), (12.7, 1.3), docked=[Covenant_Banshee_Interceptor_Flight((300,300), 3)]))
 
         self.music = loader.loadSfx("Assets/Music/Ambiant.mp3")
         self.music.setLoop(True)
@@ -141,8 +141,8 @@ class MyApp(ShowBase):
         if self.clickonObject.getNumEntries() > 0:
             # This is so we get the closest object.
             self.clickonObject.sortEntries()
-            pickedObj = self.clickonObject.getEntry(0).getIntoNodePath()
-            pickedObj = pickedObj.getTag('clickable')
+            pickedObjG = self.clickonObject.getEntry(0).getIntoNodePath()
+            pickedObj = pickedObjG.getTag('clickable')
             if pickedObj and pickedObj != "":
                 if pickedObj == "fond":
                     if(hasattr(self, "detailed")):
@@ -150,13 +150,24 @@ class MyApp(ShowBase):
                 elif pickedObj == "range":
                     NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
                     if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.object.MoveRange): #Request Move To Game logic
-                        if self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2]))
+                        if self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2])):
                             loader.loadSfx("Assets/Sounds/ShipMove.mp3").play()
                     del self.detailed
                 #Todo object menu click
                 elif pickedObj == "moveObject":
                     loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
                     self.detailed.drawMove()
+                elif pickedObj == "deployWing":
+                    self.detailed.showWingMenu()
+                elif pickedObj == "deploySelectedWing":
+                    self.detailed.deploy(ctypes.cast(int(pickedObjG.getTag("wingId")), ctypes.py_object).value)
+                elif pickedObj == "WDeployrange":
+                    self.Game.deployWing(self.detailed.DepWing, self.detailed.object) #Deploiment du wing
+                    NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
+                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.wing.MoveRange): #deplacement du wing
+                        if self.Game.requestMove(self.detailed.wing, (NewPos[0], NewPos[2])):
+                            loader.loadSfx("Assets/Sounds/ShipMove.mp3").play()
+                    del self.detailed
                 else:
                     element = ctypes.cast(int(pickedObj), ctypes.py_object).value
                     isSelectable, isMovable, canDeploy = self.Game.requestObjectSelect(element)
@@ -437,7 +448,7 @@ class objectDetails():
                 self.moveShipButton = OnscreenImage('Assets/ObjectMenu/MoveShipButtonDisabled.png', scale=(0.4, 1, 0.7), pos=(-0.5, -2, -0.2), parent=self.ObjectMenu)
             if(canDeploy):
                 self.deployButton = OnscreenImage('Assets/ObjectMenu/DeployButton.png', scale=(0.4, 1, 0.7), pos=(0.5, -2, -0.2), parent=self.ObjectMenu)
-                # self.deployButton.setTag('clickable', "DeployWings")
+                self.deployButton.setTag('clickable', "deployWing")
             else:
                 self.deployButton = OnscreenImage('Assets/ObjectMenu/DeployButtonDisabled.png', scale=(0.4, 1, 0.7), pos=(0.5, -2, -0.2), parent=self.ObjectMenu)
 
@@ -457,6 +468,12 @@ class objectDetails():
             self.menuline.removeNode()
             self.moveShipButton.destroy()
             self.deployButton.destroy()
+        if(hasattr(self, "Wrange")):
+            self.Wrange.destroy()
+        if(hasattr(self, "WMenuBackgrounf")):
+            for image in self.DeployOptionsFrames:
+                image.destroy()
+            self.WMenuBackgrounf.destroy()
 
 
     def drawRangeLine(self, mpos):
@@ -484,6 +501,28 @@ class objectDetails():
                                    scale=(10 * self.object.MoveRange, 1, 10 * self.object.MoveRange), parent=render)
         self.range.setTag('clickable', "range")
         self.range.setTransparency(TransparencyAttrib.MAlpha)
+
+    def showWingMenu(self):
+        self.ObjectMenu.destroy()
+        self.menuline.removeNode()
+        self.moveShipButton.destroy()
+        self.deployButton.destroy()
+
+        self.WMenuBackgrounf = OnscreenImage('Assets/ObjectMenu/WingMenuBackground.png', pos=(self.object.xpos, -4, self.object.ypos),
+                                    scale=(100, 1, 300), parent=render)
+        self.DeployOptionsFrames = []
+        for i in range(len(self.object.docked)):
+            option = OnscreenImage(self.object.docked[i].icon, pos=(-0.9 + 0.5*i%3, -6, 0.9 - 0.2*int(i/3)), scale=(0.01,1,0.01), parent=self.WMenuBackgrounf)
+            option.setTag("wingId", str(id(self.object.docked[i].icon)))
+            option.setTransparency(TransparencyAttrib.MAlpha)
+            self.DeployOptionsFrames.append(option)
+
+    def deploy(self, wing):
+        self.Wrange = OnscreenImage('Assets/Drawable/Range.png', pos=(self.object.xpos, -4, self.object.ypos),
+                                   scale=(10 * self.object.MoveRange, 1, 10 * self.wing.MoveRange), parent=render)
+        self.Wrange.setTag('clickable', "WDeployrange")
+        self.Wrange.setTransparency(TransparencyAttrib.MAlpha)
+        self.DepWing = wing
 
 def distAB(ax,ay,bx,by):
     return np.sqrt((ax-bx)**2+(ay-by)**2)
