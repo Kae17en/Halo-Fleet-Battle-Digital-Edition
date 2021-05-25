@@ -51,22 +51,34 @@ class MainGame():
 
 
     def wing_movement(self, object, mooveLocation):
-        if(self.currentPhase == 0 and object in self.CurrentPlayer.tokens and object not in self.moved and not object.locked):
+        if(not object.locked):
             object.set_pos(mooveLocation)
                 #Unit Have been mooved
             object.engage(self.CurrentPlayer.tokens)
                 #Engagement dealed
             self.moved.append(choosedUnit)
             self.CurrentPlayer = self.nextPlayer()
+            return True
         if (len(self.moved) == len(self.movable)):
             self.moved = []
             self.movable = []
             self.nextPhase()
+            return True
+        return False
 
 
     def requestMove(self, unit, pos):
         if(issubclass(type(unit), Spacecraft)):
-            self.wing_movement(unit, pos)
+            return self.wing_movement(unit, pos)
+
+    def requestObjectSelect(self,unit):
+        isSelectable = (unit in self.CurrentPlayer.tokens)
+        movable = False
+        canDeploy = False
+        if isSelectable:
+            movable = (unit in self.movable and unit not in self.moved)
+            canDeploy = (issubclass(type(unit), TheoryElement) and unit.Hangars > 0 and self.currentPhase == 0)
+        return isSelectable, movable, canDeploy
 
     def nextPlayer(self):
         if(self.CurrentPlayer.type == "UNSC"):

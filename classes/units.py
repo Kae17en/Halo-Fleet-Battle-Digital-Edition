@@ -117,6 +117,10 @@ class TheoryElement(metaclass=ABCMeta):
     def loadouts(self):
         return self.loadouts
 
+    @property
+    def Hangars(self):
+        return self.__Hangars
+
 
 #-------------------------------Core Elements: UNSC----------------------------#
 

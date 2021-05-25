@@ -8,7 +8,7 @@ import sys, os
 from panda3d.core import loadPrcFileData
 from direct.filter.CommonFilters import CommonFilters
 from DirectGuiExtension.DirectBoxSizer import DirectBoxSizer
-from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs
+from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs, Texture
 from gameLogic import *
 import ctypes
 
@@ -27,10 +27,11 @@ class MyApp(ShowBase):
         winProps = WindowProperties()
         winProps.setSize(1920, 1080)
         winProps.setFullscreen(True)
-        base.win.requestProperties(winProps)
+        self.win.requestProperties(winProps)
         self.accept("escape", self.updateKeyMap, ["Escape", True])
         self.accept("mouse1", self.handle_element_click)
         self.taskMgr.add(self.handleQuit, "detect-escape")
+
         self.menu = MainMenu(self)
         self.menu.show()
         self.Frames = [[],[]]
@@ -87,14 +88,19 @@ class MyApp(ShowBase):
 
         self.HUD.show()
 
+
         self.Game = MainGame(self)
         UNSC = Player("UNSC")
         Covenant = Player("Covenant")
         UNSC.addToken(UNSC_Paris_Frigate_Arrow((0, 0), (2.8, 11.6)))
         Covenant.addToken(Covenant_CCS_Battlecruiser((300, 300), (12.7, 1.3)))
 
+        self.music = loader.loadSfx("Assets/Music/Ambiant.mp3")
+        self.music.setLoop(True)
+        self.music.play()
 
         self.Game.startGameFromSituation(UNSC, Covenant)
+
 
     def UpdateGameState(self, task):
         for object in self.UNSC.tokens:
@@ -143,15 +149,22 @@ class MyApp(ShowBase):
                         del self.detailed
                 elif pickedObj == "range":
                     NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
-                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.object.MoveRange):
-                        self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2]))
+                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.object.MoveRange): #Request Move To Game logic
+                        if self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2]))
+                            loader.loadSfx("Assets/Sounds/ShipMove.mp3").play()
                     del self.detailed
+                #Todo object menu click
+                elif pickedObj == "moveObject":
+                    loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
+                    self.detailed.drawMove()
                 else:
                     element = ctypes.cast(int(pickedObj), ctypes.py_object).value
-                    if(element in self.movable and element in self.GlobalState[2].tokens): #Movable for actual Phase and Actual Player
+                    isSelectable, isMovable, canDeploy = self.Game.requestObjectSelect(element)
+                    if(isSelectable):
                         if(hasattr(self, "detailed")):
                             del self.detailed
-                        self.detailed = objectDetails(element, self.HUD)
+                        loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
+                        self.detailed = objectDetails(element, self.HUD, isMovable, canDeploy)
 
     def show_moving_object(self, task):
         if(hasattr(self, "detailed")):
@@ -221,6 +234,8 @@ class MainMenu(DirectObject):
                            command=self.quit,
                            pos=(-0.2, 0, -0.2),
                            parent=self.mainFrame,
+                           clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
+                           rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
                            scale=0.07,
                            frameSize=(-4, 4, -1, 1),
                            text_scale=0.75,
@@ -230,6 +245,8 @@ class MainMenu(DirectObject):
 
         Load = DirectButton(text="Load Game",
                            command=self.LoadGame,
+                           clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
+                           rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
                            pos=(-0.2, 0, 0),
                            parent=self.mainFrame,
                            scale=0.07,
@@ -241,6 +258,8 @@ class MainMenu(DirectObject):
 
         New = DirectButton(text="New Game",
                            command='',
+                           rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
+                           clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
                            pos=(-0.2, 0, 0.2),
                            parent=self.mainFrame,
                            scale=0.07,
@@ -249,6 +268,9 @@ class MainMenu(DirectObject):
                            relief=DGG.FLAT,
                            text_pos=(0, -0.2))
         New.setTransparency(True)
+        self.music = loader.loadSfx("Assets/Music/MainMenuMusic.mp3")
+        self.music.setLoop(True)
+        self.music.play()
 
     def show(self):
         self.mainFrame.show()
@@ -256,6 +278,7 @@ class MainMenu(DirectObject):
     def hide(self):
         self.mainFrame.hide()
         self.bg.hide()
+        self.music.stop()
 
     def quit(self):
         self.app.quit()
@@ -292,6 +315,8 @@ class HUD(DirectObject):
         Quit = DirectButton(text="",
                             command=app.quit,
                             pos=(-1.73, 0, -0.005),
+                            rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
+                            clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
                             parent=self.TopBar,
                             scale=0.018,
                             image='Assets/HUD/quit-squared.png',
@@ -313,6 +338,8 @@ class HUD(DirectObject):
 
         PScreenResume = DirectButton(text="",
                                      command=self.PauseScreen.hide,
+                                     rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
+                                     clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
                                      pos=(0, 0, 0),
                                      scale=(0.08 * app.getAspectRatio(), 1, 0.08),
                                      image='Assets/PauseMenu/Resume.png',
@@ -324,6 +351,8 @@ class HUD(DirectObject):
                             command=self.PauseScreen.show,
                             pos=(-1.67, 0, -0.005),
                             parent=self.TopBar,
+                            rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
+                            clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
                             scale=0.02,
                             image='Assets/HUD/pause-squared.png',
                             frameSize=(-1, 1, -1, 1),
@@ -342,6 +371,7 @@ class HUD(DirectObject):
         self.Frame.append(self.Bar)
         self.Frame.append(self.SideMenu)
         self.Frame.append(self.TopBar)
+
 
 
     def setGameInfo(self, State):
@@ -381,36 +411,79 @@ class HUD(DirectObject):
 
 
 class objectDetails():
-    def __init__(self, object, HUD):
+    def __init__(self, object, HUD, isMovable, canDeploy):
         self.HUD = HUD
         self.object = object
-        self.range = OnscreenImage('Assets/Drawable/Range.png', pos=(object.xpos,-4,object.ypos), scale=(10*object.MoveRange, 1, 10*object.MoveRange), parent=render)
-        self.range.setTag('clickable', "range")
-        self.range.setTransparency(TransparencyAttrib.MAlpha)
         self.HUD.SelectedName.setText(str(object))
+        self.moving = False
+        if issubclass(type(object), Spacecraft):
+            self.drawMove()
+        else:
+            self.ObjectMenu = OnscreenImage('Assets/ObjectMenu/Background.png', scale=(100, 1, 75),
+                                            pos=(object.xpos - 130, -4, object.ypos - 100), parent=render)
+            self.ObjectMenu.setTransparency(TransparencyAttrib.MAlpha)
+            lines = LineSegs()
+            lines.moveTo(self.object.xpos, -2, self.object.ypos)
+            lines.drawTo(self.object.xpos - 30, -2, self.object.ypos - 25)
+            lines.setThickness(2)
+            lines.setColor(1, 1, 1, 1)
+            node = lines.create()
+            self.menuline = NodePath(node)
+            self.menuline.reparentTo(render)
+            if(isMovable):
+                self.moveShipButton = OnscreenImage('Assets/ObjectMenu/MoveShipButton.png', scale=(0.4, 1, 0.7), pos=(-0.5, -2, -0.2), parent=self.ObjectMenu)
+                self.moveShipButton.setTag('clickable', "moveObject")
+            else:
+                self.moveShipButton = OnscreenImage('Assets/ObjectMenu/MoveShipButtonDisabled.png', scale=(0.4, 1, 0.7), pos=(-0.5, -2, -0.2), parent=self.ObjectMenu)
+            if(canDeploy):
+                self.deployButton = OnscreenImage('Assets/ObjectMenu/DeployButton.png', scale=(0.4, 1, 0.7), pos=(0.5, -2, -0.2), parent=self.ObjectMenu)
+                # self.deployButton.setTag('clickable', "DeployWings")
+            else:
+                self.deployButton = OnscreenImage('Assets/ObjectMenu/DeployButtonDisabled.png', scale=(0.4, 1, 0.7), pos=(0.5, -2, -0.2), parent=self.ObjectMenu)
+
+            self.moveShipButton.setTransparency(TransparencyAttrib.MAlpha)
+            self.deployButton.setTransparency(TransparencyAttrib.MAlpha)
+
 
 
     def __del__(self):
-        self.range.destroy()
+        if (hasattr(self, "range")):
+            self.range.destroy()
         if(hasattr(self, "np")):
             self.np.removeNode()
         self.HUD.SelectedName.setText('')
+        if (hasattr(self, "ObjectMenu")):
+            self.ObjectMenu.destroy()
+            self.menuline.removeNode()
+            self.moveShipButton.destroy()
+            self.deployButton.destroy()
 
 
     def drawRangeLine(self, mpos):
-        tx, ty = 0, 0
-        if (hasattr(self, "np")):
-            self.np.removeNode()
-        lines = LineSegs()
-        lines.reset()
-        lines.moveTo(self.object.xpos,-2, self.object.ypos)
-        lines.drawTo(1*mpos[0], -2, 1*mpos[2])
-        lines.setThickness(4)
-        lines.setColor(1,1,0,1)
-        node = lines.create()
-        self.np = NodePath(node)
-        self.np.reparentTo(render)
+        if(self.moving):
+            tx, ty = 0, 0
+            if (hasattr(self, "np")):
+                self.np.removeNode()
+            lines = LineSegs()
+            lines.moveTo(self.object.xpos,-2, self.object.ypos)
+            lines.drawTo(1*mpos[0], -2, 1*mpos[2])
+            lines.setThickness(4)
+            lines.setColor(1,1,0,1)
+            node = lines.create()
+            self.np = NodePath(node)
+            self.np.reparentTo(render)
 
+    def drawMove(self):
+        self.moving = True
+        if (hasattr(self, "ObjectMenu")):
+            self.ObjectMenu.destroy()
+            self.menuline.removeNode()
+            self.moveShipButton.destroy()
+            self.deployButton.destroy()
+        self.range = OnscreenImage('Assets/Drawable/Range.png', pos=(self.object.xpos, -4, self.object.ypos),
+                                   scale=(10 * self.object.MoveRange, 1, 10 * self.object.MoveRange), parent=render)
+        self.range.setTag('clickable', "range")
+        self.range.setTransparency(TransparencyAttrib.MAlpha)
 
 def distAB(ax,ay,bx,by):
     return np.sqrt((ax-bx)**2+(ay-by)**2)

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DirectGuiDesigner" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/plugins/LUI" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/DirectGuiDesigner" vcs="" />
+    <mapping directory="$PROJECT_DIR$/plugins/LUI" vcs="" />
   </component>
 </project>
