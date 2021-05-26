@@ -72,7 +72,7 @@
        x2="526.65143"
        y2="278.004"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.6679677,0,0,1.6679677,-540.69713,-313.17543)" />
+       gradientTransform="matrix(1.6679677,0,0,1.6679677,-595.89722,-311.5207)" />
     <linearGradient
        inkscape:collect="always"
        id="linearGradient1099">
@@ -85,6 +85,26 @@
          offset="1"
          id="stop1095" />
     </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1099"
+       id="linearGradient1093-9"
+       x1="449.84869"
+       y1="278.31659"
+       x2="526.65143"
+       y2="278.004"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.6679677,0,0,1.6679677,-491.34889,-311.52068)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1099"
+       id="linearGradient1093-9-1"
+       x1="449.84869"
+       y1="278.31659"
+       x2="526.65143"
+       y2="278.004"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.6679677,0,0,1.6679677,-544.26556,-275.23498)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -114,7 +134,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -153,7 +173,7 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.712082">Game Paused</tspan></text>
     <path
        style="fill:url(#linearGradient1093);fill-opacity:1;stroke:#000000;stroke-width:0.441316px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 306.63046,163.44633 v -24.79735 h -96.61083 l 0.14908,24.79735 z"
+       d="m 251.43037,165.10106 v -24.79735 h -96.61083 l 0.14908,24.79735 z"
        id="path1085"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"
@@ -161,16 +181,58 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:13.8613px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.346534"
-       x="324.29745"
-       y="114.14777"
+       x="248.54623"
+       y="115.35358"
        id="text1105"
        transform="scale(0.72870231,1.3723025)"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"><tspan
          sodipodi:role="line"
          id="tspan1103"
-         x="324.29745"
-         y="114.14777"
+         x="248.54623"
+         y="115.35358"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.346534">Resume</tspan></text>
+    <path
+       style="fill:url(#linearGradient1093-9);fill-opacity:1;stroke:#000000;stroke-width:0.441317px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 355.9787,165.10106 v -24.79735 h -96.61083 l 0.14908,24.79735 z"
+       id="path1085-6"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="ccccc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:13.8613px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.346533"
+       x="404.46689"
+       y="115.35357"
+       id="text1105-0"
+       transform="scale(0.72870231,1.3723025)"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
+         sodipodi:role="line"
+         id="tspan1103-1"
+         x="404.46689"
+         y="115.35357"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.346533">Quit</tspan></text>
+    <path
+       style="fill:url(#linearGradient1093-9-1);fill-opacity:1;stroke:#000000;stroke-width:0.441317px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 303.06203,201.38677 V 176.58942 H 206.4512 l 0.14908,24.79735 z"
+       id="path1085-6-8"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="ccccc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:13.8613px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.346533"
+       x="327.18094"
+       y="141.79504"
+       id="text1105-0-8"
+       transform="scale(0.72870231,1.3723025)"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
+         sodipodi:role="line"
+         id="tspan1103-1-5"
+         x="327.18094"
+         y="141.79504"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.346533">Save</tspan></text>
   </g>
 </svg>

@@ -8,6 +8,7 @@ class Player():
     def __init__(self, type):
         self.tokens = []
         self.type = type
+        self.turnEnded = False
 
     def addToken(self, token):
         self.tokens.append(token)
@@ -26,50 +27,65 @@ class MainGame():
     def startGameFromSituation(self, UNSC, Covenant):
         self.UNSC = UNSC
         self.Covenant = Covenant
-        UNSCstart = 0#rd.randint(0, 1)
+        UNSCstart = rd.randint(0, 1)
         self.currentPhase = -1
-        self.nextPhase()
+
         if(UNSCstart == 1):
             self.CurrentPlayer = UNSC
+            self.NotCurrentPlayer = Covenant
         else:
             self.CurrentPlayer = Covenant
-        self.UI.setGameState(self.UNSC, self.Covenant, (self.currentPhase, self.turn, self.CurrentPlayer))
+            self.NotCurrentPlayer = UNSC
+        self.UI.setGameState(self.UNSC, self.Covenant, [self.currentPhase, self.turn, self.CurrentPlayer])
+        self.nextPhase()
 
 
     def nextPhase(self):
-        self.currentPhase += 1
-        if self.currentPhase == 5:
+        self.moved = []
+        self.UNSC.turnEnded = False
+        self.Covenant.turnEnded = False
+        if self.currentPhase == 3:
             self.turn += 1
             self.currentPhase = 0
+        else:
+            self.currentPhase += 1
         if(self.currentPhase == 0):
+            self.UI.HUD.enableUserControl()
             self.movable = [unit for unit in self.UNSC.tokens if issubclass(type(unit), Spacecraft)] + [unit for unit in self.Covenant.tokens if issubclass(type(unit), Spacecraft)]
-        if(self.currentPhase == 2):
+        elif(self.currentPhase == 1):
+            self.UI.HUD.disableUserControl()
+            self.wing_attack()
+        elif(self.currentPhase == 2):
+            self.UI.HUD.enableUserControl()
             self.movable = [unit for unit in self.UNSC.tokens if issubclass(type(unit), TheoryElement)] + [unit for unit in self.Covenant.tokens if issubclass(type(unit),TheoryElement)]
+        elif(self.currentPhase == 3):
+            self.UI.HUD.disableUserControl()
+            self.battle_attack()
         else:
             self.movable = []
         self.UI.setMovable = self.movable
+        self.UI.setGameState(self.UNSC, self.Covenant, [self.currentPhase, self.turn, self.CurrentPlayer])
 
 
     def wing_movement(self, object, mooveLocation):
-        if(not object.locked):
+        if(not object.locked and object not in self.moved and object in self.movable):
             object.set_pos(mooveLocation)
                 #Unit Have been mooved
-            object.engage(self.CurrentPlayer.tokens)
+            object.engage(self.NotCurrentPlayer.tokens)
                 #Engagement dealed
-            self.moved.append(choosedUnit)
-            self.CurrentPlayer = self.nextPlayer()
-            return True
-        if (len(self.moved) == len(self.movable)):
-            self.moved = []
-            self.movable = []
-            self.nextPhase()
+            self.moved.append(object)
+            self.nextPlayer()
             return True
         return False
+
+    def endTurn(self):
+        self.CurrentPlayer.turnEnded = True
+        self.nextPlayer()
 
 
     def requestMove(self, unit, pos):
         if(issubclass(type(unit), Spacecraft)):
-            return self.wing_movement(unit, pos)
+            self.wing_movement(unit, pos)
 
     def requestObjectSelect(self,unit):
         isSelectable = (unit in self.CurrentPlayer.tokens)
@@ -82,14 +98,22 @@ class MainGame():
 
     def deployWing(self, wing, fromShip):
         fromShip.deployWing(wing)
-        self.UNSC.tokens.append(wing)
+        self.CurrentPlayer.tokens.append(wing)
+        self.movable.append(wing)
 
     def nextPlayer(self):
-        if(self.CurrentPlayer.type == "UNSC"):
+        if (self.UNSC.turnEnded and self.Covenant.turnEnded):
+            self.nextPhase()
+        if(self.CurrentPlayer.type == "UNSC" and self.Covenant.turnEnded == False):
             self.CurrentPlayer = self.Covenant
-        else:
+            self.NotCurrentPlayer = self.UNSC
+            self.UI.setPlayer(self.Covenant)
+        elif(self.CurrentPlayer.type == "Covenant" and self.UNSC.turnEnded == False):
             self.CurrentPlayer = self.UNSC
-        self.UI.setGameState(self.UNSC, self.Covenant, (self.currentPhase, self.turn, self.CurrentPlayer))
+            self.NotCurrentPlayer = self.Covenant
+            self.UI.setPlayer(self.UNSC)
+
+
 
     def wing_attack(self):
         toResolve = []
@@ -98,8 +122,7 @@ class MainGame():
         self.nextPhase()
 
     def battle_moovement(self):
-
-        self.nextPhase()
+        pass
 
     def battle_attack(self):
 

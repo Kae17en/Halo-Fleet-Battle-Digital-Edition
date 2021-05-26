@@ -22,6 +22,18 @@
      id="defs2">
     <linearGradient
        inkscape:collect="always"
+       id="linearGradient1532">
+      <stop
+         style="stop-color:#0063ff;stop-opacity:1"
+         offset="0"
+         id="stop1528" />
+      <stop
+         style="stop-color:#0063ff;stop-opacity:0"
+         offset="1"
+         id="stop1530" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
        id="linearGradient963">
       <stop
          style="stop-color:#0063ff;stop-opacity:0;"
@@ -306,7 +318,7 @@
        x2="526.65143"
        y2="278.004"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-1.5724531e-6)" />
+       gradientTransform="matrix(1.0924299,0,0,1,-46.954371,0)" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient933"
@@ -316,7 +328,7 @@
        x2="526.65143"
        y2="278.004"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-1.8888811e-6,-19.591894)" />
+       gradientTransform="translate(-88.466215,-34.024448)" />
     <radialGradient
        inkscape:collect="always"
        xlink:href="#linearGradient925"
@@ -361,6 +373,26 @@
        fx="254.42171"
        fy="119.0625"
        r="32.972481" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient963"
+       id="linearGradient1093-8"
+       x1="449.84869"
+       y1="278.31659"
+       x2="526.65143"
+       y2="278.004"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.0924299,0,0,1,-46.954377,-31.704791)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1532"
+       id="linearGradient1526"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.34224796,0,0,0.26330585,-377.13582,1.3321215)"
+       x1="1102.1683"
+       y1="1042.7676"
+       x2="1456.644"
+       y2="1042.7676" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -369,9 +401,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.979899"
-     inkscape:cx="1066.047"
-     inkscape:cy="514.83196"
+     inkscape:zoom="0.7"
+     inkscape:cx="456.76747"
+     inkscape:cy="913.57498"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -517,44 +549,44 @@
        d="m 457.49982,61.599852 h -43.1745 l -7.3257,8.141237 h 50.5002 v 0 z"
        id="path1057" />
     <path
-       style="fill:url(#linearGradient1093);fill-opacity:1;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 507.99999,285.75 v -14.86681 h -42.9651 L 450.16808,285.75 Z"
+       style="fill:url(#linearGradient1093);fill-opacity:1;stroke:#000000;stroke-width:0.27654px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 508,285.75 V 270.88319 H 461.06364 L 444.82269,285.75 Z"
        id="path1085"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:8.31033px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.207758"
-       x="644.87701"
-       y="205.42056"
+       style="font-style:normal;font-weight:normal;font-size:7.94006px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.198501"
+       x="633.38989"
+       y="205.2258"
        id="text1105"
        transform="scale(0.72870231,1.3723025)"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"><tspan
          sodipodi:role="line"
          id="tspan1103"
-         x="644.87701"
-         y="205.42056"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.207758">Confirm</tspan></text>
+         x="633.38989"
+         y="205.2258"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.198501">Next Player</tspan></text>
     <path
        style="fill:url(#linearGradient1093-0);fill-opacity:1;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 508,266.15811 V 251.2913 h -42.9651 l -14.86681,14.86681 z"
+       d="m 419.53379,251.72556 v -14.86681 h -42.9651 l -14.86681,14.86681 z"
        id="path1085-7"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:8.31032px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.207758"
-       x="644.87701"
-       y="191.14391"
+       x="523.47461"
+       y="180.62688"
        id="text1105-9"
        transform="scale(0.72870231,1.3723025)"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"><tspan
          sodipodi:role="line"
          id="tspan1103-9"
-         x="644.87701"
-         y="191.14391"
+         x="523.47461"
+         y="180.62688"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.207758">Confirm</tspan></text>
     <circle
        style="fill:#00b7ff;fill-opacity:0;stroke:#00c91f;stroke-width:0.529167;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.945578"
@@ -681,5 +713,32 @@
          x="419.21652"
          y="80.879257"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.17733">Wing Menu</tspan></text>
+    <path
+       style="fill:url(#linearGradient1093-8);fill-opacity:1;stroke:#000000;stroke-width:0.27654px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 508,254.04521 V 239.1784 h -46.93636 l -16.24095,14.86681 z"
+       id="path1085-2"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:8.31032px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.207758"
+       x="635.34082"
+       y="182.12245"
+       id="text1105-3"
+       transform="scale(0.72870231,1.3723025)"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"><tspan
+         sodipodi:role="line"
+         id="tspan1103-1"
+         x="635.34082"
+         y="182.12245"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.207758">Next Phase</tspan></text>
+    <path
+       style="opacity:0.75817;mix-blend-mode:multiply;fill:url(#linearGradient1526);fill-opacity:1;stroke:#000000;stroke-width:0.801983;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:2.16;stroke-opacity:1"
+       d="m 11.554528,233.88164 -0.01608,19.60703 H 132.43144 c -9.78993,-4.93162 -19.57987,-9.86339 -29.36983,-14.79503 H 47.459009 c -3.184039,-1.60401 -6.368763,-3.20804 -9.552866,-4.812 z"
+       id="path1524"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96"
+       sodipodi:nodetypes="ccccccc" />
   </g>
 </svg>
