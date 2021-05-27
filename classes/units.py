@@ -3,7 +3,7 @@ from abc import *
 import classes.weapons
 import classes.loadouts as loads
 import vectors2d as vct
-
+from config import *
 
 
 #----------------------------------------------#Vaisseaux#-----------------------------------------------
@@ -40,7 +40,10 @@ class TheoryElement(metaclass=ABCMeta):
         self.__secondary=0           #Arme Secondaire
         self.__primarybis=0          #En cas d'arme primaire double
         self.__secondarybis=0        #En cas d'arme secondaire double
-        self.docked = docked
+        self.docked = docked                            #En cas d'arme secondaire double
+        self.activated=False
+        self.locked=False
+        self.engagements=[]
 
     #Gestion de la Damage Track---------------------------
 
@@ -63,6 +66,8 @@ class TheoryElement(metaclass=ABCMeta):
     def deployWing(self,unit):
         i = self.docked.index(unit)
         self.docked.pop(i)
+
+
 
     @property
     def pos(self):
@@ -124,6 +129,21 @@ class TheoryElement(metaclass=ABCMeta):
     @property
     def Hangars(self):
         return self.__Hangars
+
+    def add_engagement(self, opp):
+        self.engagements.append(opp)
+        self.locked = True
+
+    def del_engagement(self,opp):
+        if opp in self.engagements:
+            n= self.engagements.index(opp)
+            self.engagements.pop(n)
+        if len(self.engagements)==0:
+            self.locked=False
+            self.attacked=False
+
+
+
 
 
 #-------------------------------Core Elements: UNSC----------------------------#
@@ -263,6 +283,14 @@ class Spacecraft():
         self.image = ""
         self.icon = ""
         self.locked = False
+        self.dock_unit = []
+        self.activated = False
+        self.locked = False
+        self.engagements = []
+        self.WingType = None
+        self.attacked = False
+        self._aim = vct.vector_from_dots((0,0), (1, 1))
+
 
     @property
     def vs_wing_dice(self):
@@ -273,12 +301,24 @@ class Spacecraft():
         return self.__DamageTrack
 
     @property
+    def aim(self):
+        return self._aim
+
+    def get_angle(self):
+        return ((np.arctan(self.aim[1] / self.aim[0])) * 180 / np.pi)
+
+    def set_aim(self, CursorPos):
+        self._aim = vct.vector_from_dots(CursorPos, (self.xpos, self.ypos))
+
+    @property
     def pos(self):
         return self.xpos,self.ypos
 
     def set_pos(self,L):
+        self.set_aim(L)
         self.xpos=L[0]
         self.ypos=L[1]
+
 
     @property
     def MoveRange(self):
@@ -288,6 +328,60 @@ class Spacecraft():
     def __str__(self):
         return self.Tag
 
+    @property
+    def Dock_Unit(self):
+        return self.dock_unit
+
+    def add_engagement(self, opp):
+        self.engagements.append(opp)
+        self.locked = True
+
+    def del_engagement(self,opp):
+        if opp in self.engagements:
+            n= self.engagements.index(opp)
+            self.engagements.pop(n)
+        if len(self.engagements)==0:
+            self.locked=False
+            self.attacked=False
+
+    def move_unit(self,x,y):
+        if np.sqrt((self.xpos-x)**2+(self.ypos-y)**2)<=self._MoveRange:
+            L=[x,y]
+            self.set_pos(L)
+            return True
+        else:
+            return False
+
+
+    def engage(self,ennemies):
+        P=[]
+        for e in ennemies:
+            if np.sqrt((self.xpos-e.xpos)**2+(self.ypos-e.ypos)**2)<=GLOBAL_ENGAGE_RANGE:
+                P.append(e)
+        if len(P) > 0:
+            target=P[0]
+            d=np.sqrt((self.xpos-P[0].xpos)**2+(self.ypos-P[0].ypos)**2)
+            for i in range(1,len(P)):
+                b=np.sqrt((self.xpos-P[i].xpos)**2+(self.ypos-P[i].ypos)**2)
+                if b<d:
+                    target=P[i]
+            target.attacked=True
+            self.add_engagement(target)
+            target.add_engagement(self)
+            for e in target.engagements:
+                if e.WingType=="Bomber":
+                    e.del_engagement(target)
+                    target.del_engagement(e)
+                elif e.attacked==True:
+                    e.del_engagement(target)
+                    target.del_engagement(e)
+
+    def __str__(self):
+        return self.Tag
+
+
+
+
 
 class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
     def __init__(self,pos,n):
@@ -295,6 +389,7 @@ class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber = n
+        self.WingType = "Interceptor"
 
     @property
     def FlightSize(self):
@@ -317,6 +412,7 @@ class UNSC_Longsword_Bomber_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
+        self.WingType = "Bomber"
 
     @property
     def FlightSize(self):
@@ -341,6 +437,7 @@ class Covenant_Banshee_Interceptor_Flight(Spacecraft):
         self.UnitNumber=n
         self.image = "Assets/Drawable/Ships/Covenant/Wings/Covenant_Banshee_Interceptor_Flight.png"
         self.icon = "Assets/Drawable/Ships/Covenant/Wings/Icons/Covenant_Banshee_Interceptor_Flight_Icon.png"
+        self.WingType = "Interceptor"
 
     @property
     def FlightSize(self):
@@ -357,6 +454,7 @@ class Covenant_Tarrasque_Interceptor_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
+        self.WingType = "Interceptor"
 
     @property
     def FlightSize(self):
@@ -364,4 +462,10 @@ class Covenant_Tarrasque_Interceptor_Flight(Spacecraft):
     @property
     def vs_wing_dice(self):
         return self.vs_wing_dice
+
+    def UnitNumber(self):
+        return self.UnitNumber
+
+    def setFlightSize(self, n):
+        self.UnitNumber = n
 

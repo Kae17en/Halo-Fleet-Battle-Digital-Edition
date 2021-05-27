@@ -31,6 +31,7 @@ class MyApp(ShowBase):
         self.accept("escape", self.updateKeyMap, ["Escape", True])
         self.accept("mouse1", self.handle_element_click)
         self.taskMgr.add(self.handleQuit, "detect-escape")
+        self.MouseNavDisabled = False
 
         self.menu = MainMenu(self)
         self.menu.show()
@@ -90,8 +91,10 @@ class MyApp(ShowBase):
 
 
         self.Game = MainGame(self)
+
         UNSC = Player("UNSC")
         Covenant = Player("Covenant")
+
         UNSC.addToken(UNSC_Paris_Frigate_Arrow((0, 0), (2.8, 11.6)))
         Covenant.addToken(Covenant_CCS_Battlecruiser((300, 300), (12.7, 1.3), docked=[Covenant_Banshee_Interceptor_Flight((300,300), 3)]))
 
@@ -100,6 +103,9 @@ class MyApp(ShowBase):
         self.music.play()
 
         self.Game.startGameFromSituation(UNSC, Covenant)
+
+    def setPlayer(self, player):
+        self.GlobalState[2] = player
 
 
     def UpdateGameState(self, task):
@@ -158,8 +164,10 @@ class MyApp(ShowBase):
                     loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
                     self.detailed.drawMove()
                 elif pickedObj == "deployWing":
+                    loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
                     self.detailed.showWingMenu()
                 elif pickedObj == "deploySelectedWing":
+                    loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
                     self.detailed.deploy(ctypes.cast(int(pickedObjG.getTag("wingId")), ctypes.py_object).value)
                 elif pickedObj == "WDeployrange":
                     self.Game.deployWing(self.detailed.wing, self.detailed.object) #Deploiment du wing
@@ -204,25 +212,37 @@ class MyApp(ShowBase):
             self.lens.setFilmSize(self.lens.film_size + (5000 * globalClock.getDt() * self.getAspectRatio(), 5000 * globalClock.getDt()))
 
     def handle_mouse_nav(self, task):
-        try:
-            reg = self.MouseNav.getOverRegion(self.mouseWatcherNode.getMouseX(), self.mouseWatcherNode.getMouseY())
-            if(reg):
-               if(reg.getName() == "top" and (self.cam.getZ() + self.lens.film_size[0]/2) < (self.bg.getTexture().getYSize()/1.6)):
-                   self.cam.setZ(self.cam.getZ()+ 400 * globalClock.getDt())
-               elif(reg.getName() == "bot" and (self.cam.getZ() - self.lens.film_size[0]/2) > (-self.bg.getTexture().getYSize()/1.6)):
-                   self.cam.setZ(self.cam.getZ() - 400 * globalClock.getDt())
-               elif(reg.getName() == "left" and (self.cam.getX() - self.lens.film_size[1]/2) > (-self.bg.getTexture().getXSize()/1.6)):
-                   self.cam.setX(self.cam.getX() - 400 * globalClock.getDt())
-               elif(reg.getName() == "right" and (self.cam.getX() + self.lens.film_size[1]/2) < (self.bg.getTexture().getXSize()/1.6)):
-                   self.cam.setX(self.cam.getX() + 400 * globalClock.getDt())
-        except Exception:
-            pass
+        if(not self.MouseNavDisabled):
+            try:
+                reg = self.MouseNav.getOverRegion(self.mouseWatcherNode.getMouseX(), self.mouseWatcherNode.getMouseY())
+                if(reg):
+                    if(reg.getName() == "top" and (self.cam.getZ() + self.lens.film_size[0]/2) < (self.bg.getTexture().getYSize()/1.6)):
+                        self.cam.setZ(self.cam.getZ()+ 400 * globalClock.getDt())
+                    elif(reg.getName() == "bot" and (self.cam.getZ() - self.lens.film_size[0]/2) > (-self.bg.getTexture().getYSize()/1.6)):
+                        self.cam.setZ(self.cam.getZ() - 400 * globalClock.getDt())
+                    elif(reg.getName() == "left" and (self.cam.getX() - self.lens.film_size[1]/2) > (-self.bg.getTexture().getXSize()/1.6)):
+                        self.cam.setX(self.cam.getX() - 400 * globalClock.getDt())
+                    elif(reg.getName() == "right" and (self.cam.getX() + self.lens.film_size[1]/2) < (self.bg.getTexture().getXSize()/1.6)):
+                        self.cam.setX(self.cam.getX() + 400 * globalClock.getDt())
+            except Exception:
+                pass
         return task.cont
 
     def setGameState(self, UNSC, Covenant, State):
         self.UNSC = UNSC
         self.Covenant = Covenant
         self.GlobalState = State #(PHASE, TURN, ACTUAL_PLAYER)
+
+    def NextPlayer(self):
+        loader.loadSfx("Assets/Sounds/ButtonClick.mp3")
+        self.Game.nextPlayer()
+
+    def EndTurn(self):
+        loader.loadSfx("Assets/Sounds/ButtonClick.mp3")
+        self.Game.endTurn()
+
+    def save(self):
+        pass
 
 
 
@@ -301,8 +321,10 @@ class HUD(DirectObject):
     def __init__(self, app):
         self.Frame = []
         self.app = app
-
+        self.globalFrame = DirectFrame(frameColor=(0, 0, 0, 0), frameSize=(-2, 2, -1, 1))
         self.Bar = DirectFrame(frameColor=(0, 0, 0, 0), frameSize=(-1.2, 1.2, 0, 0.2))
+        Name = self.loadImageRealScale('Assets/HUD/NameHolder.png', self.Bar)
+        Name.setPos(-1.37,0,0)
 
         self.Bar.setPos(0, 0, -0.95)
         self.SideMenu = DirectFrame(frameColor=(0, 0, 0, 0),
@@ -314,13 +336,36 @@ class HUD(DirectObject):
                                     frameSize=(-1.8, 1.8, -0.1, 0))
         self.TopBar.setPos(0, 0, 0.95)
         self.loadImageRealScale('Assets/HUD/TopBar.png', self.TopBar)
-        self.SelectedName = OnscreenText('', pos=(-0.57, -0.98), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+        self.SelectedName = OnscreenText('', pos=(-1.40, -0.98), scale=(0.027,0.03), font=loader.loadFont("Assets/HUD/Halo.ttf"))
 
         self.Phase = OnscreenText('', pos=(0, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
         self.Turn = OnscreenText('', pos=(-0.4, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
         self.Player = OnscreenText('', pos=(0.4, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
 
+        self.EndTurn = DirectButton(text="",
+                            command=self.app.EndTurn,
+                            pos=(1.655,0,-0.96),
+                            rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
+                            clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
+                            parent=self.globalFrame,
+                            scale=(app.getAspectRatio()*0.07, 1, 0.05),
+                            image='Assets/HUD/NextPhase.png',
+                            frameSize=(-1, 1, -1, 1),
+                            relief=None)
 
+        self.NextPlayer = DirectButton(text="",
+                            command=self.app.NextPlayer,
+                            pos=(1.655,0,-0.85),
+                            rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
+                            clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
+                            parent=self.globalFrame,
+                            scale=(app.getAspectRatio()*0.07, 1, 0.05),
+                            image='Assets/HUD/NextPlayer.png',
+                            frameSize=(-1, 1, -1, 1),
+                            relief=None)
+
+        self.EndTurn.setTransparency(True)
+        self.NextPlayer.setTransparency(True)
 
         Quit = DirectButton(text="",
                             command=app.quit,
@@ -335,11 +380,11 @@ class HUD(DirectObject):
 
         Quit.setTransparency(True)
 
-        self.PauseScreen = DirectDialog(frameSize=(-0.7, 0.7, -0.7, 0.7),
+        self.PauseScreen = DirectDialog(frameSize=(-1, 1, -0.7, 0.7),
                                         fadeScreen=0.4,
                                         pos = (0,-2,0),
                                         relief=DGG.FLAT,
-                                        parent=render2d,
+                                        parent=aspect2d,
                                         frameTexture = "Assets/PauseMenu/Background.png",
                                         dialogName="PauseDialog",
                                         )
@@ -347,18 +392,41 @@ class HUD(DirectObject):
         self.PauseScreen.hide()
 
         PScreenResume = DirectButton(text="",
-                                     command=self.PauseScreen.hide,
+                                     command=self.hidePauseScreen,
                                      rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
                                      clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
-                                     pos=(0, 0, 0),
-                                     scale=(0.08 * app.getAspectRatio(), 1, 0.08),
+                                     pos=(-0.3, 0, 0),
+                                     scale=(0.13*app.getAspectRatio(), 1, 0.08),
                                      image='Assets/PauseMenu/Resume.png',
                                      relief=None)
         PScreenResume.setTransparency(True)
         PScreenResume.reparentTo(self.PauseScreen)
 
+        PScreenQuit = DirectButton(text="",
+                                     command=self.app.quit,
+                                     rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
+                                     clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
+                                     pos=(0.3, 0, 0),
+                                     scale=(0.13 * app.getAspectRatio(), 1, 0.08),
+                                     image='Assets/PauseMenu/Quit.png',
+                                     parent=self.PauseScreen,
+                                     relief=None)
+        PScreenQuit.setTransparency(True)
+
+        PScreenSave = DirectButton(text="",
+                                   command=self.app.save,
+                                   rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
+                                   clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
+                                   pos=(0, 0, -0.3),
+                                   scale=(0.13 * app.getAspectRatio(), 1, 0.08),
+                                   image='Assets/PauseMenu/Save.png',
+                                   parent=self.PauseScreen,
+                                   relief=None)
+        PScreenSave.setTransparency(True)
+
+
         Pause = DirectButton(text="",
-                            command=self.PauseScreen.show,
+                            command=self.showPauseScreen,
                             pos=(-1.67, 0, -0.005),
                             parent=self.TopBar,
                             rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
@@ -382,7 +450,21 @@ class HUD(DirectObject):
         self.Frame.append(self.SideMenu)
         self.Frame.append(self.TopBar)
 
+    def showPauseScreen(self):
+        self.PauseScreen.show()
+        self.app.MouseNavDisabled = True
 
+    def hidePauseScreen(self):
+        self.PauseScreen.hide()
+        self.app.MouseNavDisabled = False
+
+    def disableUserControl(self):
+        self.EndTurn.hide()
+        self.NextPlayer.hide()
+
+    def enableUserControl(self):
+        self.EndTurn.show()
+        self.NextPlayer.show()
 
     def setGameInfo(self, State):
         Dict = ["Wing Movement", "Wing Attack", "Battle Movement", 'Battle Atack']
@@ -390,6 +472,10 @@ class HUD(DirectObject):
         self.Turn.setText("Turn " + str(State[1]))
         self.Player.setText("Playing " + State[2].type)
         self.setPlayer(State[2].type)
+        if(self.app.Game.NotCurrentPlayer.turnEnded):
+            self.NextPlayer.hide()
+        else:
+            self.NextPlayer.show()
 
 
 
@@ -455,7 +541,6 @@ class objectDetails():
 
             self.moveShipButton.setTransparency(TransparencyAttrib.MAlpha)
             self.deployButton.setTransparency(TransparencyAttrib.MAlpha)
-
 
 
     def __del__(self):
