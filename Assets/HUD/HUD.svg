@@ -132,11 +132,11 @@
        inkscape:collect="always"
        id="linearGradient1017">
       <stop
-         style="stop-color:#be00ff;stop-opacity:0.68235296"
+         style="stop-color:#ff2c00;stop-opacity:0.23809524"
          offset="0"
          id="stop1013" />
       <stop
-         style="stop-color:#be00ff;stop-opacity:0"
+         style="stop-color:#ff2c00;stop-opacity:0.68707484"
          offset="1"
          id="stop1015" />
     </linearGradient>
@@ -388,7 +388,7 @@
        xlink:href="#linearGradient1532"
        id="linearGradient1526"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.34224796,0,0,0.26330585,-377.13582,1.3321215)"
+       gradientTransform="matrix(0.34224796,0,0,0.26330585,-388.57964,-17.188712)"
        x1="1102.1683"
        y1="1042.7676"
        x2="1456.644"
@@ -402,8 +402,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="456.76747"
-     inkscape:cy="913.57498"
+     inkscape:cx="885.3389"
+     inkscape:cy="707.11719"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -735,10 +735,21 @@
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;stroke-width:0.207758">Next Phase</tspan></text>
     <path
        style="opacity:0.75817;mix-blend-mode:multiply;fill:url(#linearGradient1526);fill-opacity:1;stroke:#000000;stroke-width:0.801983;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:2.16;stroke-opacity:1"
-       d="m 11.554528,233.88164 -0.01608,19.60703 H 132.43144 c -9.78993,-4.93162 -19.57987,-9.86339 -29.36983,-14.79503 H 47.459009 c -3.184039,-1.60401 -6.368763,-3.20804 -9.552866,-4.812 z"
+       d="m 0.11070658,215.36081 -0.01608,19.60703 H 120.98762 c -9.78993,-4.93162 -19.57987,-9.86339 -29.369831,-14.79503 H 36.015188 c -3.184039,-1.60401 -6.368763,-3.20804 -9.552866,-4.812 z"
        id="path1524"
        inkscape:export-xdpi="96"
        inkscape:export-ydpi="96"
        sodipodi:nodetypes="ccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.5036px;line-height:1.25;font-family:Halo;-inkscape-font-specification:Halo;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.18759"
+       x="208.07426"
+       y="278.8804"
+       id="text954"><tspan
+         sodipodi:role="line"
+         id="tspan952"
+         x="208.07426"
+         y="278.8804"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Halo;-inkscape-font-specification:Halo;fill:#000000;fill-opacity:1;stroke-width:0.18759">Ship Locked In Fight</tspan></text>
   </g>
 </svg>

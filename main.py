@@ -147,8 +147,13 @@ class MyApp(ShowBase):
         if self.clickonObject.getNumEntries() > 0:
             # This is so we get the closest object.
             self.clickonObject.sortEntries()
-            pickedObjG = self.clickonObject.getEntry(0).getIntoNodePath()
+            i = 0
+            pickedObjG = self.clickonObject.getEntry(i).getIntoNodePath()
             pickedObj = pickedObjG.getTag('clickable')
+            while(not pickedObj and i < self.clickonObject.getNumEntries()):
+                i += 1
+                pickedObjG = self.clickonObject.getEntry(i).getIntoNodePath()
+                pickedObj = pickedObjG.getTag('clickable')
             if pickedObj and pickedObj != "":
                 if pickedObj == "fond":
                     if(hasattr(self, "detailed")):
@@ -170,9 +175,9 @@ class MyApp(ShowBase):
                     loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
                     self.detailed.deploy(ctypes.cast(int(pickedObjG.getTag("wingId")), ctypes.py_object).value)
                 elif pickedObj == "WDeployrange":
-                    self.Game.deployWing(self.detailed.wing, self.detailed.object) #Deploiment du wing
                     NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
                     if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.wing.MoveRange): #deplacement du wing
+                        self.Game.deployWing(self.detailed.wing, self.detailed.object)  # Deploiment du wing
                         if self.Game.requestMove(self.detailed.wing, (NewPos[0], NewPos[2])):
                             loader.loadSfx("Assets/Sounds/ShipMove.mp3").play()
                     del self.detailed
@@ -235,6 +240,8 @@ class MyApp(ShowBase):
 
     def NextPlayer(self):
         loader.loadSfx("Assets/Sounds/ButtonClick.mp3")
+        if (hasattr(self, "detailed")):
+            del self.detailed
         self.Game.nextPlayer()
 
     def EndTurn(self):
@@ -453,10 +460,12 @@ class HUD(DirectObject):
     def showPauseScreen(self):
         self.PauseScreen.show()
         self.app.MouseNavDisabled = True
+        self.app.music.stop()
 
     def hidePauseScreen(self):
         self.PauseScreen.hide()
         self.app.MouseNavDisabled = False
+        self.app.music.play()
 
     def disableUserControl(self):
         self.EndTurn.hide()
@@ -499,11 +508,17 @@ class HUD(DirectObject):
         if(name == "UNSC"):
             if(hasattr(self, "BarImage")):
                 self.BarImage.destroy()
-            self.BarImage = self.loadImageRealScale('Assets/HUD/Bar.png', self.Bar)
+            if (hasattr(self.app, "detailed") and self.app.detailed.object.locked):
+                self.BarImage = self.loadImageRealScale('Assets/HUD/Bar.png', self.Bar)
+            else:
+                self.BarImage = self.loadImageRealScale('Assets/HUD/Bar.png', self.Bar)
         else:
             if (hasattr(self, "BarImage")):
                 self.BarImage.destroy()
-            self.BarImage = self.loadImageRealScale('Assets/HUD/CovBar.png', self.Bar)
+            if(hasattr(self.app, "detailed") and self.app.detailed.object.locked):
+                self.BarImage = self.loadImageRealScale('Assets/HUD/CovBarEngaged.png', self.Bar)
+            else:
+                self.BarImage = self.loadImageRealScale('Assets/HUD/CovBar.png', self.Bar)
 
 
 class objectDetails():
@@ -513,6 +528,7 @@ class objectDetails():
         self.HUD.SelectedName.setText(str(object))
         self.moving = False
         self.ratio = aspectRatio
+        self.isMovable = isMovable
         self.rangeOnly = rangeOnly
         if issubclass(type(object), Spacecraft) or rangeOnly:
             self.drawMove()
@@ -548,6 +564,7 @@ class objectDetails():
             self.range.destroy()
         if(hasattr(self, "np")):
             self.np.removeNode()
+            self.engageRange.destroy()
         self.HUD.SelectedName.setText('')
         if (hasattr(self, "ObjectMenu")):
             self.ObjectMenu.destroy()
@@ -563,7 +580,7 @@ class objectDetails():
 
 
     def drawRangeLine(self, mpos):
-        if(self.moving):
+        if(self.moving and not self.rangeOnly):
             tx, ty = 0, 0
             if (hasattr(self, "np")):
                 self.np.removeNode()
@@ -575,6 +592,11 @@ class objectDetails():
             node = lines.create()
             self.np = NodePath(node)
             self.np.reparentTo(render)
+            if(hasattr(self, "engageRange")):
+                self.engageRange.setPos(mpos[0], -8, mpos[2])
+            else:
+                self.engageRange = OnscreenImage('Assets/Drawable/AttackRange.png', pos=(mpos[0], -8, mpos[2]),scale=(GLOBAL_ENGAGE_RANGE, 1, GLOBAL_ENGAGE_RANGE), parent=render)
+                self.engageRange.setTransparency(TransparencyAttrib.MAlpha)
 
     def drawMove(self):
         self.moving = True
@@ -585,8 +607,9 @@ class objectDetails():
             self.deployButton.destroy()
         self.range = OnscreenImage('Assets/Drawable/Range.png', pos=(self.object.xpos, -4, self.object.ypos),
                                    scale=(10 * self.object.MoveRange, 1, 10 * self.object.MoveRange), parent=render)
-        self.range.setTag('clickable', "range")
         self.range.setTransparency(TransparencyAttrib.MAlpha)
+        self.range.setTag('clickable', "range")
+
 
     def showWingMenu(self):
         self.ObjectMenu.destroy()
@@ -595,7 +618,7 @@ class objectDetails():
         self.deployButton.destroy()
 
         self.WMenuBackgrounf = OnscreenImage('Assets/ObjectMenu/WingMenuBackground.png', pos=(self.object.xpos - 130, -4, self.object.ypos - 100),
-                                    scale=(100, 1, 250), parent=render)
+                                    scale=(110, 1, 250), parent=render)
         self.WMenuBackgrounf.setTransparency(TransparencyAttrib.MAlpha)
         self.DeployOptionsFrames = []
         for i in range(len(self.object.docked)):
@@ -612,7 +635,7 @@ class objectDetails():
                 image.destroy()
             self.WMenuBackgrounf.destroy()
         self.Wrange = OnscreenImage('Assets/Drawable/Range.png', pos=(self.object.xpos, -4, self.object.ypos),
-                                   scale=(10 * self.object.MoveRange * self.ratio, 1, 10 * wing.MoveRange), parent=render)
+                                   scale=(10 * wing.MoveRange, 1, 10 * wing.MoveRange), parent=render)
         self.Wrange.setTag('clickable', "WDeployrange")
         self.Wrange.setTransparency(TransparencyAttrib.MAlpha)
         self.wing = wing
