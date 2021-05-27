@@ -75,8 +75,11 @@ class MainGame():
                 #Engagement dealed
             self.moved.append(object)
             self.nextPlayer()
-            return True
-        return False
+            return 0
+        elif(object in self.moved):
+            return 1
+        else:
+            return 2
 
     def endTurn(self):
         self.CurrentPlayer.turnEnded = True
@@ -85,7 +88,7 @@ class MainGame():
 
     def requestMove(self, unit, pos):
         if(issubclass(type(unit), Spacecraft)):
-            self.wing_movement(unit, pos)
+            return self.wing_movement(unit, pos)
 
     def requestObjectSelect(self,unit):
         isSelectable = (unit in self.CurrentPlayer.tokens)

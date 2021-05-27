@@ -30,6 +30,7 @@ class MyApp(ShowBase):
         self.win.requestProperties(winProps)
         self.accept("escape", self.updateKeyMap, ["Escape", True])
         self.accept("mouse1", self.handle_element_click)
+        self.accept("mouse3", self.handle_unselect)
         self.taskMgr.add(self.handleQuit, "detect-escape")
         self.MouseNavDisabled = False
 
@@ -57,6 +58,10 @@ class MyApp(ShowBase):
 
     def quit(self):
         sys.exit(0)
+
+    def handle_unselect(self):
+        if hasattr(self, "detailed"):
+            del self.detailed
 
     def StartGame(self):
         self.HUD = HUD(self)
@@ -115,7 +120,10 @@ class MyApp(ShowBase):
             else:
                 i = len(self.Frames[0])
                 self.Frames[0].append(object)
-                self.Frames[1].append(OnscreenImage('Assets/Tokens/UNSC.png', pos=(0,0,0), scale=(10*self.getAspectRatio(), 1,10)))
+                img = self.loadImageRealScaleWithFactor(object.image, render, SHIP_IMAGE_SCALE_FACTOR)
+                img.setPos(0,0,0)
+                img.setTransparency(TransparencyAttrib.MAlpha)
+                self.Frames[1].append(img)
                 self.Frames[1][i].reparentTo(render)
                 self.Frames[1][i].setTag('clickable', str(id(self.Frames[0][i])))
             self.Frames[1][i].setPos(object.xpos, -1, object.ypos)
@@ -126,7 +134,10 @@ class MyApp(ShowBase):
             else:
                 i = len(self.Frames[0])
                 self.Frames[0].append(object)
-                self.Frames[1].append(OnscreenImage('Assets/Tokens/Cov.png', pos=(0,0,0), scale=(10*self.getAspectRatio(), 1,10)))
+                img = self.loadImageRealScaleWithFactor(object.image, render, SHIP_IMAGE_SCALE_FACTOR)
+                img.setPos(0, 0, 0)
+                img.setTransparency(TransparencyAttrib.MAlpha)
+                self.Frames[1].append(img)
                 self.Frames[1][i].reparentTo(render)
                 self.Frames[1][i].setTag('clickable', str(id(self.Frames[0][i])))
             self.Frames[1][i].setPos(object.xpos, -2, object.ypos)
@@ -161,9 +172,12 @@ class MyApp(ShowBase):
                 elif pickedObj == "range":
                     if(not self.detailed.rangeOnly):
                         NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
-                        if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.object.MoveRange): #Request Move To Game logic
-                            if self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2])):
+                        if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < MOVE_RANGE_SCALE_FACTOR * self.detailed.object.MoveRange): #Request Move To Game logic
+                            success = self.Game.requestMove(self.detailed.object, (NewPos[0], NewPos[2]))
+                            if success == 0:
                                 loader.loadSfx("Assets/Sounds/ShipMove.mp3").play()
+                            elif success == 1:
+                                self.HUD.popupError("Already Moved this phase !")
                         del self.detailed
                 elif pickedObj == "moveObject":
                     loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
@@ -176,9 +190,10 @@ class MyApp(ShowBase):
                     self.detailed.deploy(ctypes.cast(int(pickedObjG.getTag("wingId")), ctypes.py_object).value)
                 elif pickedObj == "WDeployrange":
                     NewPos = self.clickonObject.getEntry(0).getSurfacePoint(NodePath(self.cam)) + (self.cam.getX(), 0, self.cam.getZ())
-                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < 10 * self.detailed.wing.MoveRange): #deplacement du wing
+                    if (distAB(self.detailed.object.xpos, self.detailed.object.ypos, NewPos[0], NewPos[2]) < MOVE_RANGE_SCALE_FACTOR * self.detailed.wing.MoveRange): #deplacement du wing
                         self.Game.deployWing(self.detailed.wing, self.detailed.object)  # Deploiment du wing
-                        if self.Game.requestMove(self.detailed.wing, (NewPos[0], NewPos[2])):
+                        succes = self.Game.requestMove(self.detailed.wing, (NewPos[0], NewPos[2]))
+                        if succes == 0:
                             loader.loadSfx("Assets/Sounds/ShipMove.mp3").play()
                     del self.detailed
                 else:
@@ -251,8 +266,15 @@ class MyApp(ShowBase):
     def save(self):
         pass
 
-
-
+    def loadImageRealScaleWithFactor(self, name, parent, factor):
+        iH = PNMImageHeader()
+        iH.readHeader(Filename(name))
+        yS = float(iH.getYSize())
+        np = OnscreenImage(name)
+        np.setScale(Vec3(iH.getXSize(), 1, yS) / self.win.getYSize()*factor)
+        np.setTransparency(TransparencyAttrib.MAlpha)
+        np.reparentTo(parent)
+        return np
 
 
 
@@ -323,6 +345,7 @@ class MainMenu(DirectObject):
     def LoadGame(self):
         self.hide()
         self.app.StartGame()
+
 
 class HUD(DirectObject):
     def __init__(self, app):
@@ -457,6 +480,18 @@ class HUD(DirectObject):
         self.Frame.append(self.SideMenu)
         self.Frame.append(self.TopBar)
 
+        self.errorPopup = DirectDialog(frameSize=(-1, 1, -0.7, 0.7),
+                                        fadeScreen=0.4,
+                                        pos = (0,-2,0),
+                                        relief=None,
+                                        parent=render2d,
+                                        dialogName="ErrorDialog",
+                                        )
+        self.loadImageRealScale("Assets/HUD/ErrorBG.png", self.errorPopup)
+        self.errorText = OnscreenText('', pos=(-0.5, 0), scale=0.07, font=loader.loadFont("Assets/HUD/Halo.ttf"), parent=self.errorPopup)
+        self.errorPopup.hide()
+
+
     def showPauseScreen(self):
         self.PauseScreen.show()
         self.app.MouseNavDisabled = True
@@ -486,6 +521,11 @@ class HUD(DirectObject):
         else:
             self.NextPlayer.show()
 
+    def popupError(self,error):
+        #self.errorPopup.show()
+        #self.errorText.setText(error)
+        #self.app.taskMgr.doMethodLater(TIME_ERROR_POPUP, self.hideError, 'hide-error-popup')
+        pass
 
 
     def loadImageRealScale(self, name, parent):
@@ -585,8 +625,8 @@ class objectDetails():
             if (hasattr(self, "np")):
                 self.np.removeNode()
             lines = LineSegs()
-            lines.moveTo(self.object.xpos,-2, self.object.ypos)
-            lines.drawTo(1*mpos[0], -2, 1*mpos[2])
+            lines.moveTo(self.object.xpos,-8, self.object.ypos)
+            lines.drawTo(1*mpos[0], -8, 1*mpos[2])
             lines.setThickness(4)
             lines.setColor(1,1,0,1)
             node = lines.create()
@@ -606,7 +646,7 @@ class objectDetails():
             self.moveShipButton.destroy()
             self.deployButton.destroy()
         self.range = OnscreenImage('Assets/Drawable/Range.png', pos=(self.object.xpos, -4, self.object.ypos),
-                                   scale=(10 * self.object.MoveRange, 1, 10 * self.object.MoveRange), parent=render)
+                                   scale=(MOVE_RANGE_SCALE_FACTOR * self.object.MoveRange, 1, MOVE_RANGE_SCALE_FACTOR * self.object.MoveRange), parent=render)
         self.range.setTransparency(TransparencyAttrib.MAlpha)
         self.range.setTag('clickable', "range")
 
@@ -622,7 +662,7 @@ class objectDetails():
         self.WMenuBackgrounf.setTransparency(TransparencyAttrib.MAlpha)
         self.DeployOptionsFrames = []
         for i in range(len(self.object.docked)):
-            option = OnscreenImage(self.object.docked[i].icon, pos=(-0.5 + 0.3*i%3, -6, 0.55 - 0.2*int(i/3)), scale=(0.2*self.ratio,1,0.2), parent=self.WMenuBackgrounf)
+            option = OnscreenImage(self.object.docked[i].icon, pos=(-0.5 + 0.3*i%3, -6, 0.55 - 0.2*int(i/3)), scale=(ICON_2D_SCALE_FACTOR*self.ratio,1,ICON_2D_SCALE_FACTOR), parent=self.WMenuBackgrounf)
             option.setTag("wingId", str(id(self.object.docked[i])))
             option.setTag("clickable", "deploySelectedWing")
             option.setTransparency(TransparencyAttrib.MAlpha)
@@ -635,7 +675,7 @@ class objectDetails():
                 image.destroy()
             self.WMenuBackgrounf.destroy()
         self.Wrange = OnscreenImage('Assets/Drawable/Range.png', pos=(self.object.xpos, -4, self.object.ypos),
-                                   scale=(10 * wing.MoveRange, 1, 10 * wing.MoveRange), parent=render)
+                                   scale=(MOVE_RANGE_SCALE_FACTOR * wing.MoveRange, 1, MOVE_RANGE_SCALE_FACTOR * wing.MoveRange), parent=render)
         self.Wrange.setTag('clickable', "WDeployrange")
         self.Wrange.setTransparency(TransparencyAttrib.MAlpha)
         self.wing = wing
