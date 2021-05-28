@@ -1,0 +1,113 @@
+<Comment> {
+  "egg-texture-cards -o button_maps.egg -p 240,240 './Assets/MainMenu/ButtonBG.png' '../Assets/MainMenu/ButtonBGClick.png' './Assets/MainMenu/ButtonBGHighlight.png' './Assets/MainMenu/ButtonBGDisabled.png'"
+}
+<Texture> ButtonBGHighlight {
+  "./Assets/MainMenu/ButtonBGHighlight.png"
+}
+<Texture> ButtonBGDisabled {
+  "./Assets/MainMenu/ButtonBGDisabled.png"
+}
+<Texture> ButtonBGClick {
+  "./Assets/MainMenu/ButtonBGClick.png"
+}
+<Texture> ButtonBG {
+  "./Assets/MainMenu/ButtonBG.png"
+}
+<Group> {
+  <Switch> { 1 }
+  <Scalar> fps { 2 }
+  <VertexPool> vpool {
+    <Vertex> 0 {
+      -0.8875 0.21875 0
+      <UV> { 0 1 }
+    }
+    <Vertex> 1 {
+      -0.8875 -0.21875 0
+      <UV> { 0 0 }
+    }
+    <Vertex> 2 {
+      0.8875 -0.21875 0
+      <UV> { 1 0 }
+    }
+    <Vertex> 3 {
+      0.8875 0.21875 0
+      <UV> { 1 1 }
+    }
+    <Vertex> 4 {
+      -0.883333333333333 0.214583333333333 0
+      <UV> { 0 1 }
+    }
+    <Vertex> 5 {
+      -0.883333333333333 -0.214583333333333 0
+      <UV> { 0 0 }
+    }
+    <Vertex> 6 {
+      0.883333333333333 -0.214583333333333 0
+      <UV> { 1 0 }
+    }
+    <Vertex> 7 {
+      0.883333333333333 0.214583333333333 0
+      <UV> { 1 1 }
+    }
+    <Vertex> 8 {
+      -0.883333333333333 0.214583333333333 0
+      <UV> { 0 1 }
+    }
+    <Vertex> 9 {
+      -0.883333333333333 -0.214583333333333 0
+      <UV> { 0 0 }
+    }
+    <Vertex> 10 {
+      0.883333333333333 -0.214583333333333 0
+      <UV> { 1 0 }
+    }
+    <Vertex> 11 {
+      0.883333333333333 0.214583333333333 0
+      <UV> { 1 1 }
+    }
+    <Vertex> 12 {
+      -0.883333333333333 0.214583333333333 0
+      <UV> { 0 1 }
+    }
+    <Vertex> 13 {
+      -0.883333333333333 -0.214583333333333 0
+      <UV> { 0 0 }
+    }
+    <Vertex> 14 {
+      0.883333333333333 -0.214583333333333 0
+      <UV> { 1 0 }
+    }
+    <Vertex> 15 {
+      0.883333333333333 0.214583333333333 0
+      <UV> { 1 1 }
+    }
+  }
+  <Group> ButtonBG {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { ButtonBG }
+      <VertexRef> { 0 1 2 3 <Ref> { vpool } }
+    }
+  }
+  <Group> ButtonBGClick {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { ButtonBGClick }
+      <VertexRef> { 4 5 6 7 <Ref> { vpool } }
+    }
+  }
+  <Group> ButtonBGHighlight {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { ButtonBGHighlight }
+      <VertexRef> { 8 9 10 11 <Ref> { vpool } }
+    }
+  }
+  <Group> ButtonBGDisabled {
+    <Polygon> {
+      <RGBA> { 1 1 1 1 }
+      <TRef> { ButtonBGDisabled }
+      <VertexRef> { 12 13 14 15 <Ref> { vpool } }
+    }
+  }
+}

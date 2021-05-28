@@ -100,8 +100,8 @@ class MyApp(ShowBase):
         UNSC = Player("UNSC")
         Covenant = Player("Covenant")
 
-        UNSC.addToken(UNSC_Paris_Frigate_Arrow((0, 0), (2.8, 11.6)))
-        Covenant.addToken(Covenant_CCS_Battlecruiser((300, 300), (12.7, 1.3), docked=[Covenant_Banshee_Interceptor_Flight((300,300), 3)]))
+        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-700, -300), (2.8, 11.6)))
+        Covenant.addToken(Covenant_CCS_Battlecruiser((600, 600), (12.7, 1.3), docked=[Covenant_Banshee_Interceptor_Flight((0,0), 3)]))
 
         self.music = loader.loadSfx("Assets/Music/Ambiant.mp3")
         self.music.setLoop(True)
@@ -120,7 +120,7 @@ class MyApp(ShowBase):
             else:
                 i = len(self.Frames[0])
                 self.Frames[0].append(object)
-                img = self.loadImageRealScaleWithFactor(object.image, render, SHIP_IMAGE_SCALE_FACTOR)
+                img = self.loadImageRealScaleWithFactor(object.image, render, SHIP_IMAGE_SCALE_FACTOR*object.sizeFactor)
                 img.setPos(0,0,0)
                 img.setTransparency(TransparencyAttrib.MAlpha)
                 self.Frames[1].append(img)
@@ -134,7 +134,7 @@ class MyApp(ShowBase):
             else:
                 i = len(self.Frames[0])
                 self.Frames[0].append(object)
-                img = self.loadImageRealScaleWithFactor(object.image, render, SHIP_IMAGE_SCALE_FACTOR)
+                img = self.loadImageRealScaleWithFactor(object.image, render, SHIP_IMAGE_SCALE_FACTOR*object.sizeFactor)
                 img.setPos(0, 0, 0)
                 img.setTransparency(TransparencyAttrib.MAlpha)
                 self.Frames[1].append(img)
@@ -283,11 +283,12 @@ class MainMenu(DirectObject):
         self.app = app
         self.mainFrame = DirectFrame(frameColor=(0, 0, 0, 1),
                                      frameSize=(-1,1,1,1),
-                                     pos=(-1, 0, -0.1))
+                                     pos=(-1.1, 0, -0.25))
 
         self.bg = OnscreenImage('pic/Main-background.jpg')
         self.bg.reparentTo(render2d)
 
+        maps = loader.loadModel('Assets/MainMenu/button_maps.egg')
 
         Quit = DirectButton(text="Quit",
                            command=self.quit,
@@ -295,11 +296,16 @@ class MainMenu(DirectObject):
                            parent=self.mainFrame,
                            clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
                            rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
-                           scale=0.07,
-                           frameSize=(-4, 4, -1, 1),
-                           text_scale=0.75,
-                           relief=DGG.FLAT,
-                           text_pos=(0, -0.2))
+                           scale=0.35,
+                           frameSize=(-1, 1, -0.5, 0.5),
+                           text_scale=0.15,
+                           relief=None,
+                            geom=(maps.find('**/ButtonBG'),
+                                  maps.find('**/ButtonBGClick'),
+                                  maps.find('**/ButtonBGHighlight'),
+                                  maps.find('**/ButtonBGDisabled')),
+                           text_pos=(-0.1, -0.05),
+                            pressEffect = 0)
         Quit.setTransparency(True)
 
         Load = DirectButton(text="Load Game",
@@ -308,11 +314,16 @@ class MainMenu(DirectObject):
                            rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
                            pos=(-0.2, 0, 0),
                            parent=self.mainFrame,
-                           scale=0.07,
-                           frameSize=(-4, 4, -1, 1),
-                           text_scale=0.75,
-                           relief=DGG.FLAT,
-                           text_pos=(0, -0.2))
+                            scale=0.35,
+                            frameSize=(-1, 1, -0.5, 0.5),
+                            text_scale=0.15,
+                            relief=None,
+                            geom=(maps.find('**/ButtonBG'),
+                                  maps.find('**/ButtonBGClick'),
+                                  maps.find('**/ButtonBGHighlight'),
+                                  maps.find('**/ButtonBGDisabled')),
+                            text_pos=(-0.1, -0.05),
+                            pressEffect = 0)
         Load.setTransparency(True)
 
         New = DirectButton(text="New Game",
@@ -321,11 +332,17 @@ class MainMenu(DirectObject):
                            clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
                            pos=(-0.2, 0, 0.2),
                            parent=self.mainFrame,
-                           scale=0.07,
-                           frameSize=(-4, 4, -1, 1),
-                           text_scale=0.75,
-                           relief=DGG.FLAT,
-                           text_pos=(0, -0.2))
+                           scale=0.35,
+                           frameSize=(-1, 1, -0.5, 0.5),
+                           text_scale=0.15,
+                           relief=None,
+                           geom=(maps.find('**/ButtonBG'),
+                                 maps.find('**/ButtonBGClick'),
+                                 maps.find('**/ButtonBGHighlight'),
+                                 maps.find('**/ButtonBGDisabled')),
+                           text_pos=(-0.1, -0.05),
+                           pressEffect = 0
+                           )
         New.setTransparency(True)
         self.music = loader.loadSfx("Assets/Music/MainMenuMusic.mp3")
         self.music.setLoop(True)
@@ -488,7 +505,7 @@ class HUD(DirectObject):
                                         dialogName="ErrorDialog",
                                         )
         self.loadImageRealScale("Assets/HUD/ErrorBG.png", self.errorPopup)
-        self.errorText = OnscreenText('', pos=(-0.5, 0), scale=0.07, font=loader.loadFont("Assets/HUD/Halo.ttf"), parent=self.errorPopup)
+        self.errorText = OnscreenText('', pos=(0, 0), scale=0.06, font=loader.loadFont("Assets/HUD/Halo.ttf"), parent=self.errorPopup)
         self.errorPopup.hide()
 
 
@@ -522,10 +539,14 @@ class HUD(DirectObject):
             self.NextPlayer.show()
 
     def popupError(self,error):
-        #self.errorPopup.show()
-        #self.errorText.setText(error)
-        #self.app.taskMgr.doMethodLater(TIME_ERROR_POPUP, self.hideError, 'hide-error-popup')
-        pass
+        self.errorPopup.show()
+        self.errorText.setText(error)
+        self.app.taskMgr.doMethodLater(TIME_ERROR_POPUP, self.hideError, 'hide-error-popup')
+
+    def hideError(self, task):
+        self.errorPopup.setText("")
+        self.errorPopup.hide()
+        return task.done
 
 
     def loadImageRealScale(self, name, parent):

@@ -45,6 +45,7 @@ class TheoryElement(metaclass=ABCMeta):
         self.locked=False
         self.engagements=[]
         self.image = ""
+        self.sizeFactor = 1
 
     #Gestion de la Damage Track---------------------------
 
@@ -193,7 +194,7 @@ class UNSC_Paris_Frigate_Arrow(TheoryElement):
                                            loads.Titanium_Armor(2),loads.Elusive])
 
         self.image = "Assets/Drawable/Ships/UNSC/Elements/UNSC_Paris_Frigate_Arrowhead_Formation.png"
-
+        self.sizeFactor = 0.1
         self.set_aim(aim)
         self.__primary=weapons.Weapons("MAC",10,20,4,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,2,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
@@ -296,6 +297,7 @@ class Spacecraft():
         self.WingType = None
         self.attacked = False
         self._aim = vct.vector_from_dots((0,0), (1, 1))
+        self.sizeFactor = 1
 
 
     @property
