@@ -176,3 +176,31 @@ def calc_fp(Target,Attacker,Weapon):
     return fp
 
 
+def resolvedogfight(unitA,unitB):
+    na = unitA.FS * unitA.vs_wing_dice
+    nb=unitB.FS*unitB.vs_wing_dice
+    if unitA.WingType=="Interceptor":
+        fpa=5
+    else:
+        fpa=3
+    if unitB.WingType=="Interceptor":
+        fpb=5
+    else:
+        fpb=3
+    damagetoA=Damage_Dice_Roll(nb,fpb)
+    damagetoB=Damage_Dice_Roll(na,fpa)
+    unitA.FS-=floor(damagetoA/(unitA.FS*unitA.DT))
+    unitB.FS-=floor(damagetoB/(unitB.FS*unitB.DT))
+    if unitA.FS<=0:
+        #lancer l'animation de destruction ici
+        del unitA
+    if unitB.FS<=0:
+        #lancer l'animation de destruction ici
+        del unitB
+
+
+def bulletdirection(unitA,unitB,ref):
+    v1=vct.vector_from_dots((unitA.xpos,unitA.ypos),(unitB.xpos,unitBypos))
+    return vct.get_angle(v1,ref)
+
+

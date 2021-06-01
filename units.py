@@ -20,7 +20,7 @@ class TheoryElement(metaclass=ABCMeta):
     (Liste taille 3,Liste taille 3,entier,entier,entier,string,Booléen,entier,string,entier,sprite,pg.rect,
     string,liste de ref au dico equipement,liste de ref dico armes)
     """
-    def __init__(self,DT,CDT,Hangars,BR,Movement,Tag,Capital,Size,BC,faction,ld):
+    def __init__(self,DT,CDT,Hangars,BR,Movement,Tag,Capital,Size,BC,faction,ld,SizeFactor):
         self.__DamageTrack=DT                                    #liste contenant 3 entiers positifs,damage track initiale
         self._CDamageTrack=CDT                                   #Damage track actuelle, relative à l'attribut
         self.__Hangars=Hangars                                   #entier représentant le nombre de hangars de l'élément
@@ -42,7 +42,7 @@ class TheoryElement(metaclass=ABCMeta):
         self.activated=False
         self.locked=False
         self.engagements=[]
-
+        self.sizefactor=SizeFactor
     #Gestion de la Damage Track---------------------------
 
     @property
@@ -143,7 +143,9 @@ class TheoryElement(metaclass=ABCMeta):
         elif opp in engagements:
             n=engagements.index(opp)
             self.engagements.pop(n)
-
+    @property
+    def sizefactor(self):
+        return self.sizefactor
 
 
 
@@ -155,7 +157,7 @@ class UNSC_Supported_Epoch(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[10,8,5],CDT=[10,8,5],Hangars=6,BR=5,Movement=6,Tag="UNSC Supported Epoch Heavy Carrier",Capital=True,Size="Large",
                  BC=190,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(6),
-                                           loads.Titanium_Armor(5)])
+                                           loads.Titanium_Armor(5)],SizeFactor=0.83)
 
         self.__primary=weapons.Weapons("MAC",10,20,12,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,15,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
@@ -164,7 +166,7 @@ class UNSC_Epoch_Heavy_Carrier(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[9,8,5],CDT=[9,8,5],Hangars=6,BR=4,Movement=6,Tag="UNSC Epoch Heavy Carrier",Capital=True,Size="Large",
                  BC=175,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(5),
-                                           loads.Titanium_Armor(4)])
+                                           loads.Titanium_Armor(4)],SizeFactor=0.83)
 
         self.__primary=weapons.Weapons("MAC",10,20,10,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,12,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
@@ -173,7 +175,7 @@ class UNSC_Supported_Marathon_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[7,6,3],CDT=[7,6,3],Hangars=2,BR=3,Movement=8,Tag="UNSC Supported Marathon Heavy Cruiser",Capital=True,Size="Medium",
                  BC=110,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
-                                           loads.Titanium_Armor(4)])
+                                           loads.Titanium_Armor(4)],SizeFactor=0.4)
 
         self.__primary=weapons.Weapons("MAC",16,32,10,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,8,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
@@ -182,7 +184,7 @@ class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[6,6,3],CDT=[6,6,3],Hangars=2,BR=2,Movement=8,Tag="UNSC Marathon Heavy Cruiser",Capital=True,Size="Medium",
                  BC=95,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
-                                           loads.Titanium_Armor(3)])
+                                           loads.Titanium_Armor(3)],SizeFactor=0.4)
 
         self.__primary=weapons.Weapons("MAC",16,32,8,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,7,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
@@ -191,7 +193,7 @@ class UNSC_Paris_Frigate_Arrow(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[3,3,3],CDT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
-                                           loads.Titanium_Armor(2),loads.Elusive])
+                                           loads.Titanium_Armor(2),loads.Elusive],SizeFactor=0.159)
 
         self.__primary=weapons.Weapons("MAC",10,20,4,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,2,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
@@ -200,7 +202,7 @@ class UNSC_Paris_Frigate_Trident(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[4,3,3],CDT=[4,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Trident Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
-                                           loads.Titanium_Armor(2),loads.Elusive])
+                                           loads.Titanium_Armor(2),loads.Elusive],SizeFactor=0.159)
 
         self.__primary=weapons.Weapons("MAC",10,20,3,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,3,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
@@ -211,7 +213,7 @@ class UNSC_Paris_Frigate_Trident(TheoryElement):
 class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[11,10,6],CDT=[11,10,6],Hangars=6,BR=5,Movement=5,Tag="Covenant Supported ORS Heavy Cruiser",Capital=True,Size="Large",
-                 BC=220,faction="Covenant",ld=[loads.Cloaking_System,loads.Defence_Array(5),loads.Glide(3),loads.Point_Defence(6),loads.Elusive])
+                 BC=220,faction="Covenant",ld=[loads.Cloaking_System,loads.Defence_Array(5),loads.Glide(3),loads.Point_Defence(6),loads.Elusive],SizeFactor=1)
 
         self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
@@ -221,7 +223,7 @@ class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
 class Covenant_ORS_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[11,10,5],CDT=[11,10,5],Hangars=5,BR=4,Movement=5,Tag="Covenant Heavy Cruiser",Capital=True,Size="Large",
-                 BC=25,faction="UNSC",ld=[loads.Cloaking_System(),loads.Defence_Array(4),loads.Glide(3),loads.Point_Defence(5)])
+                 BC=25,faction="UNSC",ld=[loads.Cloaking_System(),loads.Defence_Array(4),loads.Glide(3),loads.Point_Defence(5)],SizeFactor=1)
 
 
         self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
@@ -232,7 +234,7 @@ class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[8,7,4],CDT=[8,7,4],Hangars=3,BR=4,Movement=7,Tag="Covenant Supported CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=170,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(5),loads.Glide(4),loads.Point_Defence(4),
-                                               loads.Carrier_Action(1)])
+                                               loads.Carrier_Action(1)],SizeFactor=0.594)
 
         self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
@@ -242,7 +244,7 @@ class Covenant_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[8,7,3],CDT=[8,7,3],Hangars=2,BR=3,Movement=8,Tag="Covenant CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=150,faction="Covenant",ld=[loads.Defence_Array(4),loads.Glide(4),loads.Point_Defence(3),
-                                               loads.Carrier_Action(1)])
+                                               loads.Carrier_Action(1)],SizeFactor=0.594)
 
         self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__secondary=weapons.Weapons("Plasma",10,20,9,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
@@ -251,7 +253,7 @@ class Covenant_SDV_Heavy_Corvette_Line(TheoryElement):
     def __init__(self,pos,aim):
         super().__init__(DT=[4,4,3],CDT=[6,6,3],Hangars=1,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Line Formation)",Capital=False,Size="Small",
                  BC=40,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
-                                               loads.Cloaking_System()])
+                                               loads.Cloaking_System()],SizeFactor=0.216)
 
         self.__primary=weapons.Weapons("Plasma",10,20,3,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
         self.__secondary=weapons.Weapons("Plasma",12,24,4,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile_Weapon()])
@@ -261,7 +263,7 @@ class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
         super().__init__(DT=[4,3,3],CDT=[4,3,3],Hangars=1,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Oblique Formation)",
                          Capital=False,Size="Small",BC=40,faction="Covenant",
                          ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
-                             loads.Cloaking_System()])
+                             loads.Cloaking_System()],SizeFactor=0.216)
 
         self.__primary=weapons.Weapons("Plasma",10,20,4,["Forth","Port","Starboard"],"Plasma Cannon Arrays",
                                          [loads.Plasma_Weapon()])
@@ -272,7 +274,7 @@ class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
 #----------------------------Bombers and Fighters,UNSC----------------------------
 
 class Spacecraft():
-    def __init__(self,DT,Movement,Tag,faction,FS,vswing,vselement):
+    def __init__(self,DT,Movement,Tag,faction,FS,vswing,vselement,type):
         self.__DamageTrack=DT
         self._MoveRange=Movement
         self.Tag=Tag
@@ -302,6 +304,9 @@ class Spacecraft():
     def pos(self):
         return self.xpos,self.ypos
 
+    @property
+    def wingtype(self):
+        return self.WingType
 
     def set_pos(self,L):
         self.xpos=L[0]
