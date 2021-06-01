@@ -85,6 +85,9 @@ class MainGame():
         self.CurrentPlayer.turnEnded = True
         self.nextPlayer()
 
+    def getAbsoluteAngleBetweenOpponents(self, opponent1, opponent2):
+        return (atan2(1,0) - atan2((opponent2.pos[1] - opponent1.pos[1]), (opponent2.pos[0] - opponent1.pos[0])))
+
 
     def requestMove(self, unit, pos):
         if(issubclass(type(unit), Spacecraft)):
@@ -119,10 +122,35 @@ class MainGame():
 
 
     def wing_attack(self):
-        toResolve = []
-        [(toResolve.append((unit, unit.opponent)) for opponent in unit.engagements if ((unit, unit.opponent) not in toResolve and (unit.opponent, unit) not in toResolve)) for unit in self.UNSC.tokens if issubclass(type(unit), Spacecraft)]
+        self.toResolve = []
 
-        self.nextPhase()
+        for unit in self.UNSC.tokens:
+            if issubclass(type(unit), Spacecraft):
+                for opponent in unit.engagements:
+                    if ((unit, opponent) not in self.toResolve and (opponent, unit) not in self.toResolve):
+                        self.toResolve.append((unit, opponent))
+        for unit in self.Covenant.tokens:
+            if issubclass(type(unit), Spacecraft):
+                for opponent in unit.engagements:
+                    if ((unit, opponent) not in self.toResolve and (opponent, unit) not in self.toResolve):
+                        self.toResolve.append((unit, opponent))
+
+        if self.toResolve != []:
+            self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1])
+        else:
+            self.nextPhase()
+
+    def fightEnd(self, fighting):
+        i = self.toResolve.index(fighting)
+        self.toResolve.pop(i)
+        if self.toResolve != []:
+            self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1])
+        else:
+            self.nextPhase()
+
+    def getFightCenter(self, fighting):
+        return ((fighting[0].pos[0]+ fighting[1].pos[0])/2, (fighting[0].pos[1] + fighting[1].pos[1])/2)
+
 
     def battle_moovement(self):
         pass

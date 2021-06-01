@@ -131,6 +131,7 @@ def Damage_Dice_Roll(n,fp):
 def dist(a,b):
     return np.sqrt((a.xpos-b.xpos)**2+(a.ypos-b.ypos)**2)
 
+
 def get_closest_target(unit,board,angles):   #avec angles un objet de classe intervalle
     a=unit.aim
     d=10000

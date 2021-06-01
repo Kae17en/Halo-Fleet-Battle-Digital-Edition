@@ -8,9 +8,11 @@ import sys, os
 from panda3d.core import loadPrcFileData
 from direct.filter.CommonFilters import CommonFilters
 from DirectGuiExtension.DirectBoxSizer import DirectBoxSizer
-from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs, Texture
+from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs, Texture, TextureStage, TexGenAttrib
+from direct.actor.Actor import Actor
 from gameLogic import *
 import ctypes
+from copy import *
 
 mydir = os.path.abspath(sys.path[0])
 
@@ -100,18 +102,67 @@ class MyApp(ShowBase):
         UNSC = Player("UNSC")
         Covenant = Player("Covenant")
 
-        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-700, -300), (2.8, 11.6)))
-        Covenant.addToken(Covenant_CCS_Battlecruiser((600, 600), (12.7, 1.3), docked=[Covenant_Banshee_Interceptor_Flight((0,0), 3)]))
-
+        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-700, -300), (-480, -300)))
+        Covenant.addToken(Covenant_CCS_Battlecruiser((600, 600), (500, 500), docked=[Covenant_Banshee_Interceptor_Flight((0,0), 3)]))
+        Covenant.addToken(Covenant_Banshee_Interceptor_Flight((0,0), 3))
         self.music = loader.loadSfx("Assets/Music/Ambiant.mp3")
         self.music.setLoop(True)
         self.music.play()
 
         self.Game.startGameFromSituation(UNSC, Covenant)
+        # self.showGraphicalFight(self.Covenant.tokens[1])
+
+    def loadVideoOnplane(self, pos, scale, src, angle=0):
+        plane = loader.loadModel("Assets/Fights/plane.egg")
+        plane.setPos(pos)
+        plane.setHpr(plane, 0, 90, 0)
+        plane.setHpr(plane, 90 + angle, 0, 0)
+        plane.setScale(scale[0], scale[1], 1)
+        video = loader.loadTexture(src)
+        plane.setTransparency(1)
+        plane.reparent_to(render)
+        plane.setTexture(video)
+        video.play()
+        return plane
+
+    def showGraphicalFight(self, opponent1, opponent2):
+        # self.Oponent1Weapons = []
+        # for i in range(len(opponent1.weaponsPos)):
+        #     angle = -opponent1.get_angleRad()
+        #     fac = opponent1.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
+        #     posInWordCoords = LVecBase3f(
+        #         opponent1.pos[0] + opponent1.weaponsPos[i][0] * fac * np.cos(angle) - opponent1.weaponsPos[i][
+        #             1] * fac * np.sin(angle), -2 - i,
+        #         opponent1.pos[1] + opponent1.weaponsPos[i][1] * fac * np.cos(angle) + opponent1.weaponsPos[i][
+        #             0] * fac * np.sin(angle))
+        #     self.Oponent1Weapons.append(
+        #         self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
+        #                               -opponent1.get_angle()))
+        self.fighting = (opponent1, opponent2)
+        self.recenterOnFightZone()
+        self.OnGoingFight = Fight(opponent1, opponent2, 0, self)
+
+    def recenterOnFightZone(self):
+        self.Oldcenter = self.cam.getPos()
+        self.OldFilmSize = deepcopy(self.lens.getFilmSize())
+        center = self.Game.getFightCenter(self.fighting)
+        filmSize = (min(self.fighting[0].sizeFactor, self.fighting[1].sizeFactor)*2*1920, 1080*2*min(self.fighting[0].sizeFactor, self.fighting[1].sizeFactor))
+        self.cam.setX(center[0])
+        self.cam.setZ(center[1])
+        self.lens.setFilmSize(filmSize)
+
+    def returnToOriginalCamPos(self):
+        self.cam.setPos(self.Oldcenter)
+        self.lens.setFilmSize(self.OldFilmSize)
+
+    def fightEnd(self, task):
+        del self.OnGoingFight
+        self.returnToOriginalCamPos()
+        self.Game.fightEnd(self.fighting)
+        return task.done
 
     def setPlayer(self, player):
         self.GlobalState[2] = player
-
 
     def UpdateGameState(self, task):
         for object in self.UNSC.tokens:
@@ -165,7 +216,7 @@ class MyApp(ShowBase):
                 i += 1
                 pickedObjG = self.clickonObject.getEntry(i).getIntoNodePath()
                 pickedObj = pickedObjG.getTag('clickable')
-            if pickedObj and pickedObj != "":
+            if pickedObj and pickedObj != "" and not self.HUD.controlsDisabled:
                 if pickedObj == "fond":
                     if(hasattr(self, "detailed")):
                         del self.detailed
@@ -278,6 +329,8 @@ class MyApp(ShowBase):
 
 
 
+
+
 class MainMenu(DirectObject):
     def __init__(self, app):
         self.app = app
@@ -362,6 +415,8 @@ class MainMenu(DirectObject):
     def LoadGame(self):
         self.hide()
         self.app.StartGame()
+
+
 
 
 class HUD(DirectObject):
@@ -497,15 +552,16 @@ class HUD(DirectObject):
         self.Frame.append(self.SideMenu)
         self.Frame.append(self.TopBar)
 
-        self.errorPopup = DirectDialog(frameSize=(-1, 1, -0.7, 0.7),
+        self.errorPopup = DirectDialog(frameSize=(-2, 2, -1 ,1),
                                         fadeScreen=0.4,
                                         pos = (0,-2,0),
                                         relief=None,
                                         parent=render2d,
                                         dialogName="ErrorDialog",
                                         )
-        self.loadImageRealScale("Assets/HUD/ErrorBG.png", self.errorPopup)
-        self.errorText = OnscreenText('', pos=(0, 0), scale=0.06, font=loader.loadFont("Assets/HUD/Halo.ttf"), parent=self.errorPopup)
+        err = OnscreenImage("Assets/HUD/ErrorBG.png", parent=self.errorPopup, scale=(0.20*self.app.getAspectRatio(), 1, 0.3))
+        err.setTransparency(TransparencyAttrib.MAlpha)
+        self.errorText = OnscreenText('', pos=(0, -0.035), scale=(0.04, 0.04*self.app.getAspectRatio()), font=loader.loadFont("Assets/HUD/CopperplateGothicBold.ttf"), parent=self.errorPopup)
         self.errorPopup.hide()
 
 
@@ -520,12 +576,14 @@ class HUD(DirectObject):
         self.app.music.play()
 
     def disableUserControl(self):
+        self.controlsDisabled = True
         self.EndTurn.hide()
         self.NextPlayer.hide()
 
     def enableUserControl(self):
         self.EndTurn.show()
         self.NextPlayer.show()
+        self.controlsDisabled = False
 
     def setGameInfo(self, State):
         Dict = ["Wing Movement", "Wing Attack", "Battle Movement", 'Battle Atack']
@@ -533,10 +591,10 @@ class HUD(DirectObject):
         self.Turn.setText("Turn " + str(State[1]))
         self.Player.setText("Playing " + State[2].type)
         self.setPlayer(State[2].type)
-        if(self.app.Game.NotCurrentPlayer.turnEnded):
-            self.NextPlayer.hide()
-        else:
+        if(not self.app.Game.NotCurrentPlayer.turnEnded and not self.controlsDisabled):
             self.NextPlayer.show()
+        else:
+            self.NextPlayer.hide()
 
     def popupError(self,error):
         self.errorPopup.show()
@@ -703,6 +761,164 @@ class objectDetails():
 
 def distAB(ax,ay,bx,by):
     return np.sqrt((ax-bx)**2+(ay-by)**2)
+
+
+class Fight:
+    def __init__(self, opponent1, opponent2, resolve, GUI):
+        self.resolve = resolve
+        self.opponent1 = opponent1
+        self.opponent2 = opponent2
+        self.GUI = GUI
+        self.opponent1InitialPos = opponent1.pos
+        self.opponent1InitialAim = opponent1.aim
+        self.opponent2InitialPos = opponent2.pos
+        self.opponent2InitialAim = opponent2.aim
+
+        if (issubclass(type(opponent1), Spacecraft) and issubclass(type(opponent2), TheoryElement)):
+            self.wing = opponent1
+            self.ship = opponent2
+        elif(issubclass(type(opponent2), Spacecraft) and issubclass(type(opponent1), TheoryElement)):
+            self.wing = opponent2
+            self.ship = opponent1
+
+        if(hasattr(self, "wing")):
+            self.targetPoint = self.computeTargetWingPoint(self.wing, self.ship)
+            self.wing.set_aim(self.ship.pos)
+            self.elapsed = 0
+
+        self.Oponent1Weapons = []
+        for i in range(len(opponent1.weaponsPos)):
+            angle = -opponent1.get_angleRad()
+            fac = opponent1.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
+            posInWordCoords = LVecBase3f(
+                opponent1.pos[0] + opponent1.weaponsPos[i][0] * fac * np.cos(angle) - opponent1.weaponsPos[i][
+                    1] * fac * np.sin(angle), -2 - i,
+                opponent1.pos[1] + opponent1.weaponsPos[i][1] * fac * np.cos(angle) + opponent1.weaponsPos[i][
+                    0] * fac * np.sin(angle))
+            self.Oponent1Weapons.append(
+                self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
+                                      -opponent1.get_angle()))
+
+        self.Hits1 = self.loadVideoOnplane((opponent1.pos[0], -10, opponent1.pos[1]), (20, 20),
+                                           "Assets/Fights/Hits/Cork_Hit_03.mov")
+
+        self.Oponent2Weapons = []
+        for i in range(len(opponent2.weaponsPos)):
+            angle = -opponent2.get_angleRad()
+            fac = opponent2.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
+            posInWordCoords = LVecBase3f(
+                opponent2.pos[0] + opponent2.weaponsPos[i][0] * fac * np.cos(angle) - opponent2.weaponsPos[i][
+                    1] * fac * np.sin(angle), -2 - i,
+                opponent2.pos[1] + opponent2.weaponsPos[i][1] * fac * np.cos(angle) + opponent2.weaponsPos[i][
+                    0] * fac * np.sin(angle))
+            self.Oponent2Weapons.append(
+                self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
+                                      -opponent2.get_angle()))
+
+        self.Hits2 = self.loadVideoOnplane((opponent2.pos[0], -10, opponent2.pos[1]), (20, 20),
+                                           "Assets/Fights/Hits/Cork_Hit_03.mov")
+
+
+        if hasattr(self, "wing"):
+            self.shipWeaponsPreviousAim = deepcopy(self.ship.aim)
+            GUI.taskMgr.add(self.updateFightWing, "update-fight", uponDeath=self.GUI.fightEnd)
+
+    def loadVideoOnplane(self, pos, scale, src, angle=0):
+        plane = loader.loadModel("Assets/Fights/plane.egg")
+        plane.setPos(pos)
+        plane.setHpr(plane, 0, 90, 0)
+        plane.setHpr(plane, 90 + angle, 0, 0)
+        plane.setScale(scale[0], scale[1], 1)
+        video = loader.loadTexture(src)
+        plane.setTransparency(1)
+        plane.reparent_to(render)
+        plane.setTexture(video)
+        video.play()
+        return plane
+
+
+    def updateFightWing(self, task):
+        if(self.elapsed >= 3.5):
+            return task.done
+        else:
+            self.elapsed = self.elapsed + 0.01
+            newPos = self.GetAttackTrajectoryPoint(self.wing, self.targetPoint, self.elapsed/50)
+            self.wing.set_pos(newPos)
+            previousAim = deepcopy(self.wing.aim)
+            self.wing.set_aim(self.GetAttackTrajectoryPoint(self.wing, self.targetPoint, (self.elapsed+10)/50))
+            if (self.elapsed >= 1.5):
+                self.Hits1.removeNode()
+                self.Hits2.removeNode()
+                for effect in self.Oponent1Weapons:
+                    effect.removeNode()
+                for effect in self.Oponent2Weapons:
+                    effect.removeNode()
+                if (self.resolve == 1):
+                    pass
+                elif(self.resolve == 2):
+                    pass
+            else:
+                self.updateFirePos(self.wing, newPos, previousAim)
+                angleTowardWing = ((self.wing.pos[1] - self.ship.pos[1]), (self.wing.pos[0] - self.ship.pos[0]))
+                self.updateFirePos(self.ship, self.ship.pos, self.shipWeaponsPreviousAim, angleTowardWing)
+                self.shipWeaponsPreviousAim = deepcopy(((self.wing.pos[1] - self.ship.pos[1]), (self.wing.pos[1] - self.ship.pos[0])))
+            return task.cont
+
+    def __del__(self):
+        try:
+            self.Hits1.removeNode()
+            self.Hits2.removeNode()
+            for effect in self.Oponent1Weapons:
+                effect.removeNode()
+            for effect in self.Oponent2Weapons:
+                effect.removeNode()
+        except Exception:
+            pass
+        self.opponent1.set_pos(self.opponent1InitialPos)
+        self.opponent2.set_pos(self.opponent2InitialPos)
+        self.opponent1.aim = self.opponent1InitialAim
+        self.opponent2.aim = self.opponent2InitialAim
+
+    def updateFirePos(self, object, newPos, previousAim, specificAim = None):
+        WeaponsList = []
+        Hits = None
+        if object == self.opponent1:
+            WeaponsList = self.Oponent1Weapons
+            Hits = self.Hits1
+        else:
+            WeaponsList = self.Oponent2Weapons
+            Hits = self.Hits2
+        for i in range(len(WeaponsList)):
+            angle = -object.get_angleRad()
+            orientation = None
+            if specificAim == None:
+                orientation = -(atan2(previousAim[1], previousAim[0]) - atan2(object.aim[1], object.aim[0]))*180/np.pi
+            else:
+                orientation = -(atan2(previousAim[1], previousAim[0]) - atan2(specificAim[1], specificAim[0])) * 180 / np.pi
+            fac = object.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
+            posInWordCoords = LVecBase3f(
+                newPos[0] + object.weaponsPos[i][0] * fac * np.cos(angle) - object.weaponsPos[i][
+                    1] * fac * np.sin(angle), -2 - i,
+                newPos[1] + object.weaponsPos[i][1] * fac * np.cos(angle) + object.weaponsPos[i][
+                    0] * fac * np.sin(angle))
+            WeaponsList[i].setPos(posInWordCoords)
+            WeaponsList[i].setHpr(WeaponsList[i], 0.1*orientation, 0, 0)
+        Hits.setPos(newPos[0], -10, newPos[1])
+
+
+
+    def GetAttackTrajectoryPoint(self, attacker, TargetPoint, s):
+        Ax = (attacker.pos[0] - TargetPoint[0]) / (1 - exp(1))
+        Bx = (-attacker.pos[0] * exp(1) + TargetPoint[0]) / (1 - exp(1))
+        Ay = (attacker.pos[1] - TargetPoint[1]) / (1 - exp(-1))
+        By = (-attacker.pos[1] * exp(-1) + TargetPoint[1]) / (1 - exp(-1))
+        return (Ax * exp(s) + Bx, Ay * exp(-s) + By)
+
+    def computeTargetWingPoint(self, wing, ship):
+        side = (random.randint(0, 1) * 2) - 1
+        return (ship.pos[0] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.cos(wing.get_angleRad()),
+                ship.pos[1] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.sin(wing.get_angleRad()))
+
 
 app = MyApp()
 app.run()

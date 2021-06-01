@@ -4,6 +4,7 @@ import classes.weapons
 import classes.loadouts as loads
 import vectors2d as vct
 from config import *
+from math import *
 
 
 #----------------------------------------------#Vaisseaux#-----------------------------------------------
@@ -46,6 +47,8 @@ class TheoryElement(metaclass=ABCMeta):
         self.engagements=[]
         self.image = ""
         self.sizeFactor = 1
+        self.weaponsPos= []
+        self.weaponsRange = []
 
     #Gestion de la Damage Track---------------------------
 
@@ -73,18 +76,27 @@ class TheoryElement(metaclass=ABCMeta):
 
     @property
     def pos(self):
-        return self.xpos,self.ypos
+        return (self.xpos,self.ypos)
 
     @property
     def aim(self):
         return self._aim
 
+    @aim.setter
+    def aim(self, vector):
+        self._aim = vector
+
     def get_angle(self):
-        return ((np.arctan(self.aim[0]/self.aim[1]))*180/np.pi)
+        angle = atan2(1, 0) - atan2(self.aim[1], self.aim[0])
+        return angle*180/np.pi
+
+    def get_angleRad(self):
+        angle = atan2(1, 0) - atan2(self.aim[1], self.aim[0])
+        return angle
 
 
     def set_aim(self,CursorPos):
-       self._aim = vct.vector_from_dots(CursorPos,(self.xpos,self.ypos))
+       self._aim = vct.vector_from_dots((self.xpos,self.ypos), CursorPos)
 
 
     def set_pos(self,L):
@@ -192,7 +204,8 @@ class UNSC_Paris_Frigate_Arrow(TheoryElement):
         super().__init__(pos=pos,DT=[3,3,3],docked=docked,CDT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive])
-
+        self.weaponsPos = [(1.25, -0.4), (-1.25, -0.4), (0, 1.5)]
+        self.weaponsRange = [(-110,110),(-110,110),(-110,110)]
         self.image = "Assets/Drawable/Ships/UNSC/Elements/UNSC_Paris_Frigate_Arrowhead_Formation.png"
         self.sizeFactor = 0.1
         self.set_aim(aim)
@@ -248,6 +261,9 @@ class Covenant_CCS_Battlecruiser(TheoryElement):
                  BC=150,faction="Covenant",docked=docked,ld=[loads.Defence_Array(4),loads.Glide(4),loads.Point_Defence(3),
                                                loads.Carrier_Action(1)])
         self.image = "Assets/Drawable/Ships/Covenant/Elements/Covenant_CSS_BattleCruiser.png"
+        self.weaponsPos = [(0.025, 1.5)]
+        self.weaponsRange = [(-90,90)]
+        self.sizeFactor = 1
         self.set_aim(aim)
         self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__secondary=weapons.Weapons("Plasma",10,20,9,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
@@ -312,11 +328,20 @@ class Spacecraft():
     def aim(self):
         return self._aim
 
+    @aim.setter
+    def aim(self, vector):
+        self._aim = vector
+
     def get_angle(self):
-        return ((np.arctan(self.aim[1] / self.aim[0])) * 180 / np.pi)
+        angle = atan2(1, 0) - atan2(self.aim[1], self.aim[0])
+        return angle * 180 / np.pi
+
+    def get_angleRad(self):
+        angle = atan2(1, 0) - atan2(self.aim[1], self.aim[0])
+        return angle
 
     def set_aim(self, CursorPos):
-        self._aim = vct.vector_from_dots(CursorPos, (self.xpos, self.ypos))
+        self._aim = vct.vector_from_dots((self.xpos, self.ypos), CursorPos)
 
     @property
     def pos(self):
@@ -443,6 +468,8 @@ class Covenant_Banshee_Interceptor_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
+        self.weaponsPos=[(0.1, 0.7), (-0.1,0.7)]
+        self.sizeFactor = 0.1
         self.image = "Assets/Drawable/Ships/Covenant/Wings/Covenant_Banshee_Interceptor_Flight.png"
         self.icon = "Assets/Drawable/Ships/Covenant/Wings/Icons/Covenant_Banshee_Interceptor_Flight_Icon.png"
         self.WingType = "Interceptor"
