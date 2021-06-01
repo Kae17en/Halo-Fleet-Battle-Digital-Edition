@@ -136,17 +136,33 @@ class MainGame():
                         self.toResolve.append((unit, opponent))
 
         if self.toResolve != []:
-            self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1])
+            fighting = self.toResolve[0][0], self.toResolve[0][1]
+            self.fightResult =self.resolveFightForWingAttack(self.toResolve[0][0], self.toResolve[0][1])
+            self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1], self.fightResult)
         else:
             self.nextPhase()
 
     def fightEnd(self, fighting):
         i = self.toResolve.index(fighting)
         self.toResolve.pop(i)
+        if (self.fightResult > 0):
+            toDel = fighting[self.fightResult - 1]
+            if toDel in self.UNSC.tokens:
+                i = self.UNSC.tokens.index(toDel)
+                self.UNSC.tokens.pop(i)
+                del toDel
+            elif toDel in self.Covenant.tokens:
+                i = self.Covenant.tokens.index(toDel)
+                self.Covenant.tokens.pop(i)
+                del toDel
         if self.toResolve != []:
-            self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1])
+            self.fightResult = self.resolveFightForWingAttack(self.toResolve[0][0], self.toResolve[0][1])
+            self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1], self.fightResult)
         else:
             self.nextPhase()
+
+    def resolveFightForWingAttack(self, opponent1, opponent2):
+        return 1
 
     def getFightCenter(self, fighting):
         return ((fighting[0].pos[0]+ fighting[1].pos[0])/2, (fighting[0].pos[1] + fighting[1].pos[1])/2)

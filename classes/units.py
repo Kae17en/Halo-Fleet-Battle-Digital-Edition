@@ -48,6 +48,7 @@ class TheoryElement(metaclass=ABCMeta):
         self.image = ""
         self.sizeFactor = 1
         self.weaponsPos= []
+        self.explosionLocation = []
         self.weaponsRange = []
 
     #Gestion de la Damage Track---------------------------
@@ -206,6 +207,7 @@ class UNSC_Paris_Frigate_Arrow(TheoryElement):
                                            loads.Titanium_Armor(2),loads.Elusive])
         self.weaponsPos = [(1.25, -0.4), (-1.25, -0.4), (0, 1.5)]
         self.weaponsRange = [(-110,110),(-110,110),(-110,110)]
+        self.explosionLocation = [(1.25,-0.8),(-1.25,-0.8),(0,1.1)]
         self.image = "Assets/Drawable/Ships/UNSC/Elements/UNSC_Paris_Frigate_Arrowhead_Formation.png"
         self.sizeFactor = 0.1
         self.set_aim(aim)
@@ -310,6 +312,7 @@ class Spacecraft():
         self.activated = False
         self.locked = False
         self.engagements = []
+        self.explosionLocation = []
         self.WingType = None
         self.attacked = False
         self._aim = vct.vector_from_dots((0,0), (1, 1))
@@ -469,6 +472,7 @@ class Covenant_Banshee_Interceptor_Flight(Spacecraft):
         self.ypos=pos[1]
         self.UnitNumber=n
         self.weaponsPos=[(0.1, 0.7), (-0.1,0.7)]
+        self.explosionLocation = [(0,0)]
         self.sizeFactor = 0.1
         self.image = "Assets/Drawable/Ships/Covenant/Wings/Covenant_Banshee_Interceptor_Flight.png"
         self.icon = "Assets/Drawable/Ships/Covenant/Wings/Icons/Covenant_Banshee_Interceptor_Flight_Icon.png"
