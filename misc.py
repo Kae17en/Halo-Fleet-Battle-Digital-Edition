@@ -148,7 +148,7 @@ def get_valid_targets(unit,board,weapon):
     dmin=weapon.ShortRange
     dmax=weapon.LongRange
     Targets=[]
-    A=weapons.angles
+    A=weapon.angles
     for e in board:
         a = unit.aim
         v=vct.Vector2D(e.xpos-unit.xpos,e.ypos-unit.ypos)
@@ -163,6 +163,7 @@ def get_valid_targets(unit,board,weapon):
 
 def calc_fp(Target,Attacker,Weapon):
     LongRange=False
+    fp = None
     if dist(Target,Attacker)>=Weapon.Shortrange:
         LongRange=True
     elif Weapon.Wtype=="Plasma Beam":

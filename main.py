@@ -104,13 +104,15 @@ class MyApp(ShowBase):
 
         UNSC.addToken(UNSC_Paris_Frigate_Arrow((-700, -300), (-480, -300)))
         Covenant.addToken(Covenant_CCS_Battlecruiser((600, 600), (500, 500), docked=[Covenant_Banshee_Interceptor_Flight((0,0), 3)]))
-        Covenant.addToken(Covenant_Banshee_Interceptor_Flight((0,0), 3))
+        UNSC.addToken(UNSC_Broadsword_Interceptor_Flight((0,0), 3))
+
+
         self.music = loader.loadSfx("Assets/Music/Ambiant.mp3")
         self.music.setLoop(True)
         self.music.play()
 
         self.Game.startGameFromSituation(UNSC, Covenant)
-        # self.showGraphicalFight(self.Covenant.tokens[1])
+        # self.placeWeapons(self.UNSC.tokens[1])
 
     def loadVideoOnplane(self, pos, scale, src, angle=0):
         plane = loader.loadModel("Assets/Fights/plane.egg")
@@ -125,19 +127,19 @@ class MyApp(ShowBase):
         video.play()
         return plane
 
+    def placeWeapons(self, object): #this function is for developpement purpose only
+        for i in range(len(object.weaponsPos)):
+            angle = -object.get_angleRad()
+            fac = object.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
+            posInWordCoords = LVecBase3f(
+                object.pos[0] + object.weaponsPos[i][0] * fac * np.cos(angle) - object.weaponsPos[i][
+                    1] * fac * np.sin(angle), -2 - i,
+                object.pos[1] + object.weaponsPos[i][1] * fac * np.cos(angle) + object.weaponsPos[i][
+                    0] * fac * np.sin(angle))
+            self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
+                                      -object.get_angle())
+
     def showGraphicalFight(self, opponent1, opponent2, resolve):
-        # self.Oponent1Weapons = []
-        # for i in range(len(opponent1.weaponsPos)):
-        #     angle = -opponent1.get_angleRad()
-        #     fac = opponent1.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
-        #     posInWordCoords = LVecBase3f(
-        #         opponent1.pos[0] + opponent1.weaponsPos[i][0] * fac * np.cos(angle) - opponent1.weaponsPos[i][
-        #             1] * fac * np.sin(angle), -2 - i,
-        #         opponent1.pos[1] + opponent1.weaponsPos[i][1] * fac * np.cos(angle) + opponent1.weaponsPos[i][
-        #             0] * fac * np.sin(angle))
-        #     self.Oponent1Weapons.append(
-        #         self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
-        #                               -opponent1.get_angle()))
         self.fighting = (opponent1, opponent2)
         self.recenterOnFightZone()
         self.OnGoingFight = Fight(opponent1, opponent2, resolve, self)
@@ -257,28 +259,35 @@ class MyApp(ShowBase):
                     loader.loadSfx("Assets/Sounds/ButtonClick.mp3").play()
                     self.detailed = objectDetails(element, self.HUD, isMovable, canDeploy, aspectRatio=self.getAspectRatio(), rangeOnly=(not isSelectableForAction))
 
-    def show_moving_object(self, task):
-        if(hasattr(self, "detailed")):
-            mpos = self.mouseWatcherNode.getMouse()
-            self.pickerRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
-            self.clickonObjectTrav.traverse(render)
-
-            if self.clickonObject.getNumEntries() > 0:
-
-                self.clickonObject.sortEntries()
-                pickedObj = self.clickonObject.getEntry(self.clickonObject.getNumEntries()-1).getSurfacePoint(NodePath(self.camNode))
-                pickedObj[0] += self.cam.getX()
-                pickedObj[2] += self.cam.getZ()
-                self.detailed.drawRangeLine(pickedObj)
-
-        return task.cont
-
     def setMovable(self, objects):
         self.movable = objects
+
+    def GetMouseCoordsInBgCoords(self):
+        mpos = self.mouseWatcherNode.getMouse()
+        self.pickerRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
+        self.clickonObjectTrav.traverse(render)
+
+        if self.clickonObject.getNumEntries() > 0:
+            self.clickonObject.sortEntries()
+            pickedObj = self.clickonObject.getEntry(self.clickonObject.getNumEntries() - 1).getSurfacePoint(NodePath(self.camNode))
+            return pickedObj
+        else:
+            return [0,0,0]
+
+    def show_moving_object(self, task):
+        if (hasattr(self, "detailed")):
+            pickedObj = self.GetMouseCoordsInBgCoords()
+            pickedObj[0] += self.cam.getX()
+            pickedObj[2] += self.cam.getZ()
+            self.detailed.drawRangeLine(pickedObj)
+        return task.cont
 
     def handle_zoom_in(self):
         if(min(self.lens.film_size - (5000 * globalClock.getDt() * self.getAspectRatio(), 5000 * globalClock.getDt())) > 0):
              self.lens.setFilmSize(self.lens.film_size - (5000 * globalClock.getDt() * self.getAspectRatio(), 5000 * globalClock.getDt()))
+        mpos = self.GetMouseCoordsInBgCoords()
+        self.cam.setX(self.cam.getX() + 0.1*mpos[0])
+        self.cam.setZ(self.cam.getZ() + 0.1*mpos[2])
 
     def handle_zoom_out(self):
         if(self.lens.film_size < (1920,1080)):
@@ -328,9 +337,6 @@ class MyApp(ShowBase):
         np.setTransparency(TransparencyAttrib.MAlpha)
         np.reparentTo(parent)
         return np
-
-
-
 
 
 class MainMenu(DirectObject):
@@ -440,6 +446,7 @@ class HUD(DirectObject):
                                     frameSize=(-1.8, 1.8, -0.1, 0))
         self.TopBar.setPos(0, 0, 0.95)
         self.loadImageRealScale('Assets/HUD/TopBar.png', self.TopBar)
+
         self.SelectedName = OnscreenText('', pos=(-1.40, -0.98), scale=(0.027,0.03), font=loader.loadFont("Assets/HUD/Halo.ttf"))
 
         self.Phase = OnscreenText('', pos=(0, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
@@ -579,12 +586,16 @@ class HUD(DirectObject):
 
     def disableUserControl(self):
         self.controlsDisabled = True
+        self.Bar.hide()
+        self.SideMenu.hide()
         self.EndTurn.hide()
         self.NextPlayer.hide()
 
     def enableUserControl(self):
         self.EndTurn.show()
         self.NextPlayer.show()
+        self.Bar.show()
+        self.SideMenu.show()
         self.controlsDisabled = False
 
     def setGameInfo(self, State):
@@ -630,7 +641,7 @@ class HUD(DirectObject):
             if(hasattr(self, "BarImage")):
                 self.BarImage.destroy()
             if (hasattr(self.app, "detailed") and self.app.detailed.object.locked):
-                self.BarImage = self.loadImageRealScale('Assets/HUD/Bar.png', self.Bar)
+                self.BarImage = self.loadImageRealScale('Assets/HUD/BarEngaged.png', self.Bar)
             else:
                 self.BarImage = self.loadImageRealScale('Assets/HUD/Bar.png', self.Bar)
         else:
@@ -795,7 +806,7 @@ class Fight:
             self.wing1.set_aim(self.wing2.pos)
             self.wing2.set_aim(self.wing1.pos)
             self.elapsed = 0
-
+        fac = None
         self.Oponent1Weapons = []
         for i in range(len(opponent1.weaponsPos)):
             toWorldPos = self.transformObjectCoordsToWorldCoords(opponent1, opponent1.weaponsPos[i])
@@ -817,11 +828,13 @@ class Fight:
                 self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
                                       -opponent2.get_angle()))
 
-        self.Hits2 = self.loadVideoOnplane((opponent2.pos[0], -10, opponent2.pos[1]), (20, 20),
+        self.Hits2 = self.loadVideoOnplane((opponent2.pos[0], -10, opponent2.pos[1]), (fac, fac),
                                            "Assets/Fights/Hits/Cork_Hit_03.mov")
 
 
         if hasattr(self, "wing") or hasattr(self, "wing1"):
+            self.shots = self.GUI.loader.loadSfx("Assets/Sounds/Shots.mp3")
+            self.shots.play()
             GUI.taskMgr.add(self.updateFightWing, "update-fight", uponDeath=self.GUI.fightEnd)
 
     def loadVideoOnplane(self, pos, scale, src, angle=0):
@@ -840,6 +853,7 @@ class Fight:
 
     def updateFightWing(self, task):
         if(self.elapsed >= 3.5):
+            self.shots.stop()
             return task.done
         else:
             self.elapsed = self.elapsed + 0.01
@@ -905,8 +919,11 @@ class Fight:
         self.opponent2.aim = self.opponent2InitialAim
 
     def explode(self, object):
+        self.shots.stop()
         self.explosion = []
         for loc in object.explosionLocation:
+            explosionSound = self.GUI.loader.loadSfx("Assets/Sounds/Explosion.mp3")
+            explosionSound.play()
             toWorldPos = self.transformObjectCoordsToWorldCoords(object, loc)
             posInWordCoords = LVecBase3f(toWorldPos[0], -11, toWorldPos[1])
             fac = object.sizeFactor * SHIP_IMAGE_SCALE_FACTOR

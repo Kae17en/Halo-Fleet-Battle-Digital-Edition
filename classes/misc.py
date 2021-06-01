@@ -18,9 +18,17 @@ class Intervalle():
     @property
     def inf(self):
         return self.inf
+    @inf.setter
+    def inf(self, inf):
+        self.inf = inf
+
     @property
     def sup(self):
         return self.sup
+
+    @sup.setter
+    def sup(self, sup):
+        self.sup = sup
 
 
 class MacFiringSolution():                            #Avec L la liste de weapons participant à la salve
@@ -149,7 +157,7 @@ def get_valid_targets(unit,board,weapon):
     dmin=weapon.ShortRange
     dmax=weapon.LongRange
     Targets=[]
-    A=weapons.angles
+    A=weapon.angles
     for e in board:
         a = unit.aim
         v=vct.Vector2D(e.xpos-unit.xpos,e.ypos-unit.ypos)
@@ -164,6 +172,7 @@ def get_valid_targets(unit,board,weapon):
 
 def calc_fp(Target,Attacker,Weapon):
     LongRange=False
+    fp = None
     if dist(Target,Attacker)>=Weapon.Shortrange:
         LongRange=True
     elif Weapon.Wtype=="Plasma Beam":

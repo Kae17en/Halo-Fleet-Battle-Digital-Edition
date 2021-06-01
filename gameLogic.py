@@ -150,11 +150,11 @@ class MainGame():
             if toDel in self.UNSC.tokens:
                 i = self.UNSC.tokens.index(toDel)
                 self.UNSC.tokens.pop(i)
-                del toDel
+                toDel.destroySelf()
             elif toDel in self.Covenant.tokens:
                 i = self.Covenant.tokens.index(toDel)
                 self.Covenant.tokens.pop(i)
-                del toDel
+                toDel.destroySelf()
         if self.toResolve != []:
             self.fightResult = self.resolveFightForWingAttack(self.toResolve[0][0], self.toResolve[0][1])
             self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1], self.fightResult)
@@ -162,11 +162,10 @@ class MainGame():
             self.nextPhase()
 
     def resolveFightForWingAttack(self, opponent1, opponent2):
-        return 1
+        return 0
 
     def getFightCenter(self, fighting):
         return ((fighting[0].pos[0]+ fighting[1].pos[0])/2, (fighting[0].pos[1] + fighting[1].pos[1])/2)
-
 
     def battle_moovement(self):
         pass
