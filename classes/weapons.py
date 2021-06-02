@@ -7,16 +7,24 @@ class Intervalle():
         self.inf=inf
         self.sup=sup
     def isin(self,x):
-        if x>=inf and x<=sup:
+        if x>=self.inf and x<=self.sup:
             return True
         else:
             return False
     @property
     def inf(self):
         return self.inf
+
+    @inf.setter
+    def inf(self,v):
+        self.inf = v
     @property
     def sup(self):
         return self.sup
+
+    @sup.setter
+    def sup(self, v):
+        self.sup = v
 
 
 class Weapons():
@@ -52,7 +60,6 @@ class Weapons():
     def LongRange(self):
         return self.__LongRange
 
-    @property
     def __str__(self):
         return self.__Tag
     @property
@@ -60,16 +67,17 @@ class Weapons():
         arcs = []
         L=self.__Arcs
         for e in L:
-            if e == front:
-                arcs.append(intervalle(-45, 45))
-            elif e == starboard:
-                arcs.append(intervalle(45, 135))
-            elif e == port:
-                arcs.append(intervalle(-135, -45))
-            elif e == aft:
-                arcs.append(intervalle(-135, -180))
-                arcs.append(intervalle(135, 180))
+            if e == "front":
+                arcs.append(Intervalle(-45, 45))
+            elif e == "starboard":
+                arcs.append(Intervalle(45, 135))
+            elif e == "port":
+                arcs.append(Intervalle(-135, -45))
+            elif e == "aft":
+                arcs.append(Intervalle(-135, -180))
+                arcs.append(Intervalle(135, 180))
         return arcs
+
     @property
     def loadouts(self):
         return self.__Loadouts

@@ -8,11 +8,15 @@ import sys, os
 from panda3d.core import loadPrcFileData
 from direct.filter.CommonFilters import CommonFilters
 from DirectGuiExtension.DirectBoxSizer import DirectBoxSizer
-from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs, Texture, TextureStage, TexGenAttrib
+from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs, Texture, TextureStage, TexGenAttrib, TextNode
 from direct.actor.Actor import Actor
 from gameLogic import *
 import ctypes
 from copy import *
+import pickle
+from tkinter import Tk     # from tkinter import Tk for Python 3.x
+from tkinter.filedialog import askopenfilename, asksaveasfilename
+import datetime
 
 mydir = os.path.abspath(sys.path[0])
 
@@ -65,7 +69,29 @@ class MyApp(ShowBase):
         if hasattr(self, "detailed"):
             del self.detailed
 
-    def StartGame(self):
+    def loadGame(self):
+        Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
+        filename = askopenfilename(title='Load save', filetypes=[("HFB Data file", '*.pkl')],
+                                     defaultextension='.pkl')  # show an "Open" dialog box and return the path to the selected file
+        file = open(filename, 'rb')
+        save = pickle.load(file)
+        self.StartGame(save.UNSC, save.Covenant, save.state)
+
+    def createGame(self):
+        UNSC = Player("UNSC")
+        Covenant = Player("Covenant")
+
+        #Create situations here
+        Covenant.addToken(Covenant_CCS_Battlecruiser((600, 600), (500, 500), docked=[Covenant_Banshee_Interceptor_Flight((0, 0), 3)]))
+
+
+        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-700, -300), (-480, -300)))
+        UNSC.addToken(UNSC_Broadsword_Interceptor_Flight((0, 0), 3))
+
+
+        self.StartGame(UNSC,Covenant)
+
+    def StartGame(self, UNSC, Covenant, state = [0,0,2]):
         self.HUD = HUD(self)
         self.setBackgroundColor(0.1,0.1,0.1,1)
         self.bg = OnscreenImage('Assets/Terrain/Background.jpg', pos=(0,0,0), scale=(1000*self.getAspectRatio(), 1,1000))
@@ -99,19 +125,11 @@ class MyApp(ShowBase):
 
         self.Game = MainGame(self)
 
-        UNSC = Player("UNSC")
-        Covenant = Player("Covenant")
-
-        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-700, -300), (-480, -300)))
-        Covenant.addToken(Covenant_CCS_Battlecruiser((600, 600), (500, 500), docked=[Covenant_Banshee_Interceptor_Flight((0,0), 3)]))
-        UNSC.addToken(UNSC_Broadsword_Interceptor_Flight((0,0), 3))
-
-
         self.music = loader.loadSfx("Assets/Music/Ambiant.mp3")
         self.music.setLoop(True)
         self.music.play()
 
-        self.Game.startGameFromSituation(UNSC, Covenant)
+        self.Game.startGameFromSituation(UNSC, Covenant, state)
         # self.placeWeapons(self.UNSC.tokens[1])
 
     def loadVideoOnplane(self, pos, scale, src, angle=0):
@@ -323,10 +341,21 @@ class MyApp(ShowBase):
 
     def EndTurn(self):
         loader.loadSfx("Assets/Sounds/ButtonClick.mp3")
+        if (hasattr(self, "detailed")):
+            del self.detailed
         self.Game.endTurn()
 
     def save(self):
-        pass
+        state = [self.GlobalState[0], self.GlobalState[1]]
+        if self.GlobalState[2] == self.UNSC:
+            state.append(0)
+        else:
+            state.append(1)
+        save = Save(self.UNSC, self.Covenant, state)
+        Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
+        filename = asksaveasfilename(title='Save As', filetypes=[("HFB Data file",'*.pkl')], defaultextension = '.pkl') # show an "Open" dialog box and return the path to the selected file
+        file = open(filename, 'wb')
+        pickle.dump(save, file)
 
     def loadImageRealScaleWithFactor(self, name, parent, factor):
         iH = PNMImageHeader()
@@ -388,7 +417,7 @@ class MainMenu(DirectObject):
         Load.setTransparency(True)
 
         New = DirectButton(text="New Game",
-                           command='',
+                           command=self.newGame,
                            rolloverSound=loader.loadSfx("Assets/Sounds/ButtonHover.mp3"),
                            clickSound=loader.loadSfx("Assets/Sounds/ButtonClick.mp3"),
                            pos=(-0.2, 0, 0.2),
@@ -420,9 +449,13 @@ class MainMenu(DirectObject):
     def quit(self):
         self.app.quit()
 
+    def newGame(self):
+        self.hide()
+        self.app.createGame()
+
     def LoadGame(self):
         self.hide()
-        self.app.StartGame()
+        self.app.loadGame()
 
 
 class HUD(DirectObject):
@@ -437,8 +470,13 @@ class HUD(DirectObject):
         self.Bar.setPos(0, 0, -0.95)
         self.SideMenu = DirectFrame(frameColor=(0, 0, 0, 0),
                               frameSize=(-0.3, 0, -0.6, 0.6))
-        self.SideMenu.setPos(1.7, 0, 0)
+        self.SideMenu.setPos(1.6, 0, 0)
         self.loadImageRealScale('Assets/HUD/SideMenu.png', self.SideMenu)
+
+        self.sideMenuTitle = OnscreenText('', pos=(1.6, 0.52), scale=0.04,font=loader.loadFont("Assets/HUD/Halo.ttf"))
+        self.sideMenuWings = OnscreenText('', pos=(1.43, 0.40), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"), align=TextNode.ALeft, wordwrap=12)
+        self.sideMenuWeapons = OnscreenText('', pos=(1.43, 0.02), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"),align=TextNode.ALeft, wordwrap=12)
+
 
         self.TopBar = DirectFrame(frameColor=(0, 0, 0, 0),
                                     frameSize=(-1.8, 1.8, -0.1, 0))
@@ -450,6 +488,11 @@ class HUD(DirectObject):
         self.Phase = OnscreenText('', pos=(0, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
         self.Turn = OnscreenText('', pos=(-0.4, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
         self.Player = OnscreenText('', pos=(0.4, 0.96), scale=0.03, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+        self.CDT = OnscreenText('', pos=(0, -0.95), scale=0.1, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+        self.MvtSize = OnscreenText('', pos=(-0.57, -0.98), scale=0.05, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+        self.Hangars = OnscreenText('', pos=(0.57, -0.98), scale=0.05, font=loader.loadFont("Assets/HUD/Halo.ttf"))
+
+
 
         self.EndTurn = DirectButton(text="",
                             command=self.app.EndTurn,
@@ -655,12 +698,15 @@ class objectDetails():
     def __init__(self, object, HUD, isMovable, canDeploy, aspectRatio, rangeOnly = False):
         self.HUD = HUD
         self.object = object
-        self.HUD.SelectedName.setText(str(object))
         self.moving = False
         self.ratio = aspectRatio
         self.isMovable = isMovable
         self.rangeOnly = rangeOnly
-        if issubclass(type(object), Spacecraft) or rangeOnly:
+        isSpaceCraft = issubclass(type(object), Spacecraft)
+        self.HUD.SelectedName.setText(str(object))
+        if not rangeOnly:
+            self.printDetailedInfos(object,isSpaceCraft)
+        if isSpaceCraft or rangeOnly:
             self.drawMove()
         else:
             self.ObjectMenu = OnscreenImage('Assets/ObjectMenu/Background.png', scale=(100, 1, 75),
@@ -696,6 +742,12 @@ class objectDetails():
             self.np.removeNode()
             self.engageRange.destroy()
         self.HUD.SelectedName.setText('')
+        self.HUD.CDT.setText('')
+        self.HUD.MvtSize.setText('')
+        self.HUD.Hangars.setText('')
+        self.HUD.sideMenuWings.setText('')
+        self.HUD.sideMenuWeapons.setText("")
+        self.HUD.sideMenuTitle.setText('')
         if (hasattr(self, "ObjectMenu")):
             self.ObjectMenu.destroy()
             self.menuline.removeNode()
@@ -708,6 +760,28 @@ class objectDetails():
                 image.destroy()
             self.WMenuBackgrounf.destroy()
 
+    def printDetailedInfos(self, object, isSpacecraft):
+        self.HUD.CDT.setText(object.DisplayCDamageTrack)
+        self.HUD.MvtSize.setText('Mvt range: ' + str(object.MoveRange))
+        if hasattr(object, "Hangars") and object.Hangars > 0:
+            self.HUD.Hangars.setText(str(object.Hangars) + ' hangars')
+        else:
+            self.HUD.Hangars.setText('No hangars')
+        if isSpacecraft:
+            self.HUD.sideMenuWings.setText("Is a Wing")
+        else:
+            txt = ''
+            for unit in object.docked:
+                txt += '-' + str(unit) + '\r\n \n'
+            self.HUD.sideMenuWings.setText(txt)
+        if isSpacecraft:
+            self.HUD.sideMenuWeapons.setText("Is a Wing")
+        else:
+            self.HUD.sideMenuWeapons.setText(object.weapons)
+        if isSpacecraft:
+            self.HUD.sideMenuTitle.setText(object.faction + ' wing')
+        else:
+            self.HUD.sideMenuTitle.setText(object.faction + ' ship')
 
     def drawRangeLine(self, mpos):
         if(self.moving and not self.rangeOnly):
@@ -967,6 +1041,15 @@ class Fight:
             return ((ship.pos[0] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.cos(wing.get_angleRad()), ship.pos[1] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.sin(wing.get_angleRad())), (ship.pos[0] - side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.cos(wing.get_angleRad()), ship.pos[1] - side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.sin(wing.get_angleRad())))
         else:
             return (ship.pos[0] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.cos(wing.get_angleRad()), ship.pos[1] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.sin(wing.get_angleRad()))
+
+class Save():
+    def __init__(self, UNSC, Covenant, GameState):
+        self.UNSC = deepcopy(UNSC)
+        self.Covenant = deepcopy(Covenant)
+        self.state = deepcopy(GameState)
+        self.SaveDate = datetime.datetime.now()
+
+
 
 
 app = MyApp()

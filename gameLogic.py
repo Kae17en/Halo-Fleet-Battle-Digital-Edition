@@ -24,13 +24,13 @@ class MainGame():
         self.moved = []
         self.movable = []
 
-    def startGameFromSituation(self, UNSC, Covenant):
+    def startGameFromSituation(self, UNSC, Covenant, GameState):
         self.UNSC = UNSC
         self.Covenant = Covenant
         UNSCstart = rd.randint(0, 1)
-        self.currentPhase = -1
-
-        if(UNSCstart == 1):
+        self.currentPhase = GameState[0]-1
+        self.turn = GameState[1]
+        if(UNSCstart == 1 or GameState[2] == 0):
             self.CurrentPlayer = UNSC
             self.NotCurrentPlayer = Covenant
         else:
