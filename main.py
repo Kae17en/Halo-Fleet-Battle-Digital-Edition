@@ -77,8 +77,8 @@ class MyApp(ShowBase):
         self.lens.setNearFar(-50, 50)
         self.cam.node().setLens(self.lens)
 
-        self.accept('wheel_up', self.handle_zoom_out)
-        self.accept('wheel_down', self.handle_zoom_in)
+        self.accept('wheel_up', self.handle_zoom_in)
+        self.accept('wheel_down', self.handle_zoom_out)
 
         self.MouseNav = MouseWatcher()
 
@@ -423,8 +423,6 @@ class MainMenu(DirectObject):
     def LoadGame(self):
         self.hide()
         self.app.StartGame()
-
-
 
 
 class HUD(DirectObject):
@@ -973,3 +971,4 @@ class Fight:
 
 app = MyApp()
 app.run()
+

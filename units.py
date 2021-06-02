@@ -14,11 +14,45 @@ import vectors2d as vct
 class TheoryElement(metaclass=ABCMeta):
 
     """
-    Cette classe est la superclasse utilisée pour la création de tout pion du plateau.Elle n'intègre que les
-    statistiques de l'élément, sans prendre en compte les variables du token liées à la situation en jeu
-    Les types de variables attendus dans le constructeur sont:
-    (Liste taille 3,Liste taille 3,entier,entier,entier,string,Booléen,entier,string,entier,sprite,pg.rect,
-    string,liste de ref au dico equipement,liste de ref dico armes)
+    This class is a theoric class that is the base for all elements (i.e spaceships) in the game. All sub-classes
+    will have nearly every argument set by default according to element's sheets given in the rulebook. The only
+    arguments that actually need to be given by the user while creating tokens are its position and aim.
+
+    - DisplayDamageTrack can be used to show the element DT to the user by including it in the IHM as a string
+
+    - CDamageTrack is the current DT of the element, eventually modified by enemy attacks or miscellaneous effects
+      It is a list of 3 numbers at maximum
+
+    - DamageTrack is the initial DT of the element, depending on what is written on its token caracteristics sheet.
+      It is a list of exactly 3 numbers that should NEVER be modified
+
+    - pos is the current position of the token on board as a tuple of two coordinates (xpos, ypos)
+
+    - aim is the current direction aim by the bow of the spaceship, given as a vector from vectors2d library
+
+    - str(self) overloads str to display to the user the name of the element
+
+    - primary, secondary, primarybis,secondarybis are weapons class objects imported from the weapons.py file.
+      They are the  weaponry that can be used by the element against enemies
+
+    - MoveRange is a number modeling the maximum distance that can be travelled by the token in 1 Turn
+
+    - Faction should only be either "Covenant" or "UNSC". It also gives informations about which player controls
+      the token.
+
+    - loadouts is a list of loadouts-type objects from the loadouts file. It is all the equipments mounted on the
+     the spaceship
+
+    - activated and locked are booleans values used by the game logic to determine wether or not some actions can
+      be done by the element.
+
+    - engagements is a list of enemy wings that are involved in a dogfight or bomber run with this token
+
+    - add_engagement is a method taking an opponent as argument to add it to the "engagements" list
+
+    - Sizefactor is a number between 0 and 1 used to scale the element's token on the battlefield
+
+    - Type is either "Element" or "Wing" and is simply used to determine the type of token
     """
     def __init__(self,DT,CDT,Hangars,BR,Movement,Tag,Capital,Size,BC,faction,ld,SizeFactor):
         self.__DamageTrack=DT                                    #liste contenant 3 entiers positifs,damage track initiale
@@ -278,7 +312,39 @@ class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
 
 #----------------------------Bombers and Fighters,UNSC----------------------------
 
-class Spacecraft():
+class Spacecraft(metaclass=ABCMeta):
+
+    """
+    This theoric class is the mother class for all wing tokens in the game. When creating tokens, most arguments will
+    be set by default according to the game's RuleBook. The only arguments that need to be given by the user are the
+    token's position on the board, and the number of spacecrafts in the squadron.
+
+    - vs_wing_dice is the number of damage dice dealt by the unit to an ennemy wing
+
+    - DamageTrack is the number of damage that can be undergone by the wing before being destroyed
+
+    - pos is the wing's position on board given as a tuple of two real numbers (xpos,ypos)
+
+    - wingtype is a string that can either be "Bomber" of "Interceptor", as both type don't have the same properties
+
+    - MoveRange is a real number refering to the maximum distance can be travelled by the wing in one turn
+
+    - DockUnit is a boolean holding "True" if the wing is docked to an element, "False" if not
+
+    - Type is the type of unit used to distinguish wings from elements. Its value is "Wing" here.
+
+    - str has been overloaded to display the name of the spacecraft squadron to the user.
+
+    - add_engagement and del_engagment are to methods used to add or remove an enemy the engagement list. They both
+      take as argument an enemy element or wing
+
+    - engage is a method used to attack and enter combat with another enemy. It handles modifications of the
+     engagement lists of the target and the attacker
+
+    - move_unit is a method to change the token's location on the battlefield.
+
+    """
+
     def __init__(self,DT,Movement,Tag,faction,FS,vswing,vselement,type):
         self.__DamageTrack=DT
         self._MoveRange=Movement
