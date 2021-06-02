@@ -956,12 +956,18 @@ class Fight:
                     if not hasattr(self, "explosion"):
                         self.explode(self.opponent1)
                     else:
-                        self.updateExplosion(self.opponent1)
+                        self.updateExplosion()
                 elif(self.resolve == 2):
                     if not hasattr(self, "explosion"):
                         self.explode(self.opponent2)
                     else:
-                        self.updateExplosion(self.opponent2)
+                        self.updateExplosion()
+                elif (self.resolve == 3):
+                    if not hasattr(self, "explosion"):
+                        self.explode(self.opponent2)
+                        self.explode(self.opponent1)
+                    else:
+                        self.updateExplosion()
             else:
                 if hasattr(self, "wing"):
                     self.updateFirePos(self.wing, newPos)
@@ -983,7 +989,7 @@ class Fight:
             pass
         if hasattr(self, "explosion"):
             for frame in self.explosion:
-                frame.removeNode()
+                frame[0].removeNode()
 
         self.opponent1.set_pos(self.opponent1InitialPos)
         self.opponent2.set_pos(self.opponent2InitialPos)
@@ -992,20 +998,24 @@ class Fight:
 
     def explode(self, object):
         self.shots.stop()
-        self.explosion = []
+        if not hasattr(self, "explosion"):
+            self.explosion = []
         for loc in object.explosionLocation:
             explosionSound = self.GUI.loader.loadSfx("Assets/Sounds/Explosion.mp3")
             explosionSound.play()
             toWorldPos = self.transformObjectCoordsToWorldCoords(object, loc)
             posInWordCoords = LVecBase3f(toWorldPos[0], -11, toWorldPos[1])
             fac = object.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
-            self.explosion.append(self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/Explosions/Explosion_01.mov"))
+            self.explosion.append((self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/Explosions/Explosion_01.mov"), object, loc))
 
-    def updateExplosion(self, object):
+    def updateExplosion(self):
         for i in range(len(self.explosion)):
-            toWorldPos = self.transformObjectCoordsToWorldCoords(object, object.explosionLocation[i])
+            obj = self.explosion[i][1]
+            frame = self.explosion[i][0]
+            effect = self.explosion[i][2]
+            toWorldPos = self.transformObjectCoordsToWorldCoords(obj, effect)
             posInWordCoords = LVecBase3f(toWorldPos[0], -11 - i, toWorldPos[1])
-            self.explosion[i].setPos(posInWordCoords)
+            frame.setPos(posInWordCoords)
 
     def updateFirePos(self, object, newPos):
         WeaponsList = []
