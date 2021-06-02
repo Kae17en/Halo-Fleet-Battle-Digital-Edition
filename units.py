@@ -43,6 +43,7 @@ class TheoryElement(metaclass=ABCMeta):
         self.locked=False
         self.engagements=[]
         self.sizefactor=SizeFactor
+        self.Type="Element"
     #Gestion de la Damage Track---------------------------
 
     @property
@@ -146,6 +147,10 @@ class TheoryElement(metaclass=ABCMeta):
     @property
     def sizefactor(self):
         return self.sizefactor
+
+    @property
+    def type(self):
+        return self.type
 
 
 
@@ -290,6 +295,7 @@ class Spacecraft():
         self.engagements=[]
         self.WingType=None
         self.attacked=False
+        self.type="Wing"
 
 
     @property
@@ -320,6 +326,9 @@ class Spacecraft():
     def Dock_Unit(self):
         return self.dock_unit
 
+    @property
+    def Type(self):
+        return self.type
 
     @property
     def __str__(self):

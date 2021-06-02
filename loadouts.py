@@ -6,10 +6,14 @@ class Loadouts(metaclass=ABCMeta):
         self.__dicem=dicem
 
     @property
+    def pointdefencedamage(self):
+        pass
+
+    @property
     def fpm(self):
         return self.__fpm
     @property
-    def dicem(self):
+    def defencedice(self):
         return self.__dicem
 
     @property
@@ -21,7 +25,7 @@ class Loadouts(metaclass=ABCMeta):
         pass
 
     @property
-    def modifydice(self):
+    def defencepool(self):
         pass
 
     @property
@@ -138,7 +142,7 @@ class Defence_Array(Loadouts):
     def ArrayValue(self):
         return self.__ArrayValue
     @property
-    def modifydice(self):
+    def defencedicepool(self):
         dicem=misc.Damage_Dice_Roll(self.__ArrayValue,4)
         return dicem
 
@@ -255,7 +259,7 @@ class Point_Defence():
         return self.__Point_Value
 
     @property
-    def dicem(self):
+    def pointdefencedamage(self):
         return misc.Damage_Dice_Roll(self.__Point_Value,4)
 
 
@@ -270,7 +274,7 @@ class Titanium_Armor():
     def ArmorValue(self):
         return self.__Armor_Value
     @property
-    def dicem(self):
+    def defencedicepool(self):
         return misc.Damage_Dice_Roll(self.__Armor_Value,4)
 
     @property
