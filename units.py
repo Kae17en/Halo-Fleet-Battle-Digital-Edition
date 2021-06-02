@@ -198,6 +198,7 @@ class UNSC_Supported_Epoch(TheoryElement):
                  BC=190,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(6),
                                            loads.Titanium_Armor(5)],SizeFactor=0.83)
 
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Supported_Epoch_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("MAC",10,20,12,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,15,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -207,6 +208,7 @@ class UNSC_Epoch_Heavy_Carrier(TheoryElement):
                  BC=175,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(5),
                                            loads.Titanium_Armor(4)],SizeFactor=0.83)
 
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Epoch_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("MAC",10,20,10,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,12,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -216,6 +218,7 @@ class UNSC_Supported_Marathon_Heavy_Cruiser(TheoryElement):
                  BC=110,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
                                            loads.Titanium_Armor(4)],SizeFactor=0.4)
 
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Supported_Marathon_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("MAC",16,32,10,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,8,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -225,6 +228,7 @@ class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
                  BC=95,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
                                            loads.Titanium_Armor(3)],SizeFactor=0.4)
 
+        self.image='Assets/Drawable/Ships/UNSC/Elements\UNSC_Marathon_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("MAC",16,32,8,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,7,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -234,6 +238,7 @@ class UNSC_Paris_Frigate_Arrow(TheoryElement):
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive],SizeFactor=0.159)
 
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Paris_Frigate_Arrowhead_Formation.png'
         self.__primary=weapons.Weapons("MAC",10,20,4,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,2,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -243,6 +248,7 @@ class UNSC_Paris_Frigate_Trident(TheoryElement):
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive],SizeFactor=0.159)
 
+        self.image='Assets/Drawable/ShipsUNSC/Elements/UNSC_Paris_Frigate_Trident_Formation.png'
         self.__primary=weapons.Weapons("MAC",10,20,3,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,3,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -254,6 +260,7 @@ class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
         super().__init__(DT=[11,10,6],CDT=[11,10,6],Hangars=6,BR=5,Movement=5,Tag="Covenant Supported ORS Heavy Cruiser",Capital=True,Size="Large",
                  BC=220,faction="Covenant",ld=[loads.Cloaking_System,loads.Defence_Array(5),loads.Glide(3),loads.Point_Defence(6),loads.Elusive],SizeFactor=1)
 
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_Supported_ORS_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
         self.__secondary=weapons.Weapons("Plasma",10,20,12,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
@@ -264,7 +271,7 @@ class Covenant_ORS_Heavy_Cruiser(TheoryElement):
         super().__init__(DT=[11,10,5],CDT=[11,10,5],Hangars=5,BR=4,Movement=5,Tag="Covenant Heavy Cruiser",Capital=True,Size="Large",
                  BC=25,faction="UNSC",ld=[loads.Cloaking_System(),loads.Defence_Array(4),loads.Glide(3),loads.Point_Defence(5)],SizeFactor=1)
 
-
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_ORS_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
         self.__primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
         self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Starboard","Port"],"Plasma Cannon Arrays",[loads.Plasma_Weapons()])
@@ -275,6 +282,7 @@ class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
                  BC=170,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(5),loads.Glide(4),loads.Point_Defence(4),
                                                loads.Carrier_Action(1)],SizeFactor=0.594)
 
+        self.image='Assets/Drawable/Ships/Covenant/Elements\Covenant_Supported_CSS_BattleCruiser.png'
         self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
         self.__secondarybis=weapons.Weapons("Plasma",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapons(),loads.Missile_Weapon()])
@@ -285,6 +293,7 @@ class Covenant_CCS_Battlecruiser(TheoryElement):
                  BC=150,faction="Covenant",ld=[loads.Defence_Array(4),loads.Glide(4),loads.Point_Defence(3),
                                                loads.Carrier_Action(1)],SizeFactor=0.594)
 
+        self.image ='Assets/Drawable/Ships/Covenant/Elements/Covenant_ORS_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__secondary=weapons.Weapons("Plasma",10,20,9,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
 
@@ -293,7 +302,7 @@ class Covenant_SDV_Heavy_Corvette_Line(TheoryElement):
         super().__init__(DT=[4,4,3],CDT=[6,6,3],Hangars=1,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Line Formation)",Capital=False,Size="Small",
                  BC=40,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
                                                loads.Cloaking_System()],SizeFactor=0.216)
-
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_SDV_Heavy_Corvette_Line.png'
         self.__primary=weapons.Weapons("Plasma",10,20,3,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
         self.__secondary=weapons.Weapons("Plasma",12,24,4,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile_Weapon()])
 
@@ -304,6 +313,7 @@ class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
                          ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
                              loads.Cloaking_System()],SizeFactor=0.216)
 
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_SDV_Heavy_Corvette_Oblique.png'
         self.__primary=weapons.Weapons("Plasma",10,20,4,["Forth","Port","Starboard"],"Plasma Cannon Arrays",
                                          [loads.Plasma_Weapon()])
         self.__secondary=weapons.Weapons("Plasma",12,24,3,["Forth"],"Plasma Torpedoes",
