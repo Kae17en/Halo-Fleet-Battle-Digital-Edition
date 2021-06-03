@@ -182,22 +182,6 @@ class TheoryElement(metaclass=ABCMeta):
     def __str__(self):
         return self.Tag
 
-    #--------------Gestion des armes-----------------
-
-    # @property
-    # def primary(self):
-    #     return self._primary
-    # 
-    # @property
-    # def secondary(self):
-    #     return self._secondary
-    # 
-    # @property
-    # def primarybis(self):
-    #     return self._primarybis
-    # @property
-    # def secondarybis(self):
-    #     return self._secondarybis
     #------------------------Gestion de la distance de mouvement-------------------------
     @property
     def MoveRange(self):
