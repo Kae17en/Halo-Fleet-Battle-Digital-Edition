@@ -124,6 +124,7 @@ class MainGame():
 
     def deployWing(self, wing, fromShip):
         fromShip.deployWing(wing)
+        wing.set_pos(fromShip.pos)
         self.CurrentPlayer.tokens.append(wing)
         self.movable.append(wing)
 
@@ -199,12 +200,14 @@ class MainGame():
         This function also prints different sentences, according to what is happening during the run. Those messages will
         surely be shown to the players and voice-acted in the future.
         """
-
-        a = element.pointdefencedamage
+        n = 0
+        for l in element.loadouts:
+            n += l.getPointvalue()
+        a = Damage_Dice_Roll(n, 4)[0]
         kills = floor(a / bomber.DT)
         initialflight = bomber.FS
         bomber.FS -= kills
-        if bomber.FS == 0:
+        if bomber.FS <= 0:
             print("Devastating blow! All bombers intercepted!")
             return 2
         elif kills > initialflight // 2:
@@ -214,26 +217,26 @@ class MainGame():
         n = bomber.FS * bomber.vs_elem_dice
         success = Damage_Dice_Roll(n, 4)[0]
         d = 0
-        for e in element.ld:
+        for e in element.loadouts:
             d += e.defencedicepool
         dmg = success - d
-        if element.CDT[0] <= dmg:
+        if element.CDamageTrack[0] <= dmg:
             print("Ennemy hit, we pierced their hull!")
-            dmg -= element.CDT[0]
-            element.CDT.pop(0)
+            dmg -= element.CDamageTrack[0]
+            element.CDamageTrack.pop(0)
         else:
             print("No significant damage dealt")
             return 0
-        if element.CDT[0] <= dmg:
+        if element.CDamageTrack[0] <= dmg:
             print("Ennemy critically damaged!")
-            dmg -= element.CDT[0]
-            element.CDT.pop(0)
+            dmg -= element.CDamageTrack[0]
+            element.CDamageTrack.pop(0)
         else:
             return 0
-        if element.CDT[0] <= dmg:
+        if element.CDamageTrack[0] <= dmg:
             print("Hull critically damaged, multiple explosions on the target. Kill confirmed!")
-            dmg -= element.CDT[0]
-            element.CDT.pop(0)
+            dmg -= element.CDamageTrack[0]
+            element.CDamageTrack.pop(0)
             return 1
 
     def resolvedogfight(self, unitA, unitB):
@@ -295,12 +298,12 @@ class MainGame():
         :return: A call to the appropriate function to resolve the fight. See ResolveDogfight and Resolvebomberrun docs for
                  further informations
         """
-
         if F[0].Type == "Element" or F[1].Type == "Element":
             if F[0].Type == "Element":
+
                 return self.resolvebomberrun(F[0], F[1])
             else:
-                return self.resolvebomberrun(F[1], F[0])
+                return ((self.resolvebomberrun(F[1], F[0])%2)+1)
         else:
             return self.resolvedogfight(F[0], F[1])
 

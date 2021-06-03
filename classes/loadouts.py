@@ -17,10 +17,19 @@ class Loadouts(metaclass=ABCMeta):
     def __init__(self,fpm,dicem):
         self.__fpm=fpm
         self.__dicem=dicem
+        self._Point_Value = 0
+
+    @property
+    def defencedicepool(self):
+        return 0
 
     @property
     def fpm(self):
         return self.__fpm
+
+    def getPointvalue(self):
+        return self._Point_Value
+
     @property
     def dicem(self):
         return self.__dicem
@@ -129,8 +138,8 @@ class Defence_Array(Loadouts):
         return self.__ArrayValue
 
     @property
-    def modifydice(self):
-        dicem=Damage_Dice_Roll(self.__ArrayValue,4)
+    def defencedicepool(self):
+        dicem = Damage_Dice_Roll(self.__ArrayValue,4)[0]
         return dicem
 
 
@@ -234,17 +243,14 @@ class Plasma_Lance(Plasma_Weapon):
 class Point_Defence(Loadouts):
     def __init__(self,n):
         super().__init__(0, 0)
-        self.__Point_Value=n
-    @property
-    def Point_Value(self):
-        return self.__Point_Value
+        self._Point_Value=n
 
     @property
     def dicem(self):
-        return Damage_Dice_Roll(self.__Point_Value,4)
+        return Damage_Dice_Roll(self._Point_Value,4)
 
     def __str__(self):
-        return "Point Defence({})".format(self.__Point_Value)
+        return "Point Defence({})".format(self._Point_Value)
 
 class Titanium_Armor(Loadouts):
     def __init__(self,n):
