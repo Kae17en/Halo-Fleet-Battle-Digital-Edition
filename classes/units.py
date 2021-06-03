@@ -651,6 +651,10 @@ class Covenant_Seraph_Bomber_Flight(Spacecraft):
     def vs_wing_dice(self):
         return self.vs_wing_dice
 
+if __name__ == '__main__':
+    unittest.main()
+
+
 class TestUnits(unittest.TestCase):
     unitA = None
     unitB = None
