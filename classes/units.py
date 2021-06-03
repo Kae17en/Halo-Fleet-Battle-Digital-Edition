@@ -5,6 +5,8 @@ import classes.loadouts as loads
 import vectors2d as vct
 from config import *
 from math import *
+import random
+import unittest
 
 
 #----------------------------------------------#Vaisseaux#-----------------------------------------------
@@ -16,11 +18,45 @@ from classes import weapons
 class TheoryElement(metaclass=ABCMeta):
 
     """
-    Cette classe est la superclasse utilisée pour la création de tout pion du plateau.Elle n'intègre que les
-    statistiques de l'élément, sans prendre en compte les variables du token liées à la situation en jeu
-    Les types de variables attendus dans le constructeur sont:
-    (Liste taille 3,Liste taille 3,entier,entier,entier,string,Booléen,entier,string,entier,sprite,pg.rect,
-    string,liste de ref au dico equipement,liste de ref dico armes)
+    This class is a theoric class that is the base for all elements (i.e spaceships) in the game. All sub-classes
+    will have nearly every argument set by default according to element's sheets given in the rulebook. The only
+    arguments that actually need to be given by the user while creating tokens are its position and aim.
+
+    - DisplayDamageTrack can be used to show the element DT to the user by including it in the IHM as a string
+
+    - CDamageTrack is the current DT of the element, eventually modified by enemy attacks or miscellaneous effects
+      It is a list of 3 numbers at maximum
+
+    - DamageTrack is the initial DT of the element, depending on what is written on its token caracteristics sheet.
+      It is a list of exactly 3 numbers that should NEVER be modified
+
+    - pos is the current position of the token on board as a tuple of two coordinates (xpos, ypos)
+
+    - aim is the current direction aim by the bow of the spaceship, given as a vector from vectors2d library
+
+    - str(self) overloads str to display to the user the name of the element
+
+    - primary, secondary, primarybis,secondarybis are weapons class objects imported from the weapons.py file.
+      They are the  weaponry that can be used by the element against enemies
+
+    - MoveRange is a number modeling the maximum distance that can be travelled by the token in 1 Turn
+
+    - Faction should only be either "Covenant" or "UNSC". It also gives informations about which player controls
+      the token.
+
+    - loadouts is a list of loadouts-type objects from the loadouts file. It is all the equipments mounted on the
+     the spaceship
+
+    - activated and locked are booleans values used by the game logic to determine wether or not some actions can
+      be done by the element.
+
+    - engagements is a list of enemy wings that are involved in a dogfight or bomber run with this token
+
+    - add_engagement is a method taking an opponent as argument to add it to the "engagements" list
+
+    - Sizefactor is a number between 0 and 1 used to scale the element's token on the battlefield
+
+    - Type is either "Element" or "Wing" and is simply used to determine the type of token
     """
     def __init__(self,pos,DT,CDT,Hangars,BR,Movement,Tag,Capital,Size,BC,faction,ld, docked, SizeFactor):
         self.__DamageTrack=DT        #liste contenant 3 entiers positifs,damage track initiale
@@ -50,6 +86,20 @@ class TheoryElement(metaclass=ABCMeta):
         self.weaponsPos= []
         self.explosionLocation = []
         self.weaponsRange = []
+        self.Type = "Element"
+        self.ClickUNSC = ['Assets/Sounds/Ship_Click/UNSC/Ship_Click_1', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_2',
+                          'Assets/Sounds/Ship_Click/UNSC/Ship_Click_3'
+            , 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_4', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_5',
+                          'Assets/Sounds/Ship_Click/UNSC/Ship_Click_6'
+            , 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_7', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_8']
+        self.ClickCovenant = ['Assets/Sounds/Ship_Click/Covenant/Ship_Click_1',
+                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_2',
+                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_3'
+            , 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_4', 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_5',
+                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_5'
+            , 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_6', 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_7',
+                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_8']
+
 
     def __del__(self):
         for target in self.engagements:
@@ -178,7 +228,19 @@ class TheoryElement(metaclass=ABCMeta):
             self.locked=False
             self.attacked=False
 
+    @property
+    def type(self):
+        return self.type
 
+    # ---------------------------Gestion des sons------------------------
+
+    @property
+    def ClickSound(self):
+        n = random.randint(1, 9)
+        if self._Faction == "UNSC":
+            return self.ClickUNSC[n]
+        else:
+            return self.ClickCovenant[n]
 
 
 
@@ -191,8 +253,9 @@ class UNSC_Supported_Epoch(TheoryElement):
                  BC=190,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(6),
                                            loads.Titanium_Armor(5)],SizeFactor=0.83)
 
-        self.primary=weapons.Weapons("MAC",10,20,12,["Forth"],"Light MAC",[loads.Light_MAC])
-        self.secondary=weapons.Weapons("Missile",12,24,15,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Supported_Epoch_Heavy_Cruiser.png'
+        self.__primary=weapons.Weapons("MAC",10,20,12,["Forth"],"Light MAC",[loads.Light_MAC])
+        self.__secondary=weapons.Weapons("Missile",12,24,15,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
 class UNSC_Epoch_Heavy_Carrier(TheoryElement):
     def __init__(self,pos,aim,docked= []):
@@ -200,8 +263,9 @@ class UNSC_Epoch_Heavy_Carrier(TheoryElement):
                  BC=175,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(5),
                                            loads.Titanium_Armor(4)],SizeFactor=0.83)
 
-        self.primary=weapons.Weapons("MAC",10,20,10,["Forth"],"Light MAC",[loads.Light_MAC])
-        self.secondary=weapons.Weapons("Missile",12,24,12,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Epoch_Heavy_Cruiser.png'
+        self.__primary=weapons.Weapons("MAC",10,20,10,["Forth"],"Light MAC",[loads.Light_MAC])
+        self.__secondary=weapons.Weapons("Missile",12,24,12,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
 class UNSC_Supported_Marathon_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim,docked= []):
@@ -209,8 +273,9 @@ class UNSC_Supported_Marathon_Heavy_Cruiser(TheoryElement):
                  BC=110,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
                                            loads.Titanium_Armor(4)],SizeFactor=0.4)
 
-        self.primary=weapons.Weapons("MAC",16,32,10,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
-        self.secondary=weapons.Weapons("Missile",12,24,8,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Supported_Marathon_Heavy_Cruiser.png'
+        self.__primary=weapons.Weapons("MAC",16,32,10,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
+        self.__secondary=weapons.Weapons("Missile",12,24,8,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
 class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim,docked= []):
@@ -218,8 +283,9 @@ class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
                  BC=95,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
                                            loads.Titanium_Armor(3)],SizeFactor=0.4)
 
-        self.primary=weapons.Weapons("MAC",16,32,8,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
-        self.secondary=weapons.Weapons("Missile",12,24,7,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon()])
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Marathon_Heavy_Cruiser.png'
+        self.__primary=weapons.Weapons("MAC",16,32,8,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
+        self.__secondary=weapons.Weapons("Missile",12,24,7,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
 class UNSC_Paris_Frigate_Arrow(TheoryElement):
     def __init__(self,pos,aim,docked= []):
@@ -242,8 +308,9 @@ class UNSC_Paris_Frigate_Trident(TheoryElement):
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive],SizeFactor=0.159)
 
-        self.primary=weapons.Weapons("MAC",10,20,3,["Forth"],"Light MAC",[loads.Light_MAC])
-        self.secondary=weapons.Weapons("Missile",12,24,3,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
+        self.image='Assets/Drawable/ShipsUNSC/Elements/UNSC_Paris_Frigate_Trident_Formation.png'
+        self.__primary=weapons.Weapons("MAC",10,20,3,["Forth"],"Light MAC",[loads.Light_MAC])
+        self.__secondary=weapons.Weapons("Missile",12,24,3,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
 
 #--------------------Core Elements: Covenants------------------------
@@ -253,20 +320,21 @@ class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
         super().__init__(DT=[11,10,6],Hangars=6,docked=docked,BR=5,Movement=5,Tag="Covenant Supported ORS Heavy Cruiser",Capital=True,Size="Large",
                  BC=220,faction="Covenant",ld=[loads.Cloaking_System,loads.Defence_Array(5),loads.Glide(3),loads.Point_Defence(6),loads.Elusive], SizeFactor=1)
 
-        self.primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
-        self.primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
-        self.secondary=weapons.Weapons("Plasma",10,20,12,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
-        self.secondarybis=weapons.Weapons("Plasma/Missile",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile()])
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_Supported_ORS_Heavy_Cruiser.png'
+        self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
+        self.__primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
+        self.__secondary=weapons.Weapons("Plasma",10,20,12,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
+        self.__secondarybis=weapons.Weapons("Plasma/Missile",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile()])
 
 class Covenant_ORS_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim,docked = []):
         super().__init__(DT=[11,10,5],docked=docked,Hangars=5,BR=4,Movement=5,Tag="Covenant Heavy Cruiser",Capital=True,Size="Large",
                  BC=25,faction="UNSC",ld=[loads.Cloaking_System(),loads.Defence_Array(4),loads.Glide(3),loads.Point_Defence(5)],SizeFactor=1)
 
-
-        self.primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
-        self.primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
-        self.secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Starboard","Port"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_ORS_Heavy_Cruiser.png'
+        self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
+        self.__primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
+        self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Starboard","Port"],"Plasma Cannon Arrays",[loads.Plasma_Weapons()])
 
 class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim,docked= []):
@@ -274,10 +342,10 @@ class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
                  BC=170,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(5),loads.Glide(4),loads.Point_Defence(4),
                                                loads.Carrier_Action(1)], SizeFactor=0.594)
 
-
-        self.primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
-        self.secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
-        self.secondarybis=weapons.Weapons("Plasma",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile_Weapon()])
+        self.image='Assets/Drawable/Ships/Covenant/Elements\Covenant_Supported_CSS_BattleCruiser.png'
+        self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
+        self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
+        self.__secondarybis=weapons.Weapons("Plasma",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapons(),loads.Missile_Weapon()])
 
 class Covenant_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim,docked = []):
@@ -298,9 +366,9 @@ class Covenant_SDV_Heavy_Corvette_Line(TheoryElement):
         super().__init__(DT=[4,4,3],Hangars=1,docked=docked,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Line Formation)",Capital=False,Size="Small",
                  BC=40,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
                                                loads.Cloaking_System()],SizeFactor=0.216)
-
-        self.primary=weapons.Weapons("Plasma",10,20,3,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
-        self.secondary=weapons.Weapons("Plasma",12,24,4,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile_Weapon()])
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_SDV_Heavy_Corvette_Line.png'
+        self.__primary=weapons.Weapons("Plasma",10,20,3,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
+        self.__secondary=weapons.Weapons("Plasma",12,24,4,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile_Weapon()])
 
 class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
     def __init__(self,pos,aim, docked= []):
@@ -309,7 +377,8 @@ class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
                          ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
                              loads.Cloaking_System()],SizeFactor=0.216)
 
-        self.primary=weapons.Weapons("Plasma",10,20,4,["Forth","Port","Starboard"],"Plasma Cannon Arrays",
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_SDV_Heavy_Corvette_Oblique.png'
+        self.__primary=weapons.Weapons("Plasma",10,20,4,["Forth","Port","Starboard"],"Plasma Cannon Arrays",
                                          [loads.Plasma_Weapon()])
         self.secondary=weapons.Weapons("Plasma",12,24,3,["Forth"],"Plasma Torpedoes",
                                            [loads.Plasma_Weapon(),loads.Missile_Weapon()])
@@ -317,8 +386,40 @@ class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
 
 #----------------------------Bombers and Fighters,UNSC----------------------------
 
-class Spacecraft():
-    def __init__(self,DT,Movement,Tag,faction,FS,vswing,vselement):
+class Spacecraft(metaclass=ABCMeta):
+
+    """
+    This theoric class is the mother class for all wing tokens in the game. When creating tokens, most arguments will
+    be set by default according to the game's RuleBook. The only arguments that need to be given by the user are the
+    token's position on the board, and the number of spacecrafts in the squadron.
+
+    - vs_wing_dice is the number of damage dice dealt by the unit to an ennemy wing
+
+    - DamageTrack is the number of damage that can be undergone by the wing before being destroyed
+
+    - pos is the wing's position on board given as a tuple of two real numbers (xpos,ypos)
+
+    - wingtype is a string that can either be "Bomber" of "Interceptor", as both type don't have the same properties
+
+    - MoveRange is a real number refering to the maximum distance can be travelled by the wing in one turn
+
+    - DockUnit is a boolean holding "True" if the wing is docked to an element, "False" if not
+
+    - Type is the type of unit used to distinguish wings from elements. Its value is "Wing" here.
+
+    - str has been overloaded to display the name of the spacecraft squadron to the user.
+
+    - add_engagement and del_engagment are to methods used to add or remove an enemy the engagement list. They both
+      take as argument an enemy element or wing
+
+    - engage is a method used to attack and enter combat with another enemy. It handles modifications of the
+     engagement lists of the target and the attacker
+
+    - move_unit is a method to change the token's location on the battlefield.
+
+    """
+
+    def __init__(self,DT,Movement,Tag,faction,FS,vswing,vselement,type):
         self.__DamageTrack=DT
         self._CDT = DT
         self._MoveRange=Movement
@@ -342,6 +443,7 @@ class Spacecraft():
         self.attacked = False
         self._aim = vct.vector_from_dots((0,0), (1, 1))
         self.sizeFactor = 1
+        self.type = "Wing"
 
     def __del__(self):
         for target in self.engagements:
@@ -403,6 +505,10 @@ class Spacecraft():
     @property
     def Dock_Unit(self):
         return self.dock_unit
+
+    @property
+    def Type(self):
+        return self.type
 
     def add_engagement(self, opp):
         self.engagements.append(opp)
@@ -523,10 +629,9 @@ class Covenant_Banshee_Interceptor_Flight(Spacecraft):
         return self.vs_wing_dice
 
 
-
-class Covenant_Tarrasque_Interceptor_Flight(Spacecraft):
-    def __init__(self,pos,n):
-        super().__init__(DT=2,Movement=16,Tag="Covenant Tarrasque Bomber Flight",faction="Covenant",FS=1,vselement=2,vswing=1)
+class Covenant_Seraph_Bomber_Flight(Spacecraft):
+    def __init__(self, pos, n):
+        super().__init__(DT=2, Movement=16, Tag="Covenant Seraph Bomber Flight", faction="Covenant", FS=1, vselement=0, vswing=2)
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
@@ -545,3 +650,20 @@ class Covenant_Tarrasque_Interceptor_Flight(Spacecraft):
     @property
     def vs_wing_dice(self):
         return self.vs_wing_dice
+
+class TestUnits(unittest.TestCase):
+    unitA = None
+    unitB = None
+    wingA = None
+    wingB = None
+    def setUp(self):
+        unitA=UNSC_Epoch_Heavy_Carrier((18,19),vct.vector_from_dots((11.8, 11.6), (18, 16)))
+        unitB=Covenant_CCS_Battlecruiser((0,8),vct.vector_from_dots((-11.8, 11.6), (-18, 16)))
+        wingA=UNSC_Longsword_Bomber_Flight((57,12),6)
+        wingB=Covenant_Seraph_Bomber_Flight((34,2),6)
+    def testInit(self):
+        self.assertIsInstance(self.unitA,TheoryElement)
+        self.assertIsInstance(self.unitA,UNSC_Epoch_Heavy_Carrier)
+        self.assertFalse(len(self.unitB.loadouts)==0)
+        self.assertNotEqual(self.unitA.faction,self.unitB.faction)
+        self.assertIsInstance(self.unitA, UNSC_Epoch_Heavy_Carrier)
