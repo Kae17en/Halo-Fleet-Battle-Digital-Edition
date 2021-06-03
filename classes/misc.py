@@ -122,13 +122,13 @@ def Damage_Dice_Roll(n,fp):
                 e = pool[0]
                 if e == 6:
                     success += 2
-                    pool.pop(pool.index(e))
+                    pool.pop(0)
                 elif e == 4 or e == 5:
-                    pool.pop(pool.index(e))
+                    pool.pop(0)
                     success += 1
                 elif e == 3 or e == 2:
+                    pool.pop(0)
                     if c != 0:
-                        pool.pop(0)
                         r += 1
                         reroll = random.choice([1, 2, 3, 4, 5, 6])
                         pool.append(reroll)
@@ -136,7 +136,9 @@ def Damage_Dice_Roll(n,fp):
                             c += 1
                         c -= 1
                 elif e == 1:
+                    pool.pop(0)
                     skull+=1
+        return int(success), skull
 
     elif fp==5:
         c=critical
@@ -148,22 +150,22 @@ def Damage_Dice_Roll(n,fp):
                 e=pool[0]
                 if e==6:
                     success+=2
-                    pool.pop(pool.index(e))
+                    pool.pop(0)
                 elif e==4 or e==5:
-                    pool.pop(pool.index(e))
+                    pool.pop(0)
                     success+=1
                 elif e==3 or e==2:
                     if c!=0:
-                        pool.pop(0)
                         r+=1
                         reroll=random.choice([1,2,3,4,5,6])
                         pool.append(reroll)
                         if reroll==6:
                             c+=1
                         c-=1
+                    pool.pop(0)
                 elif e==1:
+                    pool.pop(0)
                     if c!=0:
-                        pool.pop(0)
                         r+=1
                         reroll=random.choice([1, 2, 3, 4, 5, 6])
                         pool.append(reroll)
@@ -172,9 +174,9 @@ def Damage_Dice_Roll(n,fp):
                         c-=1
                     else:
                         skull+=1
-            print("Devastating Roll!!")
-            print("Rerolls:{}".format(r))
-            return int(success),skull
+        print("Devastating Roll!!")
+        print("Rerolls:{}".format(r))
+        return int(success),skull
 
 
 def dist(a,b):

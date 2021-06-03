@@ -85,15 +85,18 @@ class MyApp(ShowBase):
         #Create situations here
         Covenant.addToken(Covenant_Supported_CCS_Battlecruiser((700,600), (690,650)))
         Covenant.addToken(Covenant_CCS_Battlecruiser((740,20), (730, 60), docked=[Covenant_Banshee_Interceptor_Flight((0,0), 5)]))
+
+
+        UNSC.addToken(UNSC_Epoch_Heavy_Carrier((-600, 50), (-350, -270), docked=[UNSC_Longsword_Bomber_Flight((0,0), 5), UNSC_Broadsword_Interceptor_Flight((0,0), 4)]))
+
         Covenant.addToken(Covenant_Seraph_Bomber_Flight((-30, 550), 4))
         Covenant.addToken(Covenant_Seraph_Bomber_Flight((-20, 500), 4))
         Covenant.addToken(Covenant_Seraph_Bomber_Flight((-10, 400), 4))
         Covenant.addToken(Covenant_Seraph_Bomber_Flight((20, 10), 3))
 
-        UNSC.addToken(UNSC_Epoch_Heavy_Carrier((-400, -300), (-350, -270), docked=[UNSC_Longsword_Bomber_Flight((0,0), 5), UNSC_Broadsword_Interceptor_Flight((0,0), 4)]))
-        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-470, -200),(-420, -170)))
-        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-430, -80),(-380, -50)))
-        UNSC.addToken(UNSC_Broadsword_Interceptor_Flight((-400,-250), 4))
+        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-670, 250),(-420, -170)))
+        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-630, 400),(-380, -50)))
+        UNSC.addToken(UNSC_Broadsword_Interceptor_Flight((-520,150), 4))
 
 
         self.StartGame(UNSC,Covenant)

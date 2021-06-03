@@ -126,7 +126,14 @@ class TheoryElement(metaclass=ABCMeta):
 
     @property
     def DisplayCDamageTrack(self):   #Permet d'afficher proprement la DT
-        return "{}/{}/{}".format(self._CDamageTrack[0],self._CDamageTrack[1],self._CDamageTrack[2])
+        if (len(self._CDamageTrack) == 3):
+            return "{}/{}/{}".format(self._CDamageTrack[0],self._CDamageTrack[1],self._CDamageTrack[2])
+        elif (len(self._CDamageTrack) == 2):
+            return "{}/{}".format(self._CDamageTrack[0], self._CDamageTrack[1])
+        elif (len(self._CDamageTrack) == 1):
+            return "{}".format(self._CDamageTrack[0])
+        else:
+            return ""
 
     @property
     def CDamageTrack(self):        #Récupère la DT pour calculs internes
@@ -281,7 +288,7 @@ class UNSC_Paris_Frigate_Arrow(TheoryElement):
     def __init__(self,pos,aim,docked= []):
         super().__init__(pos=pos,DT=[3,3,3],docked=docked,Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
-                                           loads.Titanium_Armor(2),loads.Elusive], SizeFactor=0.159)
+                                           loads.Titanium_Armor(2),loads.Elusive()], SizeFactor=0.200)
 
         self.weaponsPos = [(1.25, -0.4), (-1.25, -0.4), (0, 1.5)]
         self.weaponsRange = [(-110,110),(-110,110),(-110,110)]
@@ -416,16 +423,15 @@ class Spacecraft(metaclass=ABCMeta):
 
     def __init__(self,DT,Movement,Tag,faction,FS,vswing,vselement):
         self.__DamageTrack=DT
-        self._CDT = DT
+        self._CDT = FS
         self._MoveRange=Movement
         self.Tag=Tag
         self._Faction=faction
         self.xpos=0
         self.ypos=0
-        self.__Flight_Slot=FS
+        self.__Flight_Slot= FS
         self.__vs_wing_dice=vswing
         self.__vs_elem_dice=vselement
-        self.UnitNumber = 0
         self.image = ""
         self.icon = ""
         self.locked = False
@@ -450,7 +456,7 @@ class Spacecraft(metaclass=ABCMeta):
 
     @property
     def DisplayCDamageTrack(self):
-        return str(self._CDT)
+        return str(self.FS)
 
     @property
     def DamageTrack(self):
@@ -542,10 +548,10 @@ class Spacecraft(metaclass=ABCMeta):
             self.add_engagement(target)
             target.add_engagement(self)
             for e in target.engagements:
-                if hasattr(e, "WingType") and e.WingType=="Bomber":
+                if hasattr(e, "WingType") and e.WingType=="Bomber" and e != self:
                     e.del_engagement(target)
                     target.del_engagement(e)
-                elif e.attacked==True:
+                elif e.attacked==True and e != self:
                     e.del_engagement(target)
                     target.del_engagement(e)
 
@@ -576,11 +582,9 @@ class Spacecraft(metaclass=ABCMeta):
 
 class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
     def __init__(self,pos,n):
-        super().__init__(DT=2,Movement=16,Tag="UNSC Broadsword Interceptor Flight",faction="UNSC",FS=1,vselement=0,vswing=2)
+        super().__init__(DT=2,Movement=16,Tag="UNSC Broadsword Interceptor Flight",faction="UNSC",FS=n,vselement=0,vswing=2)
         self.xpos=pos[0]
         self.ypos=pos[1]
-        self.UnitNumber = n
-        self._CDT = self.UnitNumber
         self.WingType = "Interceptor"
 
         self.sizeFactor = 0.1
@@ -589,19 +593,14 @@ class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
         self.explosionLocation = [(0,0)]
         self.weaponsPos = [(-0.23, 0.2),(0.17, 0.2)]
 
-    @property
-    def FlightSize(self):
-        return self.UnitNumber
 
 
 
 class UNSC_Longsword_Bomber_Flight(Spacecraft):
     def __init__(self,pos,n):
-        super().__init__(DT=2,Movement=16,Tag="UNSC Longsword Bomber Flight",faction="UNSC",FS=1,vselement=2,vswing=1)
+        super().__init__(DT=2,Movement=16,Tag="UNSC Longsword Bomber Flight",faction="UNSC",FS=n,vselement=2,vswing=1)
         self.xpos=pos[0]
         self.ypos=pos[1]
-        self.UnitNumber = n
-        self._CDT = self.UnitNumber
         self.WingType = "Bomber"
 
         self.sizeFactor = 0.1
@@ -610,18 +609,13 @@ class UNSC_Longsword_Bomber_Flight(Spacecraft):
         self.explosionLocation = [(0, 0)]
         self.weaponsPos = [(-0.14, 0.7), (0.17, 0.7)]
 
-    @property
-    def FlightSize(self):
-        return self.UnitNumber
 
 
 class Covenant_Banshee_Interceptor_Flight(Spacecraft):
     def __init__(self,pos,n):
-        super().__init__(DT=2,Movement=16,Tag="Covenant Banshee Interceptor Flight",faction="Covenant",FS=1,vselement=0,vswing=2)
+        super().__init__(DT=2,Movement=16,Tag="Covenant Banshee Interceptor Flight",faction="Covenant",FS=n,vselement=0,vswing=2)
         self.xpos=pos[0]
         self.ypos=pos[1]
-        self.UnitNumber=n
-        self._CDT = self.UnitNumber
         self.weaponsPos=[(0.1, 0.7), (-0.1,0.7)]
         self.explosionLocation = [(0,0)]
         self.sizeFactor = 0.1
@@ -629,30 +623,21 @@ class Covenant_Banshee_Interceptor_Flight(Spacecraft):
         self.icon = "Assets/Drawable/Ships/Covenant/Wings/Icons/Covenant_Banshee_Interceptor_Flight_Icon.png"
         self.WingType = "Interceptor"
 
-    @property
-    def FlightSize(self):
-        return self.UnitNumber
 
 
 
 class Covenant_Seraph_Bomber_Flight(Spacecraft):
     def __init__(self, pos, n):
-        super().__init__(DT=2, Movement=16, Tag="Covenant Seraph Bomber Flight", faction="Covenant", FS=1, vselement=0, vswing=2)
+        super().__init__(DT=2, Movement=16, Tag="Covenant Seraph Bomber Flight", faction="Covenant", FS=n, vselement=2, vswing=1)
         self.xpos=pos[0]
         self.ypos=pos[1]
-        self.UnitNumber=n
-        self._CDT = self.UnitNumber
-        self.WingType = "Interceptor"
+        self.WingType = "Bomber"
 
         self.sizeFactor = 0.1
         self.image = "Assets/Drawable/Ships/Covenant/Wings/Covenant_Seraph_Bomber_Flight.png"
         self.icon = "Assets/Drawable/Ships/Covenant/Wings/Icons/Covenant_Seraph_Bomber_Flight_Icon.png"
         self.weaponsPos = [(0.1, 0.7), (-0.1, 0.7)]
         self.explosionLocation = [(0, 0)]
-
-    @property
-    def FlightSize(self):
-        return self.UnitNumber
 
 
 

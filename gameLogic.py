@@ -47,7 +47,7 @@ class MainGame():
     def startGameFromSituation(self, UNSC, Covenant, GameState):
         self.UNSC = UNSC
         self.Covenant = Covenant
-        UNSCstart = rd.randint(0, 1)
+        UNSCstart = 1#rd.randint(0, 1)  #Random player start overloaded
         self.currentPhase = GameState[0]-1
         self.turn = GameState[1]
         if(UNSCstart == 1 or GameState[2] == 0):
@@ -227,17 +227,23 @@ class MainGame():
         else:
             print("No significant damage dealt")
             return 0
+        if len(element.CDamageTrack) ==0:
+            return 1
         if element.CDamageTrack[0] <= dmg:
             print("Ennemy critically damaged!")
             dmg -= element.CDamageTrack[0]
             element.CDamageTrack.pop(0)
         else:
             return 0
+        if len(element.CDamageTrack) ==0:
+            return 1
         if element.CDamageTrack[0] <= dmg:
             print("Hull critically damaged, multiple explosions on the target. Kill confirmed!")
             dmg -= element.CDamageTrack[0]
             element.CDamageTrack.pop(0)
+        if len(element.CDamageTrack) ==0:
             return 1
+        return 0
 
     def resolvedogfight(self, unitA, unitB):
         """
@@ -255,6 +261,7 @@ class MainGame():
         Voice acting may be added in future update to make the game more immersive
 
         """
+        print(unitA.FS)
         na = unitA.FS * unitA.vs_wing_dice
         nb = unitB.FS * unitB.vs_wing_dice
         if unitA.WingType == "Interceptor":
@@ -267,20 +274,25 @@ class MainGame():
             fpb = 3
         damagetoA = Damage_Dice_Roll(nb, fpb)[0]
         damagetoB = Damage_Dice_Roll(na, fpa)[0]
-        unitA.FS -= floor(damagetoA / (unitA.FS * unitA.DT))
-        unitB.FS -= floor(damagetoB / (unitB.FS * unitB.DT))
+        unitA.FS -= floor(damagetoA / (unitA.DT))
+        unitB.FS -= floor(damagetoB / (unitB.DT))
 
         if damagetoA > damagetoB and unitB.FS > 0:
-            pool = [random.randint(1, 7) for i in range(unitB.FS)]
+            pool = [random.randint(1, 6) for i in range(unitB.FS)]
             unitA.FS -= pool.count(6)
         if damagetoB > damagetoA and unitA.FS > 0:
-            pool = [random.randint(1, 7) for i in range(unitA.FS)]
+            pool = [random.randint(1, 6) for i in range(unitA.FS)]
             unitB.FS -= pool.count(6)
 
-        if unitA.FS <= 0:
+        print(unitA.FS)
+        print(unitA.DisplayCDamageTrack)
+        print(unitB.FS)
+        print(unitB.DisplayCDamageTrack)
+
+        if unitA.FS <= 0 and unitB.FS >= 0:
             # lancer l'animation de destruction ici
             return 1
-        elif unitB.FS <= 0:
+        elif unitB.FS <= 0 and unitA.FS >= 0:
             # lancer l'animation de destruction ici
             return 2
         elif unitB.FS <= 0 and unitA.FS <= 0:
@@ -303,7 +315,13 @@ class MainGame():
 
                 return self.resolvebomberrun(F[0], F[1])
             else:
-                return ((self.resolvebomberrun(F[1], F[0])%2)+1)
+                ret = self.resolvebomberrun(F[1], F[0])
+                if (ret == 2):
+                    return 1
+                elif (ret == 1):
+                    return 2
+                else:
+                    return ret
         else:
             return self.resolvedogfight(F[0], F[1])
 
