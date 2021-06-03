@@ -549,6 +549,10 @@ class Spacecraft(metaclass=ABCMeta):
     def faction(self):
         return self._Faction
 
+    @property
+    def FS(self):
+        return self.__Flight_Slot
+
 
 
 class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
