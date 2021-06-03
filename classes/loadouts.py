@@ -182,8 +182,8 @@ class Missile_Barrage():
 
 
 class Plasma_Weapon():
-    def __init__(self, shortrange):
-        self.__ShortRange = shortrange
+    def __init__(self):
+        self.__ShortRange = 0
 
     def modifyfp(self,d):
         if d>self.__ShortRange:
@@ -195,8 +195,8 @@ class Plasma_Weapon():
         return "Plasma Weapon"
 
 class Beam(Plasma_Weapon):
-    def __init__(self,shortrange):
-        super().__init__(shortrange)
+    def __init__(self):
+        super().__init__()
 
     def __str__(self):
         return "Plasma Beam"
@@ -206,15 +206,15 @@ class Beam(Plasma_Weapon):
         return "Plasma Beam Attack"
 
 class Plasma_Cannon_Array(Plasma_Weapon):
-    def __init__(self,shortrange):
-        super().__init__(shortrange)
+    def __init__(self):
+        super().__init__()
 
     def __str__(self):
         return "Plasma Cannon Array"
 
 class Plasma_Torpedoes(Plasma_Weapon):
-    def __init__(self,shortrange):
-        super().__init__(shortrange)
+    def __init__(self):
+        super().__init__()
 
 
     def modifyfp(self,d):
@@ -227,8 +227,8 @@ class Plasma_Torpedoes(Plasma_Weapon):
         return "Plasma Torpedoes"
 
 class Plasma_Lance(Plasma_Weapon):
-    def __init__(self,shortrange):
-        super().__init__(shortrange)
+    def __init__(self):
+        super().__init__()
 
     def __str__(self):
         return "Plasma Lance"

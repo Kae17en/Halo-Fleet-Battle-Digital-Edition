@@ -282,16 +282,20 @@ class MyApp(ShowBase):
         self.movable = objects
 
     def GetMouseCoordsInBgCoords(self):
-        mpos = self.mouseWatcherNode.getMouse()
-        self.pickerRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
-        self.clickonObjectTrav.traverse(render)
+        try:
+            mpos = self.mouseWatcherNode.getMouse()
+            self.pickerRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
+            self.clickonObjectTrav.traverse(render)
 
-        if self.clickonObject.getNumEntries() > 0:
-            self.clickonObject.sortEntries()
-            pickedObj = self.clickonObject.getEntry(self.clickonObject.getNumEntries() - 1).getSurfacePoint(NodePath(self.camNode))
-            return pickedObj
-        else:
-            return [0,0,0]
+            if self.clickonObject.getNumEntries() > 0:
+                self.clickonObject.sortEntries()
+                pickedObj = self.clickonObject.getEntry(self.clickonObject.getNumEntries() - 1).getSurfacePoint(
+                    NodePath(self.camNode))
+                return pickedObj
+            else:
+                return [0, 0, 0]
+        except Exception:
+            pass
 
     def show_moving_object(self, task):
         if (hasattr(self, "detailed")):
@@ -695,7 +699,7 @@ class HUD(DirectObject):
                 self.BarImage = self.loadImageRealScale('Assets/HUD/CovBar.png', self.Bar)
 
     def playSound(self, sound):
-        snd = self.app.loader.loasSfx(sound)
+        snd = self.app.loader.loadSfx(sound)
         snd.play()
 
 
@@ -711,10 +715,10 @@ class objectDetails():
         self.HUD.SelectedName.setText(str(object))
         if not rangeOnly:
             self.printDetailedInfos(object,isSpaceCraft)
-            self.HUD.playSound(self.object.clickSound())
         if isSpaceCraft or rangeOnly:
             self.drawMove()
         else:
+            self.HUD.playSound(self.object.clickSound)
             self.ObjectMenu = OnscreenImage('Assets/ObjectMenu/Background.png', scale=(100, 1, 75),
                                             pos=(object.xpos - 130, -4, object.ypos - 100), parent=render)
             self.ObjectMenu.setTransparency(TransparencyAttrib.MAlpha)

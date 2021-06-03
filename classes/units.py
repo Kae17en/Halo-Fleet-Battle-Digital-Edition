@@ -87,18 +87,18 @@ class TheoryElement(metaclass=ABCMeta):
         self.explosionLocation = []
         self.weaponsRange = []
         self.Type = "Element"
-        self.ClickUNSC = ['Assets/Sounds/Ship_Click/UNSC/Ship_Click_1', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_2',
-                          'Assets/Sounds/Ship_Click/UNSC/Ship_Click_3'
-            , 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_4', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_5',
-                          'Assets/Sounds/Ship_Click/UNSC/Ship_Click_6'
-            , 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_7', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_8']
-        self.ClickCovenant = ['Assets/Sounds/Ship_Click/Covenant/Ship_Click_1',
-                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_2',
-                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_3'
-            , 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_4', 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_5',
-                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_5'
-            , 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_6', 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_7',
-                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_8']
+        self.ClickUNSC = ['Assets/Sounds/Ship_Click/UNSC/Ship_Click_1.wav', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_2.wav',
+                          'Assets/Sounds/Ship_Click/UNSC/Ship_Click_3.wav'
+            , 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_4.wav', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_5.wav',
+                          'Assets/Sounds/Ship_Click/UNSC/Ship_Click_6.wav'
+            , 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_7.wav', 'Assets/Sounds/Ship_Click/UNSC/Ship_Click_8.wav']
+        self.ClickCovenant = ['Assets/Sounds/Ship_Click/Covenant/Ship_Click_1.wav',
+                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_2.wav',
+                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_3.wav'
+            , 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_4.wav', 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_5.wav',
+                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_5.wav'
+            , 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_6.wav', 'Assets/Sounds/Ship_Click/Covenant/Ship_Click_7.wav',
+                              'Assets/Sounds/Ship_Click/Covenant/Ship_Click_8.wav']
 
 
     def __del__(self):
@@ -235,9 +235,9 @@ class TheoryElement(metaclass=ABCMeta):
     # ---------------------------Gestion des sons------------------------
 
     @property
-    def ClickSound(self):
-        n = random.randint(1, 9)
-        if self._Faction == "UNSC":
+    def clickSound(self):
+        n = random.randint(0, 7)
+        if self.__Faction == "UNSC":
             return self.ClickUNSC[n]
         else:
             return self.ClickCovenant[n]
