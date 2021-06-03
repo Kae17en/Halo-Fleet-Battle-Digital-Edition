@@ -239,6 +239,7 @@ class MyApp(ShowBase):
                 pickedObjG = self.clickonObject.getEntry(i).getIntoNodePath()
                 pickedObj = pickedObjG.getTag('clickable')
             if pickedObj and pickedObj != "" and not self.HUD.controlsDisabled:
+
                 if pickedObj == "fond":
                     if(hasattr(self, "detailed")):
                         del self.detailed

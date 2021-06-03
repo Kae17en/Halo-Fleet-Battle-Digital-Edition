@@ -4,6 +4,7 @@ from abc import *
 from weapons import Weapons
 import loadouts as loads
 import vectors2d as vct
+from unittest import *
 
 
 
@@ -548,3 +549,11 @@ class Covenant_Tarrasque_Bomber_Flight(Spacecraft):
     @UnitNumber.setter
     def setFlightSize(self,n):
         self.UnitNumber=n
+
+
+class TestUnits(unittest.TestCase):
+    def setUp(self):
+        unitA=UNSC_Epoch_Heavy_Carrier((18,19),vct.vector_from_dots((11.8, 11.6), (18, 16)))
+        unitB=Covenant_CCS_Battlecruiser((0,8),vct.vector_from_dots((-11.8, 11.6), (-18, 16)))
+        wingA=UNSC_Longsword_Bomber_Flight((57,12),6)
+        wingB=Co
