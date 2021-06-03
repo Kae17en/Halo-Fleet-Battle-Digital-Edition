@@ -4,9 +4,19 @@ from weapons import *
 import random
 import numpy as np
 import vectors2d as vct
+from unittest import *
 
 
 class Intervalle():
+
+    """
+    This class is a simple interval class making range checks easier for the game logic. It simply takes an inf and sup as arguments.
+
+    - isin allows to check if the given parameter x is in the interval
+
+
+    """
+
     def __init__(self,inf,sup):
         self.inf=inf
         self.sup=sup
@@ -23,7 +33,16 @@ class Intervalle():
         return self.sup
 
 
-class MacFiringSolution():                            #Avec L la liste de weapons participant à la salve
+class MacFiringSolution():
+
+    """
+    MAC (Magnetic Acceleration Cannon) has particular rules in the game. Any firing solution made with MAC cannons can apply bonus critical
+    damage. This class will be a subclass of the "Firing Solution" class, to handle easily the additional rules
+    The parameter required is L, which is the list of all weapons taking part in the firing solution.
+
+    /!\ THIS PART OF THE CODE IS NOT FINISHED YET AND IS SUBJECT TO SUBSEQUENT CHANGES IN THE FUTURE /!\
+
+    """
     def __init__(self,L):
         m=sum(l.loadouts.__MACValue for l in L)
         d=sum(l.__Dice for l in L)
@@ -40,6 +59,17 @@ class MacFiringSolution():                            #Avec L la liste de weapon
 
 
 def Damage_Dice_Roll(n,fp):
+
+    """
+    :param n: The number of dice that need to be rolled
+    :param fp: The firepower rating used to calculate the number of successes
+    :return: (Success,Skulls) where Success is the number of successes of the roll, and skulls the number of critical fails remaining
+             among the dice pool
+
+    This function is able to calculate any dice roll in the game. The firepower rating (fp parameter) should be calculated while creating the
+    Firing Solution linked to the dice roll, or simply given according to the situation and the rulebook.
+    """
+
     if fp<1 or fp>5:
         raise ValueError("Invalid Firepower")
     r=0
@@ -50,7 +80,8 @@ def Damage_Dice_Roll(n,fp):
         print("Impossible Roll")
         print("Rerolls:{}".format(r))
         skull=pool.count(1)
-        return success,skull
+        assertIsTrue(skull+success<=n)
+        return int(success),skull
     elif fp==2:
         for e in pool:
             if e==4 or e==5 or e==6:
@@ -69,7 +100,7 @@ def Damage_Dice_Roll(n,fp):
         skull = pool.count(1)
         print("Crushing Roll!")
         print("Rerolls:{}".format(r))
-        return success,skull
+        return int(success),skull
 
 
     elif fp==4:
@@ -84,7 +115,7 @@ def Damage_Dice_Roll(n,fp):
                 if c!=0:
                     r+=1
                     reroll=random.choice([0,0.1,0.1,1,1,2])
-                    success+=floor(reroll)
+                    success+=np.floor(reroll)
                     if reroll==0:
                         skull+=1
                     elif reroll==2:
@@ -92,7 +123,7 @@ def Damage_Dice_Roll(n,fp):
                     c-=1
         print("Exploding Roll!")
         print("Rerolls:{}".format(r))
-        return success,skull
+        return int(success),skull
 
     elif fp==5:
         c=critical
@@ -106,7 +137,7 @@ def Damage_Dice_Roll(n,fp):
                 if c!=0:
                     r+=1
                     reroll=random.choice([0,0.1,0.1,1,1,2])
-                    success+=floor(reroll)
+                    success+=np.floor(reroll)
                     if reroll==2:
                         c+=1
                     elif reroll==0:
@@ -117,7 +148,7 @@ def Damage_Dice_Roll(n,fp):
                     r+=1
                     skull-=1
                     reroll=random.choice([0,0.1,0.1,1,1,2])
-                    success+=floor(reroll)
+                    success+=np.floor(reroll)
                     if reroll==2:
                         c+=1
                     elif reroll==0:
@@ -125,7 +156,7 @@ def Damage_Dice_Roll(n,fp):
                     c-=1
         print("Devastating Roll!!")
         print("Rerolls:{}".format(r))
-        return success,skull
+        return int(success),skull
 
 
 def dist(a,b):

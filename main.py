@@ -749,6 +749,7 @@ class objectDetails():
         self.HUD.sideMenuWings.setText('')
         self.HUD.sideMenuWeapons.setText("")
         self.HUD.sideMenuTitle.setText('')
+
         if (hasattr(self, "ObjectMenu")):
             self.ObjectMenu.destroy()
             self.menuline.removeNode()

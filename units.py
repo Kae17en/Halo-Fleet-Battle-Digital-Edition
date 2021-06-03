@@ -4,7 +4,8 @@ from abc import *
 from weapons import Weapons
 import loadouts as loads
 import vectors2d as vct
-from unittest import *
+import unittest
+import random
 
 
 
@@ -79,6 +80,12 @@ class TheoryElement(metaclass=ABCMeta):
         self.engagements=[]
         self.sizefactor=SizeFactor
         self.Type="Element"
+        self.ClickUNSC=['Assets/Sounds/Ship_Click/UNSC/Ship_Click_1','Assets/Sounds/Ship_Click/UNSC/Ship_Click_2','Assets/Sounds/Ship_Click/UNSC/Ship_Click_3'
+                        ,'Assets/Sounds/Ship_Click/UNSC/Ship_Click_4','Assets/Sounds/Ship_Click/UNSC/Ship_Click_5','Assets/Sounds/Ship_Click/UNSC/Ship_Click_6'
+                        ,'Assets/Sounds/Ship_Click/UNSC/Ship_Click_7','Assets/Sounds/Ship_Click/UNSC/Ship_Click_8']
+        self.ClickCovenant=['Assets/Sounds/Ship_Click/Covenant/Ship_Click_1','Assets/Sounds/Ship_Click/Covenant/Ship_Click_2','Assets/Sounds/Ship_Click/Covenant/Ship_Click_3'
+                            ,'Assets/Sounds/Ship_Click/Covenant/Ship_Click_4','Assets/Sounds/Ship_Click/Covenant/Ship_Click_5','Assets/Sounds/Ship_Click/Covenant/Ship_Click_5'
+                            ,'Assets/Sounds/Ship_Click/Covenant/Ship_Click_6','Assets/Sounds/Ship_Click/Covenant/Ship_Click_7','Assets/Sounds/Ship_Click/Covenant/Ship_Click_8']
     #Gestion de la Damage Track---------------------------
 
     @property
@@ -187,6 +194,17 @@ class TheoryElement(metaclass=ABCMeta):
     def type(self):
         return self.type
 
+    # ---------------------------Gestion des sons------------------------
+
+    @property
+    def ClickSound(self):
+        n=random.randint(1,9)
+        if self._Faction=="UNSC":
+            return self.ClickUNSC[n]
+        else:
+            return self.ClickCovenant[n]
+
+
 
 
 
@@ -229,7 +247,7 @@ class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
                  BC=95,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
                                            loads.Titanium_Armor(3)],SizeFactor=0.4)
 
-        self.image='Assets/Drawable/Ships/UNSC/Elements\UNSC_Marathon_Heavy_Cruiser.png'
+        self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Marathon_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("MAC",16,32,8,["Forth"],"Heavy MAC",[loads.Heavy_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,7,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
 
@@ -556,4 +574,11 @@ class TestUnits(unittest.TestCase):
         unitA=UNSC_Epoch_Heavy_Carrier((18,19),vct.vector_from_dots((11.8, 11.6), (18, 16)))
         unitB=Covenant_CCS_Battlecruiser((0,8),vct.vector_from_dots((-11.8, 11.6), (-18, 16)))
         wingA=UNSC_Longsword_Bomber_Flight((57,12),6)
-        wingB=Co
+        wingB=Covenant_Tarrasque_Bomber_Flight((34,2),6)
+    def testInit(self):
+        self.assertIsInstance(unitA,TheoryElement)
+        self.assertIsInstance(unitA,UNSC_Epoch_Heavy_Carrier)
+        self.assertFalse(len(unitB.loadouts)==0)
+        self.assertNotEqual(unitA.faction,unitB.faction)
+        self.assertIsInstance(unitA, UNSC_Epoch_Heavy_Carrier)
+

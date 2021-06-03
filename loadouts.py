@@ -1,4 +1,5 @@
 from abc import *
+import unittest
 
 class Loadouts(metaclass=ABCMeta):
     def __init__(self,fpm,dicem):
@@ -300,9 +301,6 @@ class Emplacement():
     @property
     def __str__(self):
         return "Emplacement"
-
-
-
 
 
 
