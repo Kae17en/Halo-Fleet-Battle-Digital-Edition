@@ -66,6 +66,8 @@ class MacFiringSolution():
         return self.MacBonus
 
 
+def Rerolldice()
+
 def Damage_Dice_Roll(n,fp):
 
     """
@@ -113,57 +115,66 @@ def Damage_Dice_Roll(n,fp):
     elif fp==4:
         c=critical
         skull=pool.count(1)
-        for e in pool:
-            if e==6:
-                success+=2
-            elif e==4 or e==5:
-                success+=1
-            elif e==3 or e==2:
-                if c!=0:
-                    r+=1
-                    reroll=random.choice([0,0.1,0.1,1,1,2])
-                    success+=np.floor(reroll)
-                    if reroll==0:
-                        skull+=1
-                    elif reroll==2:
-                        c+=1
-                    c-=1
-        print("Exploding Roll!")
-        print("Rerolls:{}".format(r))
-        return int(success),skull
+        if c==0:
+            success=pool.count(5)+pool.count(4)
+        else:
+            while pool != []:
+                e = pool[0]
+                if e == 6:
+                    success += 2
+                    pool.pop(pool.index(e))
+                elif e == 4 or e == 5:
+                    pool.pop(pool.index(e))
+                    success += 1
+                elif e == 3 or e == 2:
+                    if c != 0:
+                        pool.pop(0)
+                        r += 1
+                        reroll = random.choice([1, 2, 3, 4, 5, 6])
+                        pool.append(reroll)
+                        if reroll == 6:
+                            c += 1
+                        c -= 1
+                elif e == 1:
+                    skull+=1
 
     elif fp==5:
         c=critical
         skull=pool.count(1)
-        for e in pool:
-            if e==6:
-                success+=2
-            elif e==4 or e==5:
-                success+=1
-            elif e==3 or e==2:
-                if c!=0:
-                    r+=1
-                    reroll=random.choice([0,0.1,0.1,1,1,2])
-                    success+=np.floor(reroll)
-                    if reroll==2:
-                        c+=1
-                    elif reroll==0:
+        if c==0:
+            success=pool.count(5)+pool.count(4)
+        else:
+            while pool!=[]:
+                e=pool[0]
+                if e==6:
+                    success+=2
+                    pool.pop(pool.index(e))
+                elif e==4 or e==5:
+                    pool.pop(pool.index(e))
+                    success+=1
+                elif e==3 or e==2:
+                    if c!=0:
+                        pool.pop(0)
+                        r+=1
+                        reroll=random.choice([1,2,3,4,5,6])
+                        pool.append(reroll)
+                        if reroll==6:
+                            c+=1
+                        c-=1
+                elif e==1:
+                    if c!=0:
+                        pool.pop(0)
+                        r+=1
+                        reroll=random.choice([1, 2, 3, 4, 5, 6])
+                        pool.append(reroll)
+                        if reroll==6:
+                            c+=1
+                        c-=1
+                    else:
                         skull+=1
-                    c-=1
-            elif e==1:
-                if c!=0:
-                    r+=1
-                    skull-=1
-                    reroll=random.choice([0,0.1,0.1,1,1,2])
-                    success+=np.floor(reroll)
-                    if reroll==2:
-                        c+=1
-                    elif reroll==0:
-                        skull+=1
-                    c-=1
-        print("Devastating Roll!!")
-        print("Rerolls:{}".format(r))
-        return int(success),skull
+            print("Devastating Roll!!")
+            print("Rerolls:{}".format(r))
+            return int(success),skull
 
 
 def dist(a,b):
