@@ -157,7 +157,7 @@ class MainGame():
 
         if self.toResolve != []:
             fighting = self.toResolve[0][0], self.toResolve[0][1]
-            self.fightResult =self.resolveFightForWingAttack(self.toResolve[0][0], self.toResolve[0][1])
+            self.fightResult =self.resolveFightForWingAttack((self.toResolve[0][0], self.toResolve[0][1]))
             self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1], self.fightResult)
         else:
             self.nextPhase()
@@ -180,13 +180,129 @@ class MainGame():
                     self.Covenant.tokens.pop(i)
                     toDel.destroySelf()
         if self.toResolve != []:
-            self.fightResult = self.resolveFightForWingAttack(self.toResolve[0][0], self.toResolve[0][1])
+            self.fightResult = self.resolveFightForWingAttack((self.toResolve[0][0], self.toResolve[0][1]))
             self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1], self.fightResult)
         else:
             self.nextPhase()
 
-    def resolveFightForWingAttack(self, opponent1, opponent2):
-        return 3
+
+    def resolvebomberrun(self, element, bomber):
+
+        """
+        :param element: Any element on the board
+        :param bomber: The wing attacking the element. Type is a Spacecraft subclass instance that has the "Bomber" type.
+        :return: A integrer between 0 and 2 included. This value will never be seen by the player, but the game logic will
+                 use it to determine animations and board state modifications to conduct. It return:
+                 - 0 if the ship is not destroyed
+                 - 2 if all bombers are destroyed
+                 - 1 if the element is destroyed
+        This function also prints different sentences, according to what is happening during the run. Those messages will
+        surely be shown to the players and voice-acted in the future.
+        """
+
+        a = element.pointdefencedamage
+        kills = floor(a / bomber.DT)
+        initialflight = bomber.FS
+        bomber.FS -= kills
+        if bomber.FS == 0:
+            print("Devastating blow! All bombers intercepted!")
+            return 2
+        elif kills > initialflight // 2:
+            print("{} Bombers down, some of them went throught, Brace yourself!".format(kills))
+        elif kills <= initialflight // 2:
+            print(("Only {} Bombers down, others went throught! Prepare for impact!".format(kills)))
+        n = bomber.FS * bomber.vs_elem_dice
+        success = Damage_Dice_Roll(n, 4)[0]
+        d = 0
+        for e in element.ld:
+            d += e.defencedicepool
+        dmg = success - d
+        if element.CDT[0] <= dmg:
+            print("Ennemy hit, we pierced their hull!")
+            dmg -= element.CDT[0]
+            element.CDT.pop(0)
+        else:
+            print("No significant damage dealt")
+            return 0
+        if element.CDT[0] <= dmg:
+            print("Ennemy critically damaged!")
+            dmg -= element.CDT[0]
+            element.CDT.pop(0)
+        else:
+            return 0
+        if element.CDT[0] <= dmg:
+            print("Hull critically damaged, multiple explosions on the target. Kill confirmed!")
+            dmg -= element.CDT[0]
+            element.CDT.pop(0)
+            return 1
+
+    def resolvedogfight(self, unitA, unitB):
+        """
+        This function is used to resolve any engaged fight between to wings
+
+        :param unitA: A wing-type unit on board
+        :param unitB: A wing-type unit on board
+        :return: A integrer between 0 and 3 included. This value will never be seen by the player, but the game logic will
+                 use it to determine animations and board state modifications to conduct. It return:
+                 - 0 if both wings survive the fight
+                 - 1 if unitA gets killed
+                 - 2 if unitB gets killed
+                 - 3 if both units gets killed
+
+        Voice acting may be added in future update to make the game more immersive
+
+        """
+        na = unitA.FS * unitA.vs_wing_dice
+        nb = unitB.FS * unitB.vs_wing_dice
+        if unitA.WingType == "Interceptor":
+            fpa = 5
+        else:
+            fpa = 3
+        if unitB.WingType == "Interceptor":
+            fpb = 5
+        else:
+            fpb = 3
+        damagetoA = Damage_Dice_Roll(nb, fpb)[0]
+        damagetoB = Damage_Dice_Roll(na, fpa)[0]
+        unitA.FS -= floor(damagetoA / (unitA.FS * unitA.DT))
+        unitB.FS -= floor(damagetoB / (unitB.FS * unitB.DT))
+
+        if damagetoA > damagetoB and unitB.FS > 0:
+            pool = [random.randint(1, 7) for i in range(unitB.FS)]
+            unitA.FS -= pool.count(6)
+        if damagetoB > damagetoA and unitA.FS > 0:
+            pool = [random.randint(1, 7) for i in range(unitA.FS)]
+            unitB.FS -= pool.count(6)
+
+        if unitA.FS <= 0:
+            # lancer l'animation de destruction ici
+            return 1
+        elif unitB.FS <= 0:
+            # lancer l'animation de destruction ici
+            return 2
+        elif unitB.FS <= 0 and unitA.FS <= 0:
+            return 3
+        else:
+            return 0
+
+    def resolveFightForWingAttack(self,F):
+
+        """
+        This function is called each time a fight involving at least one wing token needs to be resolved. It only determines
+        what type of wing fight has to be resolved, and redirect to the appropriate function.
+
+        :param L: A list or tuple of two tokens
+        :return: A call to the appropriate function to resolve the fight. See ResolveDogfight and Resolvebomberrun docs for
+                 further informations
+        """
+
+        if F[0].Type == "Element" or F[1].Type == "Element":
+            if F[0].Type == "Element":
+                return self.resolvebomberrun(F[0], F[1])
+            else:
+                return self.resolvebomberrun(F[1], F[0])
+        else:
+            return self.resolvedogfight(F[0], F[1])
 
     def getFightCenter(self, fighting):
         return ((fighting[0].pos[0]+ fighting[1].pos[0])/2, (fighting[0].pos[1] + fighting[1].pos[1])/2)
