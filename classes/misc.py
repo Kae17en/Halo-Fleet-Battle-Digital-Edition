@@ -66,7 +66,7 @@ class MacFiringSolution():
         return self.MacBonus
 
 
-def Rerolldice()
+
 
 def Damage_Dice_Roll(n,fp):
 
