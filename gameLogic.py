@@ -5,6 +5,19 @@ from classes.misc import *
 import pickle
 
 class Player():
+    """
+    This class models a player. "Players" and "Faction" are in direct link, has each player has the name of a faction,
+    either Covenant or UNSC (the "type" parameter). This make communication between game logic and HUD easier. A player has:
+
+    - a certain number of token, either wings or elements, listed in the .tokens list
+    - a boolean value .turnEnded to know if the player has decided to withdraw from the current phase and let his
+      opponent finish the current phase
+
+    :parameter: type: A string being either "Covenant" or "UNSC"
+
+    The addToken method is used to implement a new token under the player's control
+
+    """
     def __init__(self, type):
         self.tokens = []
         self.type = type
@@ -15,6 +28,13 @@ class Player():
 
 
 class MainGame():
+
+    """
+    This class contains all informations about the game state progress, HUD and how to interact with it
+
+    :parameter: UI: All graphic elements needed to display the in game informations, menus and tokens.
+    """
+
     def __init__(self, UI):
         self.UI = UI
         self.turn = 0

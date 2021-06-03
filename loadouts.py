@@ -2,6 +2,18 @@ from abc import *
 import unittest
 
 class Loadouts(metaclass=ABCMeta):
+
+    """
+    Loadouts are various equipments mounted on an element, a wing or a weapon. They can affect multiple stages of the
+    game at different moments. Therefore, all loadouts have one modifier of each kind. Therefore, a entire list of
+    loadouts can be called to apply modifications to a situation in the game logic. If a loadout don't modify
+    the situation, the modifier associated to the situation is either set to "pass", "None", or 0.
+    A loadout modify a situation if the game's rulebook says so.
+    In each loadout, str has been overloaded to display the loadout name on the HUD.
+
+
+    """
+
     def __init__(self,fpm,dicem):
         self.__fpm=fpm
         self.__dicem=dicem
