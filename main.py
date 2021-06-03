@@ -38,6 +38,7 @@ class MyApp(ShowBase):
         self.accept("mouse1", self.handle_element_click)
         self.accept("mouse3", self.handle_unselect)
         self.taskMgr.add(self.handleQuit, "detect-escape")
+
         self.MouseNavDisabled = False
 
         self.menu = MainMenu(self)
@@ -82,11 +83,17 @@ class MyApp(ShowBase):
         Covenant = Player("Covenant")
 
         #Create situations here
-        Covenant.addToken(Covenant_CCS_Battlecruiser((600, 600), (500, 500), docked=[Covenant_Banshee_Interceptor_Flight((0, 0), 3)]))
+        Covenant.addToken(Covenant_Supported_CCS_Battlecruiser((700,600), (690,650)))
+        Covenant.addToken(Covenant_CCS_Battlecruiser((740,20), (730, 60), docked=[Covenant_Banshee_Interceptor_Flight((0,0), 5)]))
+        Covenant.addToken(Covenant_Seraph_Bomber_Flight((-30, 550), 4))
+        Covenant.addToken(Covenant_Seraph_Bomber_Flight((-20, 500), 4))
+        Covenant.addToken(Covenant_Seraph_Bomber_Flight((-10, 400), 4))
+        Covenant.addToken(Covenant_Seraph_Bomber_Flight((20, 10), 3))
 
-
-        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-700, -300), (-480, -300)))
-        UNSC.addToken(UNSC_Broadsword_Interceptor_Flight((0, 0), 3))
+        UNSC.addToken(UNSC_Epoch_Heavy_Carrier((-400, -300), (-350, -270), docked=[UNSC_Longsword_Bomber_Flight((0,0), 5), UNSC_Broadsword_Interceptor_Flight((0,0), 4)]))
+        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-470, -200),(-420, -170)))
+        UNSC.addToken(UNSC_Paris_Frigate_Arrow((-430, -80),(-380, -50)))
+        UNSC.addToken(UNSC_Broadsword_Interceptor_Flight((-400,-250), 4))
 
 
         self.StartGame(UNSC,Covenant)
@@ -127,10 +134,13 @@ class MyApp(ShowBase):
 
         self.music = loader.loadSfx("Assets/Music/Ambiant.mp3")
         self.music.setLoop(True)
+        self.music.setVolume(0.6)
         self.music.play()
 
+
         self.Game.startGameFromSituation(UNSC, Covenant, state)
-        #self.placeWeapons(self.Covenant.tokens[0])
+        self.taskMgr.add(self.gameOverWatch, "detect-game-over")
+        # self.placeWeapons(self.UNSC.tokens[0])
 
     def loadVideoOnplane(self, pos, scale, src, angle=0):
         plane = loader.loadModel("Assets/Fights/plane.egg")
@@ -166,7 +176,7 @@ class MyApp(ShowBase):
         self.Oldcenter = self.cam.getPos()
         self.OldFilmSize = deepcopy(self.lens.getFilmSize())
         center = self.Game.getFightCenter(self.fighting)
-        filmSize = (min(self.fighting[0].sizeFactor, self.fighting[1].sizeFactor)*2*1920, 1080*2*min(self.fighting[0].sizeFactor, self.fighting[1].sizeFactor))
+        filmSize = (int(1920*(self.fighting[0].sizeFactor + self.fighting[1].sizeFactor)), int(1080*(self.fighting[0].sizeFactor+ self.fighting[1].sizeFactor)))
         self.cam.setX(center[0])
         self.cam.setZ(center[1])
         self.lens.setFilmSize(filmSize)
@@ -222,6 +232,8 @@ class MyApp(ShowBase):
             i = i + 1
         self.HUD.setGameInfo(self.GlobalState)
         return task.cont
+
+
 
     def handle_element_click(self):
         mpos = self.mouseWatcherNode.getMouse()
@@ -371,6 +383,24 @@ class MyApp(ShowBase):
         np.setTransparency(TransparencyAttrib.MAlpha)
         np.reparentTo(parent)
         return np
+
+    def gameOverWatch(self, task):
+        if(len(self.UNSC.tokens) == 0 and len(self.Covenant.tokens) != 0):
+            self.GameOver(self.Covenant)
+            return task.done
+        elif(len(self.UNSC.tokens) != 0 and len(self.Covenant.tokens) == 0):
+            self.GameOver(self.UNSC)
+            return task.done
+        elif(len(self.UNSC.tokens) == 0 and len(self.Covenant.tokens) == 0):
+            self.GameOver()
+            return task.done
+        return task.cont
+
+    def GameOver(self, winner = None):
+        if(winner == None):
+            self.HUD.showWinner("Draw, both faction destroyed")
+        else:
+            self.HUD.showWinner(winner.type + " has won the battle")
 
 
 class MainMenu(DirectObject):
@@ -619,6 +649,25 @@ class HUD(DirectObject):
         self.errorText = OnscreenText('', pos=(0, -0.035), scale=(0.04, 0.04*self.app.getAspectRatio()), font=loader.loadFont("Assets/HUD/CopperplateGothicBold.ttf"), parent=self.errorPopup)
         self.errorPopup.hide()
 
+        self.GameOverPopup = DirectDialog(frameSize=(-2, 2, -1, 1),
+                                       fadeScreen=0.4,
+                                       pos=(0, -2, 0),
+                                       relief=None,
+                                       parent=render2d,
+                                       dialogName="GameOverDialog",
+                                       )
+        GameOver = OnscreenImage("Assets/HUD/GameOverBG.png", parent=self.GameOverPopup,
+                            scale=(0.20 * self.app.getAspectRatio(), 1, 0.3))
+        GameOver.setTransparency(TransparencyAttrib.MAlpha)
+        self.gameOverText = OnscreenText('', pos=(0, -0.035), scale=(0.04, 0.04 * self.app.getAspectRatio()),
+                                      font=loader.loadFont("Assets/HUD/CopperplateGothicBold.ttf"),
+                                      parent=self.GameOverPopup)
+        self.GameOverPopup.hide()
+
+
+    def showWinner(self, winner):
+        self.gameOverText.setText(winner)
+        self.GameOverPopup.show()
 
     def showPauseScreen(self):
         self.PauseScreen.show()
@@ -713,8 +762,7 @@ class objectDetails():
         self.rangeOnly = rangeOnly
         isSpaceCraft = issubclass(type(object), Spacecraft)
         self.HUD.SelectedName.setText(str(object))
-        if not rangeOnly:
-            self.printDetailedInfos(object,isSpaceCraft)
+        self.printDetailedInfos(object,isSpaceCraft)
         if isSpaceCraft or rangeOnly:
             self.drawMove()
         else:
@@ -837,7 +885,7 @@ class objectDetails():
         self.WMenuBackgrounf.setTransparency(TransparencyAttrib.MAlpha)
         self.DeployOptionsFrames = []
         for i in range(len(self.object.docked)):
-            option = OnscreenImage(self.object.docked[i].icon, pos=(-0.5 + 0.3*i%3, -6, 0.55 - 0.2*int(i/3)), scale=(ICON_2D_SCALE_FACTOR*self.ratio,1,ICON_2D_SCALE_FACTOR), parent=self.WMenuBackgrounf)
+            option = OnscreenImage(self.object.docked[i].icon, pos=(-0.5 + 1*i%2, -6, 0.55 - 0.2*int(i/2)), scale=(ICON_2D_SCALE_FACTOR*self.ratio,1,ICON_2D_SCALE_FACTOR), parent=self.WMenuBackgrounf)
             option.setTag("wingId", str(id(self.object.docked[i])))
             option.setTag("clickable", "deploySelectedWing")
             option.setTransparency(TransparencyAttrib.MAlpha)
@@ -957,6 +1005,7 @@ class Fight:
                 self.wing2.set_aim(self.GetAttackTrajectoryPoint(self.wing2, self.targetPoint2, (self.elapsed + 10) / 50))
 
             if (self.elapsed >= 1.5):
+                self.shots.stop()
                 self.Hits1.removeNode()
                 self.Hits2.removeNode()
                 for effect in self.Oponent1Weapons:
@@ -1008,7 +1057,6 @@ class Fight:
         self.opponent2.aim = self.opponent2InitialAim
 
     def explode(self, object):
-        self.shots.stop()
         if not hasattr(self, "explosion"):
             self.explosion = []
         for loc in object.explosionLocation:
@@ -1075,4 +1123,3 @@ class Save():
 
 app = MyApp()
 app.run()
-

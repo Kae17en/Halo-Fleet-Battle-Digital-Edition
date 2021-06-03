@@ -80,12 +80,11 @@ def Damage_Dice_Roll(n,fp):
     calculated while creating the Firing Solution linked to the dice roll with the calc_fp function, or simply given
     according to the situation and the rulebook.
     """
-
     if fp<1 or fp>5:
         raise ValueError("Invalid Firepower")
     r=0
     success=0
-    pool=[random.randint(1,7) for i in range(n)]
+    pool=[random.randint(1,6) for i in range(n)]
     critical=pool.count(6)
     if fp==1:
         print("Impossible Roll")

@@ -174,6 +174,7 @@ class TheoryElement(metaclass=ABCMeta):
 
 
     def set_pos(self,L):
+        self.aim = vct.vector_from_dots((self.xpos,self.ypos), L)
         self.xpos=L[0]
         self.ypos=L[1]
 
@@ -182,22 +183,7 @@ class TheoryElement(metaclass=ABCMeta):
     def __str__(self):
         return self.Tag
 
-    #--------------Gestion des armes-----------------
 
-    # @property
-    # def primary(self):
-    #     return self._primary
-    # 
-    # @property
-    # def secondary(self):
-    #     return self._secondary
-    # 
-    # @property
-    # def primarybis(self):
-    #     return self._primarybis
-    # @property
-    # def secondarybis(self):
-    #     return self._secondarybis
 
     #------------------------Gestion de la distance de mouvement-------------------------
     @property
@@ -263,6 +249,10 @@ class UNSC_Epoch_Heavy_Carrier(TheoryElement):
                  BC=175,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(5),
                                            loads.Titanium_Armor(4)],SizeFactor=0.83)
 
+        self.weaponsPos = [(0, 0.4),(0, -0.6),(0, -1.2)]
+        self.weaponsRange = [(-110, 110)]
+        self.explosionLocation = [(0,0)]
+        self.set_aim(aim)
         self.image='Assets/Drawable/Ships/UNSC/Elements/UNSC_Epoch_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("MAC",10,20,10,["Forth"],"Light MAC",[loads.Light_MAC])
         self.__secondary=weapons.Weapons("Missile",12,24,12,["Starboard","Port"],"Missile Batteries",[loads.Missile_Weapon])
@@ -360,6 +350,7 @@ class Covenant_CCS_Battlecruiser(TheoryElement):
         self.image = "Assets/Drawable/Ships/Covenant/Elements/Covenant_CSS_BattleCruiser.png"
         self.weaponsPos = [(0.025, 1.5)]
         self.weaponsRange = [(-90,90)]
+        self.explosionLocation = [(0, 0)]
         self.set_aim(aim)
 
         self.primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
@@ -462,16 +453,16 @@ class Spacecraft(metaclass=ABCMeta):
         return str(self._CDT)
 
     @property
-    def vs_wing_dice(self):
-        return self
-
-    @property
     def DamageTrack(self):
         return self.__DamageTrack
 
     @property
     def aim(self):
         return self._aim
+
+    @property
+    def DT(self):
+        return self.__DamageTrack
 
     @aim.setter
     def aim(self, vector):
@@ -569,6 +560,18 @@ class Spacecraft(metaclass=ABCMeta):
     def FS(self):
         return self.__Flight_Slot
 
+    @FS.setter
+    def FS(self, val):
+        self.__Flight_Slot = val
+
+    @property
+    def vs_wing_dice(self):
+        return self.__vs_wing_dice
+
+    @property
+    def vs_elem_dice(self):
+        return self.__vs_elem_dice
+
 
 
 class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
@@ -577,20 +580,19 @@ class UNSC_Broadsword_Interceptor_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber = n
+        self._CDT = self.UnitNumber
         self.WingType = "Interceptor"
 
         self.sizeFactor = 0.1
         self.image = "Assets/Drawable/Ships/UNSC/Wings/UNSC_ShortSword_Interceptor_Flight.png"
-        self.icon = "Assets/Drawable/Ships/UNSC/Wings/Icons/UNSC_ShortSword_Interceptor_Flight_Icon.png"
+        self.icon = "Assets/Drawable/Ships/UNSC/Wings/Icon/UNSC_Shortsword_Interceptor_Flight_Icon.png"
         self.explosionLocation = [(0,0)]
         self.weaponsPos = [(-0.23, 0.2),(0.17, 0.2)]
 
     @property
     def FlightSize(self):
         return self.UnitNumber
-    @property
-    def vs_wing_dice(self):
-        return self.vs_wing_dice
+
 
 
 class UNSC_Longsword_Bomber_Flight(Spacecraft):
@@ -598,21 +600,19 @@ class UNSC_Longsword_Bomber_Flight(Spacecraft):
         super().__init__(DT=2,Movement=16,Tag="UNSC Longsword Bomber Flight",faction="UNSC",FS=1,vselement=2,vswing=1)
         self.xpos=pos[0]
         self.ypos=pos[1]
-        self.UnitNumber=n
+        self.UnitNumber = n
+        self._CDT = self.UnitNumber
         self.WingType = "Bomber"
 
         self.sizeFactor = 0.1
-        self.image = "Assets/Drawable/Ships/UNSC/Wings/UNSC_Longwsord_Bomber_Flight.png"
-        self.icon = "Assets/Drawable/Ships/UNSC/Wings/Icons/UNSC_Longwsord_Bomber_Flight_Icon.png"
+        self.image = "Assets/Drawable/Ships/UNSC/Wings/UNSC_Longsword_Bomber_Flight.png"
+        self.icon = "Assets/Drawable/Ships/UNSC/Wings/Icon/UNSC_Longsword_Bomber_Flight_Icon.png"
         self.explosionLocation = [(0, 0)]
-        self.weaponsPos = []
+        self.weaponsPos = [(-0.14, 0.7), (0.17, 0.7)]
 
     @property
     def FlightSize(self):
         return self.UnitNumber
-    @property
-    def vs_wing_dice(self):
-        return self.vs_wing_dice
 
 
 class Covenant_Banshee_Interceptor_Flight(Spacecraft):
@@ -621,7 +621,7 @@ class Covenant_Banshee_Interceptor_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
-
+        self._CDT = self.UnitNumber
         self.weaponsPos=[(0.1, 0.7), (-0.1,0.7)]
         self.explosionLocation = [(0,0)]
         self.sizeFactor = 0.1
@@ -632,9 +632,7 @@ class Covenant_Banshee_Interceptor_Flight(Spacecraft):
     @property
     def FlightSize(self):
         return self.UnitNumber
-    @property
-    def vs_wing_dice(self):
-        return self.vs_wing_dice
+
 
 
 class Covenant_Seraph_Bomber_Flight(Spacecraft):
@@ -643,24 +641,23 @@ class Covenant_Seraph_Bomber_Flight(Spacecraft):
         self.xpos=pos[0]
         self.ypos=pos[1]
         self.UnitNumber=n
+        self._CDT = self.UnitNumber
         self.WingType = "Interceptor"
 
         self.sizeFactor = 0.1
         self.image = "Assets/Drawable/Ships/Covenant/Wings/Covenant_Seraph_Bomber_Flight.png"
         self.icon = "Assets/Drawable/Ships/Covenant/Wings/Icons/Covenant_Seraph_Bomber_Flight_Icon.png"
-        self.explosionLocation = [(0, 0.2)]
-        self.weaponsPos = []
+        self.weaponsPos = [(0.1, 0.7), (-0.1, 0.7)]
+        self.explosionLocation = [(0, 0)]
 
     @property
     def FlightSize(self):
         return self.UnitNumber
 
-    @property
-    def vs_wing_dice(self):
-        return self.vs_wing_dice
 
-#if __name__ == '__main__':
-    #unittest.main()
+
+if __name__ == '__main__':
+    unittest.main()
 
 
 class TestUnits(unittest.TestCase):
