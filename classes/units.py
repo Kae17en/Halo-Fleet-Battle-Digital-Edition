@@ -69,7 +69,7 @@ class TheoryElement(metaclass=ABCMeta):
         self._Size=Size              #Taille de l'élément,Small,Medium,Large,Gigantic
         self._BuildCost=BC           #Cout d'ajout à la flotte
         self.__Faction=faction        #Faction à laquelle appartient l'élément. Aussi joueur controleur
-        self.__Loadouts=ld           #Liste d'équipements
+        self.__Equipment=ld           #Liste d'équipements
         self.xpos = pos[0]                #Position en x
         self.ypos = pos[1]            #Position en y
         self.set_aim((0,0))                       #Direction pointée par l'unité
@@ -198,6 +198,7 @@ class TheoryElement(metaclass=ABCMeta):
     # @property
     # def secondarybis(self):
     #     return self._secondarybis
+
     #------------------------Gestion de la distance de mouvement-------------------------
     @property
     def MoveRange(self):
@@ -210,8 +211,7 @@ class TheoryElement(metaclass=ABCMeta):
 
     @property
     def loadouts(self):
-        return self.loadouts
-
+        return self.__Equipment
     @property
     def Hangars(self):
         return self.__Hangars
@@ -249,7 +249,7 @@ class TheoryElement(metaclass=ABCMeta):
 class UNSC_Supported_Epoch(TheoryElement):
 
     def __init__(self,pos,aim, docked = []):
-        super().__init__(DT=[10,8,5],docked=docked,Hangars=6,BR=5,Movement=6,Tag="UNSC Supported Epoch Heavy Carrier",Capital=True,Size="Large",
+        super().__init__(pos=pos,DT=[10,8,5],docked=docked,Hangars=6,BR=5,Movement=6,Tag="UNSC Supported Epoch Heavy Carrier",Capital=True,Size="Large",
                  BC=190,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(6),
                                            loads.Titanium_Armor(5)],SizeFactor=0.83)
 
@@ -259,7 +259,7 @@ class UNSC_Supported_Epoch(TheoryElement):
 
 class UNSC_Epoch_Heavy_Carrier(TheoryElement):
     def __init__(self,pos,aim,docked= []):
-        super().__init__(DT=[9,8,5],docked=docked,Hangars=6,BR=4,Movement=6,Tag="UNSC Epoch Heavy Carrier",Capital=True,Size="Large",
+        super().__init__(pos=pos,DT=[9,8,5],docked=docked,Hangars=6,BR=4,Movement=6,Tag="UNSC Epoch Heavy Carrier",Capital=True,Size="Large",
                  BC=175,faction="UNSC",ld=[loads.Carrier_Action(3),loads.Hard_Burn(7),loads.Missile_Barrage(),loads.Point_Defence(5),
                                            loads.Titanium_Armor(4)],SizeFactor=0.83)
 
@@ -269,7 +269,7 @@ class UNSC_Epoch_Heavy_Carrier(TheoryElement):
 
 class UNSC_Supported_Marathon_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim,docked= []):
-        super().__init__(DT=[7,6,3],Hangars=2,docked=docked,BR=3,Movement=8,Tag="UNSC Supported Marathon Heavy Cruiser",Capital=True,Size="Medium",
+        super().__init__(pos=pos,DT=[7,6,3],Hangars=2,docked=docked,BR=3,Movement=8,Tag="UNSC Supported Marathon Heavy Cruiser",Capital=True,Size="Medium",
                  BC=110,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
                                            loads.Titanium_Armor(4)],SizeFactor=0.4)
 
@@ -279,7 +279,7 @@ class UNSC_Supported_Marathon_Heavy_Cruiser(TheoryElement):
 
 class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim,docked= []):
-        super().__init__(DT=[6,6,3],Hangars=2,docked=docked,BR=2,Movement=8,Tag="UNSC Marathon Heavy Cruiser",Capital=True,Size="Medium",
+        super().__init__(pos=pos,DT=[6,6,3],Hangars=2,docked=docked,BR=2,Movement=8,Tag="UNSC Marathon Heavy Cruiser",Capital=True,Size="Medium",
                  BC=95,faction="UNSC",ld=[loads.Hard_Burn(10),loads.Missile_Barrage(),loads.Point_Defence(4),
                                            loads.Titanium_Armor(3)],SizeFactor=0.4)
 
@@ -304,7 +304,7 @@ class UNSC_Paris_Frigate_Arrow(TheoryElement):
 
 class UNSC_Paris_Frigate_Trident(TheoryElement):
     def __init__(self,pos,aim,docked= []):
-        super().__init__(DT=[4,3,3],Hangars=0,docked=docked,BR=1,Movement=10,Tag="UNSC Paris Frigate (Trident Formation)",Capital=False,Size="Small",
+        super().__init__(pos=pos,DT=[4,3,3],Hangars=0,docked=docked,BR=1,Movement=10,Tag="UNSC Paris Frigate (Trident Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive],SizeFactor=0.159)
 
@@ -317,7 +317,7 @@ class UNSC_Paris_Frigate_Trident(TheoryElement):
 
 class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim,docked= []):
-        super().__init__(DT=[11,10,6],Hangars=6,docked=docked,BR=5,Movement=5,Tag="Covenant Supported ORS Heavy Cruiser",Capital=True,Size="Large",
+        super().__init__(pos=pos,DT=[11,10,6],Hangars=6,docked=docked,BR=5,Movement=5,Tag="Covenant Supported ORS Heavy Cruiser",Capital=True,Size="Large",
                  BC=220,faction="Covenant",ld=[loads.Cloaking_System,loads.Defence_Array(5),loads.Glide(3),loads.Point_Defence(6),loads.Elusive], SizeFactor=1)
 
         self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_Supported_ORS_Heavy_Cruiser.png'
@@ -328,7 +328,7 @@ class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
 
 class Covenant_ORS_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim,docked = []):
-        super().__init__(DT=[11,10,5],docked=docked,Hangars=5,BR=4,Movement=5,Tag="Covenant Heavy Cruiser",Capital=True,Size="Large",
+        super().__init__(pos=pos,DT=[11,10,5],docked=docked,Hangars=5,BR=4,Movement=5,Tag="Covenant Heavy Cruiser",Capital=True,Size="Large",
                  BC=25,faction="UNSC",ld=[loads.Cloaking_System(),loads.Defence_Array(4),loads.Glide(3),loads.Point_Defence(5)],SizeFactor=1)
 
         self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_ORS_Heavy_Cruiser.png'
@@ -367,7 +367,7 @@ class Covenant_CCS_Battlecruiser(TheoryElement):
 
 class Covenant_SDV_Heavy_Corvette_Line(TheoryElement):
     def __init__(self,pos,aim,docked= []):
-        super().__init__(DT=[4,4,3],Hangars=1,docked=docked,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Line Formation)",Capital=False,Size="Small",
+        super().__init__(pos=pos,DT=[4,4,3],Hangars=1,docked=docked,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Line Formation)",Capital=False,Size="Small",
                  BC=40,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
                                                loads.Cloaking_System()],SizeFactor=0.216)
         self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_SDV_Heavy_Corvette_Line.png'
@@ -376,7 +376,7 @@ class Covenant_SDV_Heavy_Corvette_Line(TheoryElement):
 
 class Covenant_SDV_Heavy_Corvette_Oblique(TheoryElement):
     def __init__(self,pos,aim, docked= []):
-        super().__init__(DT=[4,3,3],Hangars=1,docked=docked,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Oblique Formation)",
+        super().__init__(pos=pos,DT=[4,3,3],Hangars=1,docked=docked,BR=1,Movement=9,Tag="Covenant SDV Heavy Corvette (Oblique Formation)",
                          Capital=False,Size="Small",BC=40,faction="Covenant",
                          ld=[loads.Cloaking_System(),loads.Defence_Array(2),loads.Glide(5),loads.Point_Defence(3),
                              loads.Cloaking_System()],SizeFactor=0.216)
@@ -655,20 +655,17 @@ class Covenant_Seraph_Bomber_Flight(Spacecraft):
     def vs_wing_dice(self):
         return self.vs_wing_dice
 
-if __name__ == '__main__':
-    unittest.main()
+#if __name__ == '__main__':
+    #unittest.main()
 
 
 class TestUnits(unittest.TestCase):
-    unitA = None
-    unitB = None
-    wingA = None
-    wingB = None
+
     def setUp(self):
-        unitA=UNSC_Epoch_Heavy_Carrier((18,19),vct.vector_from_dots((11.8, 11.6), (18, 16)))
-        unitB=Covenant_CCS_Battlecruiser((0,8),vct.vector_from_dots((-11.8, 11.6), (-18, 16)))
-        wingA=UNSC_Longsword_Bomber_Flight((57,12),6)
-        wingB=Covenant_Seraph_Bomber_Flight((34,2),6)
+        self.unitA=UNSC_Epoch_Heavy_Carrier((18,19),(11.8, 11.6))
+        self.unitB=Covenant_CCS_Battlecruiser((0,8),(-11.8, 11.6))
+        self.wingA=UNSC_Longsword_Bomber_Flight((57,12),6)
+        self.wingB=Covenant_Seraph_Bomber_Flight((34,2),6)
     def testInit(self):
         self.assertIsInstance(self.unitA,TheoryElement)
         self.assertIsInstance(self.unitA,UNSC_Epoch_Heavy_Carrier)

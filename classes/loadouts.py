@@ -25,10 +25,6 @@ class Loadouts(metaclass=ABCMeta):
     def dicem(self):
         return self.__dicem
 
-
-
-
-
 class Light_MAC(Loadouts):
     def __init__(self):
         super().__init__(0,0)
@@ -173,16 +169,18 @@ class Massive():
     def __str__(self):
         return "Massive"
 
-class Missile_Barrage():
+class Missile_Barrage(Loadouts):
     def __init__(self):
+        super().__init__(0, 0)
         pass
 
     def __str__(self):
         return "Missile Barrage"
 
 
-class Plasma_Weapon():
+class Plasma_Weapon(Loadouts):
     def __init__(self):
+        super().__init__(0, 0)
         self.__ShortRange = 0
 
     def modifyfp(self,d):
@@ -233,8 +231,9 @@ class Plasma_Lance(Plasma_Weapon):
     def __str__(self):
         return "Plasma Lance"
 
-class Point_Defence():
+class Point_Defence(Loadouts):
     def __init__(self,n):
+        super().__init__(0, 0)
         self.__Point_Value=n
     @property
     def Point_Value(self):
@@ -247,8 +246,9 @@ class Point_Defence():
     def __str__(self):
         return "Point Defence({})".format(self.__Point_Value)
 
-class Titanium_Armor():
+class Titanium_Armor(Loadouts):
     def __init__(self,n):
+        super().__init__(0, 0)
         self.__Armor_Value=n
     @property
     def ArmorValue(self):
@@ -260,8 +260,9 @@ class Titanium_Armor():
     def __str__(self):
         return "Titanium Armor({})".format(self.__Armor_Value)
 
-class Carrier_Action():
+class Carrier_Action(Loadouts):
     def __init__(self,n):
+        super().__init__(0, 0)
         self.__Carrier_Value=n
     @property
     def Carrier_Value(self):
@@ -271,7 +272,11 @@ class Carrier_Action():
         return "Carrier Action({})".format(self.__Carrier_Value)
 
 
-class Emplacement():
+class Emplacement(Loadouts):
+
+    def __init__(self):
+        super().__init__(0, 0)
+
     def __str__(self):
         return "Emplacement"
 
