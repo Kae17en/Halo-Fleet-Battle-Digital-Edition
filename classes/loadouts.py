@@ -31,7 +31,7 @@ class Loadouts(metaclass=ABCMeta):
 
 class Light_MAC(Loadouts):
     def __init__(self):
-        super().__init__(self,0,0)
+        super().__init__(0,0)
         self.__macvalue=1
 
     @property
@@ -45,7 +45,7 @@ class Light_MAC(Loadouts):
 
 class Heavy_MAC(Loadouts):
     def __init__(self):
-        super().__init__(self, 0, 0)
+        super().__init__(0, 0)
         self.__macvalue=2
 
     @property
@@ -60,7 +60,7 @@ class Heavy_MAC(Loadouts):
 
 class Missile_Weapon(Loadouts):
     def __init__(self):
-        super().__init__(self, 1, 0)
+        super().__init__(1, 0)
 
     def modifyfp(self,LongRange):
         if LongRange==True:

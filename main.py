@@ -130,7 +130,7 @@ class MyApp(ShowBase):
         self.music.play()
 
         self.Game.startGameFromSituation(UNSC, Covenant, state)
-        # self.placeWeapons(self.UNSC.tokens[1])
+        #self.placeWeapons(self.Covenant.tokens[0])
 
     def loadVideoOnplane(self, pos, scale, src, angle=0):
         plane = loader.loadModel("Assets/Fights/plane.egg")
@@ -151,7 +151,7 @@ class MyApp(ShowBase):
             fac = object.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
             posInWordCoords = LVecBase3f(
                 object.pos[0] + object.weaponsPos[i][0] * fac * np.cos(angle) - object.weaponsPos[i][
-                    1] * fac * np.sin(angle), -2 - i,
+                    1] * fac * np.sin(angle), -5 - i,
                 object.pos[1] + object.weaponsPos[i][1] * fac * np.cos(angle) + object.weaponsPos[i][
                     0] * fac * np.sin(angle))
             self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
@@ -893,7 +893,7 @@ class Fight:
         self.Oponent1Weapons = []
         for i in range(len(opponent1.weaponsPos)):
             toWorldPos = self.transformObjectCoordsToWorldCoords(opponent1, opponent1.weaponsPos[i])
-            posInWordCoords = LVecBase3f(toWorldPos[0], -2 - i, toWorldPos[1])
+            posInWordCoords = LVecBase3f(toWorldPos[0], -5 - i, toWorldPos[1])
             fac = opponent1.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
             self.Oponent1Weapons.append(
                 self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
@@ -905,7 +905,7 @@ class Fight:
         self.Oponent2Weapons = []
         for i in range(len(opponent2.weaponsPos)):
             toWorldPos = self.transformObjectCoordsToWorldCoords(opponent2, opponent2.weaponsPos[i])
-            posInWordCoords = LVecBase3f(toWorldPos[0], -2 - i, toWorldPos[1])
+            posInWordCoords = LVecBase3f(toWorldPos[0], -5 - i, toWorldPos[1])
             fac = opponent2.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
             self.Oponent2Weapons.append(
                 self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
@@ -1039,7 +1039,7 @@ class Fight:
             Hits = self.Hits2
         for i in range(len(WeaponsList)):
             toWorldPos = self.transformObjectCoordsToWorldCoords(object, object.weaponsPos[i])
-            posInWordCoords = LVecBase3f(toWorldPos[0], -2 - i, toWorldPos[1])
+            posInWordCoords = LVecBase3f(toWorldPos[0], -5 - i, toWorldPos[1])
             WeaponsList[i].setPos(posInWordCoords)
 
         Hits.setPos(newPos[0], -10, newPos[1])

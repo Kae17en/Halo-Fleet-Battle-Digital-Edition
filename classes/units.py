@@ -58,7 +58,7 @@ class TheoryElement(metaclass=ABCMeta):
 
     - Type is either "Element" or "Wing" and is simply used to determine the type of token
     """
-    def __init__(self,pos,DT,CDT,Hangars,BR,Movement,Tag,Capital,Size,BC,faction,ld, docked, SizeFactor):
+    def __init__(self,pos,DT,Hangars,BR,Movement,Tag,Capital,Size,BC,faction,ld, docked, SizeFactor):
         self.__DamageTrack=DT        #liste contenant 3 entiers positifs,damage track initiale
         self._CDamageTrack=DT      #Damage track actuelle, relative à l'attribut
         self.__Hangars=Hangars       #entier représentant le nombre de hangars de l'élément
@@ -289,7 +289,7 @@ class UNSC_Marathon_Heavy_Cruiser(TheoryElement):
 
 class UNSC_Paris_Frigate_Arrow(TheoryElement):
     def __init__(self,pos,aim,docked= []):
-        super().__init__(pos=pos,DT=[3,3,3],docked=docked,CDT=[3,3,3],Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
+        super().__init__(pos=pos,DT=[3,3,3],docked=docked,Hangars=0,BR=1,Movement=10,Tag="UNSC Paris Frigate (Arrowhead Formation)",Capital=False,Size="Small",
                  BC=25,faction="UNSC",ld=[loads.Hard_Burn(13),loads.Missile_Barrage(),loads.Point_Defence(2),
                                            loads.Titanium_Armor(2),loads.Elusive], SizeFactor=0.159)
 
@@ -324,7 +324,7 @@ class Covenant_Supported_ORS_Heavy_Cruiser(TheoryElement):
         self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
         self.__secondary=weapons.Weapons("Plasma",10,20,12,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
-        self.__secondarybis=weapons.Weapons("Plasma/Missile",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile()])
+        self.__secondarybis=weapons.Weapons("Plasma/Missile",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile_Weapon()])
 
 class Covenant_ORS_Heavy_Cruiser(TheoryElement):
     def __init__(self,pos,aim,docked = []):
@@ -334,22 +334,26 @@ class Covenant_ORS_Heavy_Cruiser(TheoryElement):
         self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_ORS_Heavy_Cruiser.png'
         self.__primary=weapons.Weapons("Plasma",18,32,14,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
         self.__primarybis=weapons.Weapons("Plasma",12,None,9,["Forth","Port","Starboard"],"Plasma Beam",[loads.Beam(),loads.Plasma_Weapon()])
-        self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Starboard","Port"],"Plasma Cannon Arrays",[loads.Plasma_Weapons()])
+        self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Starboard","Port"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
 
 class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim,docked= []):
-        super().__init__(DT=[8,7,4],Hangars=3,docked=docked,BR=4,Movement=7,Tag="Covenant Supported CCS BattleCruiser",Capital=True,Size="Medium",
+        super().__init__(pos=pos,DT=[8,7,4],Hangars=3,docked=docked,BR=4,Movement=7,Tag="Covenant Supported CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=170,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(5),loads.Glide(4),loads.Point_Defence(4),
                                                loads.Carrier_Action(1)], SizeFactor=0.594)
+        self.weaponsPos = [(0.2, 0.25),(0.6,0.25), (-0.69, 0.67)]
+        self.weaponsRange = [(-90, 90),(-90,90)]
+        self.explosionLocation = [(0.4, 0)]
+        self.set_aim(aim)
 
         self.image='Assets/Drawable/Ships/Covenant/Elements\Covenant_Supported_CSS_BattleCruiser.png'
         self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
-        self.__secondarybis=weapons.Weapons("Plasma",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapons(),loads.Missile_Weapon()])
+        self.__secondarybis=weapons.Weapons("Plasma",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile_Weapon()])
 
 class Covenant_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim,docked = []):
-        super().__init__(pos,DT=[8,7,3],CDT=[8,7,3],Hangars=2,BR=3,Movement=8,Tag="Covenant CCS BattleCruiser",Capital=True,Size="Medium",
+        super().__init__(pos=pos,DT=[8,7,3],Hangars=2,BR=3,Movement=8,Tag="Covenant CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=150,faction="Covenant",docked=docked,ld=[loads.Defence_Array(4),loads.Glide(4),loads.Point_Defence(3),
                                                loads.Carrier_Action(1)], SizeFactor=0.594)
 
