@@ -376,7 +376,7 @@ class MainMenu(DirectObject):
                                      frameSize=(-1,1,1,1),
                                      pos=(-1.1, 0, -0.25))
 
-        self.bg = OnscreenImage('Assets/MainMenu/Main-background.jpg')
+        self.bg = OnscreenImage('Assets/MainMenu/Main-background.png')
         self.bg.reparentTo(render2d)
 
         maps = loader.loadModel('Assets/MainMenu/button_maps.egg')

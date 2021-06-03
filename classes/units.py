@@ -419,7 +419,7 @@ class Spacecraft(metaclass=ABCMeta):
 
     """
 
-    def __init__(self,DT,Movement,Tag,faction,FS,vswing,vselement,type):
+    def __init__(self,DT,Movement,Tag,faction,FS,vswing,vselement):
         self.__DamageTrack=DT
         self._CDT = DT
         self._MoveRange=Movement
