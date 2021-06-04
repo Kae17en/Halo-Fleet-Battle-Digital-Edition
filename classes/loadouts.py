@@ -19,8 +19,7 @@ class Loadouts(metaclass=ABCMeta):
         self.__dicem=dicem
         self._Point_Value = 0
 
-    @property
-    def defencedicepool(self):
+    def defencedicepool(self,CDT):
         return 0
 
     @property
@@ -137,8 +136,7 @@ class Defence_Array(Loadouts):
     def ArrayValue(self):
         return self.__ArrayValue
 
-    @property
-    def defencedicepool(self):
+    def defencedicepool(self,CDT):
         dicem = Damage_Dice_Roll(self.__ArrayValue,4)[0]
         return dicem
 
@@ -259,9 +257,13 @@ class Titanium_Armor(Loadouts):
     @property
     def ArmorValue(self):
         return self.__Armor_Value
-    @property
-    def dicem(self):
-        return Damage_Dice_Roll(self.__Armor_Value,4)
+
+    def defencedicepool(self,CDT):
+        if len(CDT)==3:
+            return self.__Armor_Value
+        else:
+            return 0
+
 
     def __str__(self):
         return "Titanium Armor({})".format(self.__Armor_Value)

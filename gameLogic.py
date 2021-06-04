@@ -180,6 +180,9 @@ class MainGame():
                     i = self.Covenant.tokens.index(toDel)
                     self.Covenant.tokens.pop(i)
                     toDel.destroySelf()
+                for fight in self.toResolve:
+                    if toDel in fight:
+                        self.toResolve.remove(fight)
         if self.toResolve != []:
             self.fightResult = self.resolveFightForWingAttack((self.toResolve[0][0], self.toResolve[0][1]))
             self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1], self.fightResult)
@@ -218,7 +221,7 @@ class MainGame():
         success = Damage_Dice_Roll(n, 4)[0]
         d = 0
         for e in element.loadouts:
-            d += e.defencedicepool
+            d += e.defencedicepool(element.CDamageTrack)
         dmg = success - d
         if element.CDamageTrack[0] <= dmg:
             print("Ennemy hit, we pierced their hull!")

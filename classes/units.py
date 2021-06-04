@@ -221,9 +221,6 @@ class TheoryElement(metaclass=ABCMeta):
             self.locked=False
             self.attacked=False
 
-    @property
-    def type(self):
-        return self.type
 
     # ---------------------------Gestion des sons------------------------
 
@@ -539,21 +536,24 @@ class Spacecraft(metaclass=ABCMeta):
                 P.append(e)
         if len(P) > 0:
             target=P[0]
-            d=np.sqrt((self.xpos-P[0].xpos)**2+(self.ypos-P[0].ypos)**2)
-            for i in range(1,len(P)):
-                b=np.sqrt((self.xpos-P[i].xpos)**2+(self.ypos-P[i].ypos)**2)
-                if b<d:
-                    target=P[i]
-            target.attacked=True
-            self.add_engagement(target)
-            target.add_engagement(self)
-            for e in target.engagements:
-                if hasattr(e, "WingType") and e.WingType=="Bomber" and e != self:
-                    e.del_engagement(target)
-                    target.del_engagement(e)
-                elif e.attacked==True and e != self:
-                    e.del_engagement(target)
-                    target.del_engagement(e)
+            if issubclass(type(target), Spacecraft) and (hasattr(self, "WingType") and self.WingType=="Bomber"):
+                return
+            else:
+                d = np.sqrt((self.xpos - P[0].xpos) ** 2 + (self.ypos - P[0].ypos) ** 2)
+                for i in range(1, len(P)):
+                    b = np.sqrt((self.xpos - P[i].xpos) ** 2 + (self.ypos - P[i].ypos) ** 2)
+                    if b < d:
+                        target = P[i]
+                target.attacked = True
+                self.add_engagement(target)
+                target.add_engagement(self)
+                for e in target.engagements:
+                    if hasattr(e, "WingType") and e.WingType == "Bomber" and issubclass(type(target), Spacecraft) and e != self:
+                        e.del_engagement(target)
+                        target.del_engagement(e)
+                    elif e.attacked == True and e != self:
+                        e.del_engagement(target)
+                        target.del_engagement(e)
 
     def __str__(self):
         return self.Tag

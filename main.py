@@ -198,7 +198,7 @@ class MyApp(ShowBase):
         self.GlobalState[2] = player
 
     def UpdateGameState(self, task):
-        for object in self.UNSC.tokens:
+        for object in (self.UNSC.tokens + self.Covenant.tokens):
             if (object in self.Frames[0]):
                 i = self.Frames[0].index(object)
             else:
@@ -208,22 +208,11 @@ class MyApp(ShowBase):
                 img.setTransparency(TransparencyAttrib.MAlpha)
                 self.Frames[1].append(img)
                 self.Frames[1][i].setTag('clickable', str(id(self.Frames[0][i])))
-            self.Frames[1][i].setPos(object.xpos, -1, object.ypos)
+            ymodifier = 0
+            if issubclass(type(object), Spacecraft):
+                ymodifier = -1
+            self.Frames[1][i].setPos(object.xpos, -1 +ymodifier, object.ypos)
             self.Frames[1][i].setHpr(0, 0, object.get_angle())
-
-        for object in self.Covenant.tokens:
-            if (object in self.Frames[0]):
-                i = self.Frames[0].index(object)
-            else:
-                i = len(self.Frames[0])
-                self.Frames[0].append(object)
-                img = self.loadImageRealScaleWithFactor(object.image, render, SHIP_IMAGE_SCALE_FACTOR*object.sizeFactor)
-                img.setTransparency(TransparencyAttrib.MAlpha)
-                self.Frames[1].append(img)
-                self.Frames[1][i].setTag('clickable', str(id(self.Frames[0][i])))
-            self.Frames[1][i].setPos(object.xpos, -2, object.ypos)
-            self.Frames[1][i].setHpr(0, 0, object.get_angle())
-
         FrameLen = len(self.Frames[0])
         i = 0
         while i < FrameLen:
