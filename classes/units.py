@@ -334,7 +334,7 @@ class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
     def __init__(self,pos,aim,docked= []):
         super().__init__(pos=pos,DT=[8,7,4],Hangars=3,docked=docked,BR=4,Movement=7,Tag="Covenant Supported CCS BattleCruiser",Capital=True,Size="Medium",
                  BC=170,faction="Covenant",ld=[loads.Cloaking_System(),loads.Defence_Array(5),loads.Glide(4),loads.Point_Defence(4),
-                                               loads.Carrier_Action(1)], SizeFactor=0.594)
+                                               loads.Carrier_Action(1)], SizeFactor=0.950)
         self.weaponsPos = [(0.2, 0.25),(0.6,0.25), (-0.69, 0.67)]
         self.weaponsRange = [(-90, 90),(-90,90)]
         self.explosionLocation = [(0.4, 0)]

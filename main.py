@@ -172,26 +172,48 @@ class MyApp(ShowBase):
 
     def showGraphicalFight(self, opponent1, opponent2, resolve):
         self.fighting = (opponent1, opponent2)
+        self.fightResult = resolve
         self.recenterOnFightZone()
-        self.OnGoingFight = Fight(opponent1, opponent2, resolve, self)
 
     def recenterOnFightZone(self):
+        self.MouseNavDisabled = True
         self.Oldcenter = self.cam.getPos()
         self.OldFilmSize = deepcopy(self.lens.getFilmSize())
-        center = self.Game.getFightCenter(self.fighting)
-        filmSize = (int(1920*(self.fighting[0].sizeFactor + self.fighting[1].sizeFactor)), int(1080*(self.fighting[0].sizeFactor+ self.fighting[1].sizeFactor)))
-        self.cam.setX(center[0])
-        self.cam.setZ(center[1])
-        self.lens.setFilmSize(filmSize)
+        self.AutoRecenter = self.Game.getFightCenter(self.fighting)
+        self.AutoFilmSize = (int(1920*(self.fighting[0].sizeFactor + self.fighting[1].sizeFactor)), int(1080*(self.fighting[0].sizeFactor+ self.fighting[1].sizeFactor)))
+        self.cameraZoomTimeElapsed = 0
+        self.taskMgr.add(self.calculateCameraInterpolation, "zoom-on-fight", uponDeath=self.AutoCameraMoveInEnd, extraArgs=[1], appendTask=True)
+
+    def calculateCameraInterpolation(self, sens, task):
+        self.cameraZoomTimeElapsed = self.cameraZoomTimeElapsed + globalClock.getDt()
+        t = self.cameraZoomTimeElapsed/CAMERA_ZOOM_TIME
+        if (t >= 1):
+            return task.done
+        else:
+            s = ((sens-1)/-2) + sens*t
+            self.cam.setX(s*self.AutoRecenter[0] + (1-s)*self.Oldcenter[0])
+            self.cam.setZ(s*self.AutoRecenter[1] + (1-s)*self.Oldcenter[1])
+            self.lens.setFilmSize(int(s*self.AutoFilmSize[0] + (1-s)*self.OldFilmSize[0]), int(s*self.AutoFilmSize[1] + (1-s)*self.OldFilmSize[1]))
+            return task.cont
+
+    def AutoCameraMoveInEnd(self, task):
+        self.MouseNavDisabled = False
+        self.OnGoingFight = Fight(self.fighting[0], self.fighting[1], self.fightResult, self)
+        return task.done
+
+    def AutoCameraMoveOutEnd(self, task):
+        self.MouseNavDisabled = False
+        self.Game.fightEnd(self.fighting)
+        return task.done
 
     def returnToOriginalCamPos(self):
-        self.cam.setPos(self.Oldcenter)
-        self.lens.setFilmSize(self.OldFilmSize)
+        self.MouseNavDisabled = True
+        self.cameraZoomTimeElapsed = 0
+        self.taskMgr.add(self.calculateCameraInterpolation, "zoom-out-fight", uponDeath=self.AutoCameraMoveOutEnd, extraArgs=[-1],appendTask=True)
 
     def fightEnd(self, task):
         del self.OnGoingFight
         self.returnToOriginalCamPos()
-        self.Game.fightEnd(self.fighting)
         return task.done
 
     def setPlayer(self, player):
@@ -925,7 +947,7 @@ class Fight:
             self.wing.set_aim(self.ship.pos)
             self.elapsed = 0
         elif (hasattr(self, "wing1")):
-            self.targetPoint1, self.targetPoint2 = self.computeTargetWingPoint(self.wing2, self.wing1, dual=True)
+            self.targetPoint1, self.targetPoint2 = self.computeTargetWingPoint(self.wing1, self.wing2, dual=True)
             self.wing1.set_aim(self.wing2.pos)
             self.wing2.set_aim(self.wing1.pos)
             self.elapsed = 0
@@ -992,7 +1014,7 @@ class Fight:
                 newPos1 = self.GetAttackTrajectoryPoint(self.wing1, self.targetPoint1, self.elapsed / 50)
                 newPos2 = self.GetAttackTrajectoryPoint(self.wing2, self.targetPoint2, self.elapsed / 50)
                 self.wing1.set_pos(newPos1)
-                self.wing1.set_aim(self.GetAttackTrajectoryPoint(self.wing2, self.targetPoint2, (self.elapsed + 10) / 50))
+                self.wing1.set_aim(self.GetAttackTrajectoryPoint(self.wing1, self.targetPoint1, (self.elapsed + 10) / 50))
                 self.wing2.set_pos(newPos2)
                 self.wing2.set_aim(self.GetAttackTrajectoryPoint(self.wing2, self.targetPoint2, (self.elapsed + 10) / 50))
 
@@ -1081,6 +1103,12 @@ class Fight:
             toWorldPos = self.transformObjectCoordsToWorldCoords(object, object.weaponsPos[i])
             posInWordCoords = LVecBase3f(toWorldPos[0], -5 - i, toWorldPos[1])
             WeaponsList[i].setPos(posInWordCoords)
+            if (hasattr(self, "ship") and object == self.ship):
+                newAngle = 180-((atan2(1, 0) - atan2((self.wing.pos[1] - self.ship.pos[1]), (self.wing.pos[0] - self.ship.pos[0])))*180/np.pi) #angle to target wing
+                WeaponsList[i].setHpr(self.GUI.cam, -90, newAngle, 90)
+            else: #object is a wing
+                newAngle = 90 - (atan2(1, 0) - atan2(object.aim[1], object.aim[0]) * 180 / np.pi)  # angle to target wing
+                WeaponsList[i].setHpr(self.GUI.cam, -90, newAngle, 90)
 
         Hits.setPos(newPos[0], -10, newPos[1])
 
@@ -1090,18 +1118,34 @@ class Fight:
         return  (object.pos[0] + coords[0] * fac * np.cos(angle) - coords[1] * fac * np.sin(angle) ,object.pos[1] + coords[1] * fac * np.cos(angle) + coords[0] * fac * np.sin(angle))
 
     def GetAttackTrajectoryPoint(self, attacker, TargetPoint, s):
-        Ax = (attacker.pos[0] - TargetPoint[0]) / (1 - exp(1))
-        Bx = (-attacker.pos[0] * exp(1) + TargetPoint[0]) / (1 - exp(1))
-        Ay = (attacker.pos[1] - TargetPoint[1]) / (1 - exp(-1))
-        By = (-attacker.pos[1] * exp(-1) + TargetPoint[1]) / (1 - exp(-1))
-        return (Ax * exp(s) + Bx, Ay * exp(-s) + By)
+        # Ax = (attacker.pos[0] - TargetPoint[0]) / (1 - exp(1))
+        # Bx = (-attacker.pos[0] * exp(1) + TargetPoint[0]) / (1 - exp(1))
+        # Ay = (attacker.pos[1] - TargetPoint[1]) / (1 - exp(-1))
+        # By = (-attacker.pos[1] * exp(-1) + TargetPoint[1]) / (1 - exp(-1))
+        Ax = (attacker.pos[0] - TargetPoint[0]) / (1 - exp(-1))
+        Bx = (-attacker.pos[0] * exp(-1) + TargetPoint[0]) / (1 - exp(-1))
+        Ay = (attacker.pos[1] - TargetPoint[1]) / (1 - exp(1))
+        By = (-attacker.pos[1] * exp(1) + TargetPoint[1]) / (1 - exp(1))
+        return (Ax * exp(-s) + Bx, Ay * exp(s) + By)
 
     def computeTargetWingPoint(self, wing, ship, dual = False):
-        side = (random.randint(0, 1) * 2) - 1
+        side = random.randint(-1000, 1000)/1000
+        wing_angle = wing.get_angleRad()
+        ship_angle = ship.get_angleRad()
         if dual:
-            return ((ship.pos[0] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.cos(wing.get_angleRad()), ship.pos[1] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.sin(wing.get_angleRad())), (ship.pos[0] - side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.cos(wing.get_angleRad()), ship.pos[1] - side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.sin(wing.get_angleRad())))
+            return deepcopy(((ship.pos[0] + ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * (
+                        side * WING_AIM_FAC[1] * np.cos(wing_angle) - WING_AIM_FAC[0] * np.sin(wing_angle)),
+              ship.pos[1] + ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * (
+                          side * WING_AIM_FAC[1] * np.sin(wing_angle) + WING_AIM_FAC[0] * np.cos(wing_angle))),
+
+             (wing.pos[0] + wing.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * (
+                         side * WING_AIM_FAC[1] * np.cos(ship_angle) - WING_AIM_FAC[0] * np.sin(ship_angle)),
+              wing.pos[1] + wing.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * (
+                          side * WING_AIM_FAC[1] * np.sin(ship_angle) + WING_AIM_FAC[0] * np.cos(ship_angle)))))
         else:
-            return (ship.pos[0] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.cos(wing.get_angleRad()), ship.pos[1] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.sin(wing.get_angleRad()))
+            #return (ship.pos[0] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.cos(wing.get_angleRad()), ship.pos[1] + side * ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * 3.5 * np.sin(wing.get_angleRad()))
+            return deepcopy((ship.pos[0] + ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * (side * WING_AIM_FAC[1] * np.cos(wing_angle) - WING_AIM_FAC[0]* np.sin(wing_angle)),
+                             ship.pos[1] + ship.sizeFactor * SHIP_IMAGE_SCALE_FACTOR * (side * WING_AIM_FAC[1] * np.sin(wing_angle) + WING_AIM_FAC[0]* np.cos(wing_angle))))
 
 class Save():
     def __init__(self, UNSC, Covenant, GameState):
