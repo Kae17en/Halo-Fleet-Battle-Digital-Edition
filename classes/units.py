@@ -534,16 +534,17 @@ class Spacecraft(metaclass=ABCMeta):
         for e in ennemies:
             if np.sqrt((self.xpos-e.xpos)**2+(self.ypos-e.ypos)**2)<=GLOBAL_ENGAGE_RANGE:
                 P.append(e)
-        if len(P) > 0:
+        while len(P) > 0:
             target=P[0]
+            d = np.sqrt((self.xpos - P[0].xpos) ** 2 + (self.ypos - P[0].ypos) ** 2)
+            for i in range(1, len(P)):
+                b = np.sqrt((self.xpos - P[i].xpos) ** 2 + (self.ypos - P[i].ypos) ** 2)
+                if b < d:
+                    target = P[i]
+                    d = b
             if issubclass(type(target), Spacecraft) and (hasattr(self, "WingType") and self.WingType=="Bomber"):
-                return
+                P.remove(target)
             else:
-                d = np.sqrt((self.xpos - P[0].xpos) ** 2 + (self.ypos - P[0].ypos) ** 2)
-                for i in range(1, len(P)):
-                    b = np.sqrt((self.xpos - P[i].xpos) ** 2 + (self.ypos - P[i].ypos) ** 2)
-                    if b < d:
-                        target = P[i]
                 target.attacked = True
                 self.add_engagement(target)
                 target.add_engagement(self)
@@ -554,6 +555,7 @@ class Spacecraft(metaclass=ABCMeta):
                     elif e.attacked == True and e != self:
                         e.del_engagement(target)
                         target.del_engagement(e)
+                break
 
     def __str__(self):
         return self.Tag

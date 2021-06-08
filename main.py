@@ -203,7 +203,7 @@ class MyApp(ShowBase):
 
     def AutoCameraMoveOutEnd(self, task):
         self.MouseNavDisabled = False
-        self.Game.fightEnd(self.fighting)
+        self.Game.nextFight()
         return task.done
 
     def returnToOriginalCamPos(self):
@@ -213,6 +213,7 @@ class MyApp(ShowBase):
 
     def fightEnd(self, task):
         del self.OnGoingFight
+        self.Game.fightEnd(self.fighting)
         self.returnToOriginalCamPos()
         return task.done
 

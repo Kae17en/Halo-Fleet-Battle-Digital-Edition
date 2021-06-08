@@ -10,6 +10,7 @@ setup(
                 '**/*.egg',
                 '**/Assets/*',
                 '**/*.py',
+                '**/Scripts/*',
             ],
             'gui_apps': {
                 'HFB': 'main.py',
@@ -20,7 +21,7 @@ setup(
                 'p3ffmpeg',
 
             ],
-            'plateforms': [
+            'platforms': [
                 'win32',
                 'win_amd64',
             ],

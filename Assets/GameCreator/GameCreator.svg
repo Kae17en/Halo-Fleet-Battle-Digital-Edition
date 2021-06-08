@@ -51,30 +51,6 @@
          id="stop884" />
     </linearGradient>
     <linearGradient
-       inkscape:collect="always"
-       id="linearGradient874">
-      <stop
-         style="stop-color:#ffab00;stop-opacity:1"
-         offset="0"
-         id="stop870" />
-      <stop
-         style="stop-color:#ffc400;stop-opacity:0"
-         offset="1"
-         id="stop872" />
-    </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       id="linearGradient1526">
-      <stop
-         style="stop-color:#ffab00;stop-opacity:1"
-         offset="0"
-         id="stop1522" />
-      <stop
-         style="stop-color:#ffc400;stop-opacity:0"
-         offset="1"
-         id="stop1524" />
-    </linearGradient>
-    <linearGradient
        id="linearGradient1518"
        osb:paint="solid">
       <stop
@@ -120,53 +96,12 @@
        xlink:href="#linearGradient1436"
        id="radialGradient1438"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1,0,0,0.37198063,1.4174107,12.702831)"
+       gradientTransform="matrix(1,0,0,0.37198063,0,11.946879)"
        cx="78.241074"
        cy="29.104166"
        fx="78.241074"
        fy="29.104166"
        r="78.241074" />
-    <radialGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient1526"
-       id="radialGradient1530"
-       cx="267.18604"
-       cy="89.982613"
-       fx="267.18604"
-       fy="89.982613"
-       r="72.004463"
-       gradientTransform="matrix(1.0822952,0,0,1.1916637,-210.70829,-95.407298)"
-       gradientUnits="userSpaceOnUse" />
-    <radialGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient874"
-       id="radialGradient878"
-       cx="280.22623"
-       cy="53.634365"
-       fx="280.22626"
-       fy="53.634369"
-       r="72.004463"
-       gradientTransform="matrix(1.082295,1.3673318e-7,-1.595983e-7,1.1916637,-224.82156,-52.092449)"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient886"
-       id="linearGradient888"
-       x1="176.66515"
-       y1="49.598642"
-       x2="240.88398"
-       y2="49.598642"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.9198376,0,0,1.7911954,-159.72492,-4.9899187)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient903"
-       id="linearGradient911"
-       x1="179.44354"
-       y1="83.850723"
-       x2="302.73322"
-       y2="83.850723"
-       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -175,9 +110,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.7"
-     inkscape:cx="699.62836"
-     inkscape:cy="436.78155"
+     inkscape:zoom="1.4"
+     inkscape:cx="211.32653"
+     inkscape:cy="276.93185"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -230,14 +165,14 @@
        y="2.1874998e-06" />
     <path
        style="fill:none;stroke:url(#radialGradient1438);stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 157.89955,23.529017 H 1.4174107"
+       d="M 156.48214,22.773065 H 0"
        id="path1420" />
     <rect
-       style="fill:url(#radialGradient878);fill-opacity:1;stroke:url(#radialGradient1530);stroke-width:0.169546;stroke-linejoin:round;stroke-dasharray:0, 1.86501000000000006;stroke-opacity:1"
-       id="rect1504"
-       width="156.61992"
-       height="23.434521"
-       x="7.1054274e-15"
+       style="fill:#454545;fill-opacity:1;stroke:#000000;stroke-width:3.38852;stroke-linejoin:round;stroke-dasharray:0, 37.27369999999999806;stroke-dashoffset:33.8852"
+       id="rect877"
+       width="156.48215"
+       height="22.773062"
+       x="0"
        y="2.1874998e-06" />
     <text
        xml:space="preserve"
@@ -257,9 +192,41 @@
        height="35.546844"
        x="184.41597"
        y="57.462948" />
-    <path
-       id="rect882"
-       style="fill:url(#linearGradient888);fill-opacity:1;stroke:url(#linearGradient911);stroke-width:3.38851875;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0, 37.27370624999999649;stroke-dashoffset:33.8851875;stroke-opacity:1"
-       d="M 179.44354,71.127998 V 96.573455 H 302.73322 V 71.127998 Z m 4.97243,4.448559 h 20.49983 v 17.433239 h -20.49983 z" />
+    <rect
+       style="fill:#e8e8e8;fill-opacity:1;stroke:#000000;stroke-width:1.36756;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0, 15.0432;stroke-dashoffset:0;paint-order:fill markers stroke"
+       id="rect879"
+       width="138.33929"
+       height="28.631697"
+       x="9.8273878"
+       y="31.844492" />
+    <rect
+       style="fill:#8a8a8a;fill-opacity:0.730337;stroke:#000000;stroke-width:1.96568;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:0, 21.6226;stroke-dashoffset:0;paint-order:fill markers stroke"
+       id="rect881"
+       width="101.86458"
+       height="10.772322"
+       x="40.254467"
+       y="44.223217" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:6.60051px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.165013"
+       x="14.035331"
+       y="39.111824"
+       id="text885"><tspan
+         sodipodi:role="line"
+         id="tspan883"
+         x="14.035331"
+         y="39.111824"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Copperplate Gothic Bold';-inkscape-font-specification:'Copperplate Gothic Bold, ';stroke-width:0.165013">Icon</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:5.83949px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.145988"
+       x="41.016888"
+       y="39.205223"
+       id="text889"><tspan
+         sodipodi:role="line"
+         id="tspan887"
+         x="41.016888"
+         y="39.205223"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Copperplate Gothic Bold';-inkscape-font-specification:'Copperplate Gothic Bold, ';stroke-width:0.145988">Ship Name</tspan></text>
   </g>
 </svg>

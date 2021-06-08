@@ -183,6 +183,8 @@ class MainGame():
                 for fight in self.toResolve:
                     if toDel in fight:
                         self.toResolve.remove(fight)
+
+    def nextFight(self):
         if self.toResolve != []:
             self.fightResult = self.resolveFightForWingAttack((self.toResolve[0][0], self.toResolve[0][1]))
             self.UI.showGraphicalFight(self.toResolve[0][0], self.toResolve[0][1], self.fightResult)
