@@ -1,8 +1,6 @@
 # Default ignored files
-/shelf/
-/workspace.xml
-# Datasource local storage ignored files
-/../../../../../../:\Users\Théo\Desktop\HFB\.idea/dataSources/
-/dataSources.local.xml
-# Editor-based HTTP Client requests
-/httpRequests/
+Assets/Music/Ambiant.mp3
+*.pyc
+classes/__pycache__/*.*
+*.zip
+*.pdf

@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="54d62dfb-daca-409e-8d5d-3968d59411fb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="raids_animations" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
+  </component>
+  <component name="JupyterTrust" id="83f223c9-5024-40cf-8fe7-3e44d1ca3bf8" />
+  <component name="ProjectId" id="1qnQ5edo1upWI21OWCDMvdxD93d" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/main.py" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/classes/misc.py" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Théo\Desktop\HFB2" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Théo\Desktop\HFB2" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.Main">
+    <configuration name="Main" type="PythonConfigurationType" factoryName="Python">
+      <module name="HFB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\Théo\Desktop\HFB\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="gameLogic" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="HFB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gameLogic.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="HFB" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.Main" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.gameLogic" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.gameLogic" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.gameLogic" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.gameLogic" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="54d62dfb-daca-409e-8d5d-3968d59411fb" name="Default Changelist" comment="" />
+      <created>1617712691239</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1617712691239</updated>
+      <workItem from="1617712725943" duration="758000" />
+      <workItem from="1617787365326" duration="3435000" />
+      <workItem from="1618294401408" duration="4965000" />
+      <workItem from="1618300323692" duration="5148000" />
+      <workItem from="1618431716901" duration="4218000" />
+      <workItem from="1620387611156" duration="9438000" />
+      <workItem from="1620646825474" duration="6956000" />
+      <workItem from="1620741706883" duration="2145000" />
+      <workItem from="1621416635933" duration="92000" />
+      <workItem from="1621425396578" duration="105000" />
+      <workItem from="1621426520457" duration="9667000" />
+      <workItem from="1621579369881" duration="19000" />
+      <workItem from="1621596768045" duration="58000" />
+      <workItem from="1621616645846" duration="13000" />
+      <workItem from="1621693133688" duration="12319000" />
+      <workItem from="1621715174966" duration="10810000" />
+      <workItem from="1621764475846" duration="27531000" />
+      <workItem from="1621805630298" duration="26803000" />
+      <workItem from="1621878178619" duration="97000" />
+      <workItem from="1621892137583" duration="453000" />
+      <workItem from="1621892816252" duration="7779000" />
+      <workItem from="1621923457483" duration="12696000" />
+      <workItem from="1621940525508" duration="19790000" />
+      <workItem from="1621981133605" duration="3726000" />
+      <workItem from="1622048166757" duration="1753000" />
+      <workItem from="1622112280581" duration="10981000" />
+      <workItem from="1622189503123" duration="4733000" />
+      <workItem from="1622294716461" duration="9015000" />
+      <workItem from="1622312047826" duration="5825000" />
+      <workItem from="1622415135845" duration="28868000" />
+      <workItem from="1622501549003" duration="33796000" />
+      <workItem from="1622638030315" duration="11580000" />
+      <workItem from="1622662215392" duration="1869000" />
+      <workItem from="1622720644769" duration="57000" />
+      <workItem from="1622734264040" duration="28522000" />
+      <workItem from="1622804008795" duration="43000" />
+      <workItem from="1622809395966" duration="1827000" />
+      <workItem from="1622815004833" duration="5651000" />
+      <workItem from="1623005468104" duration="3838000" />
+      <workItem from="1623056026258" duration="16186000" />
+      <workItem from="1623090766716" duration="92000" />
+      <workItem from="1623097258747" duration="999000" />
+      <workItem from="1623133768730" duration="4897000" />
+      <workItem from="1623142991267" duration="1466000" />
+      <workItem from="1623144536296" duration="4163000" />
+      <workItem from="1623160268808" duration="1214000" />
+    </task>
+    <task id="LOCAL-00001" summary="Wing attack and wing engagement (main game part)">
+      <created>1621433520954</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1621433520954</updated>
+    </task>
+    <task id="LOCAL-00002" summary="UI improved (menu + mouse nav system and map)">
+      <created>1621706068662</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1621706068662</updated>
+    </task>
+    <task id="LOCAL-00003" summary="UI improved nav + HUD">
+      <created>1621728177870</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1621728177870</updated>
+    </task>
+    <task id="LOCAL-00004" summary="UI improved select object in scene">
+      <created>1621800877760</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1621800877760</updated>
+    </task>
+    <task id="LOCAL-00005" summary="UI improved moving objects in range">
+      <created>1621864467100</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1621864467100</updated>
+    </task>
+    <task id="LOCAL-00006" summary="UI improved">
+      <created>1622144502944</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1622144502944</updated>
+    </task>
+    <task id="LOCAL-00007" summary="UI improved">
+      <created>1622202021398</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1622202021398</updated>
+    </task>
+    <task id="LOCAL-00008" summary="UI improved: fight systems">
+      <created>1622547923330</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1622547923330</updated>
+    </task>
+    <task id="LOCAL-00009" summary="UI improved: fight systems + destroy complete">
+      <created>1622556525269</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1622556525269</updated>
+    </task>
+    <task id="LOCAL-00010" summary="UI improved: fight system complete">
+      <created>1622587320589</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1622587320589</updated>
+    </task>
+    <task id="LOCAL-00011" summary="save system working">
+      <created>1622661897869</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1622661897869</updated>
+    </task>
+    <task id="LOCAL-00012" summary="fight system correction: both destroyed implemented">
+      <created>1622664096222</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1622664096222</updated>
+    </task>
+    <task id="LOCAL-00013" summary="plasma weapons corrected">
+      <created>1622734516276</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1622734516276</updated>
+    </task>
+    <task id="LOCAL-00014" summary="sounds implementation">
+      <created>1622737649753</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1622737649753</updated>
+    </task>
+    <task id="LOCAL-00015" summary="debug">
+      <created>1622742731109</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1622742731109</updated>
+    </task>
+    <task id="LOCAL-00016" summary="debug">
+      <created>1622817939632</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1622817939633</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Camera + wing movement + follow wing">
+      <created>1623078296256</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1623078296256</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Moving in wing_phase function" />
+    <MESSAGE value="Wing attack and wing engagement (main game part)" />
+    <MESSAGE value="UI improved (menu + mouse nav system and map)" />
+    <MESSAGE value="UI improved nav + HUD" />
+    <MESSAGE value="UI improved select object in scene" />
+    <MESSAGE value="UI improved moving objects in range" />
+    <MESSAGE value="UI improved" />
+    <MESSAGE value="UI improved: fight systems" />
+    <MESSAGE value="UI improved: fight systems + destroy complete" />
+    <MESSAGE value="UI improved: fight system complete" />
+    <MESSAGE value="save system working" />
+    <MESSAGE value="fight system correction: both destroyed implemented" />
+    <MESSAGE value="plasma weapons corrected" />
+    <MESSAGE value="sounds implementation" />
+    <MESSAGE value="debug" />
+    <MESSAGE value="Camera + wing movement + follow wing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Camera + wing movement + follow wing" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="414" y="109" width="1092" height="931" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1623139628563">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="109" width="1092" height="931" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1623139628563" />
+    <state x="291" y="0" width="1338" height="951" key="CommitChangelistDialog2" timestamp="1623078295400">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="291" y="0" width="1338" height="951" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1623078295400" />
+    <state x="92" y="92" width="1736" height="856" maximized="true" key="DiffContextDialog" timestamp="1622741509083">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="92" y="92" width="1736" height="856" maximized="true" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1622741509083" />
+    <state x="740" y="286" key="FileChooserDialogImpl" timestamp="1622765668992">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="286" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1622765668992" />
+    <state width="1877" height="142" key="GridCell.Tab.0.bottom" timestamp="1623153097165">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="142" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1623153097165" />
+    <state width="1877" height="142" key="GridCell.Tab.0.center" timestamp="1623153097165">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="142" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1623153097165" />
+    <state width="1877" height="142" key="GridCell.Tab.0.left" timestamp="1623153097165">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="142" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1623153097165" />
+    <state width="1877" height="142" key="GridCell.Tab.0.right" timestamp="1623153097165">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="142" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1623153097165" />
+    <state width="1877" height="203" key="GridCell.Tab.1.bottom" timestamp="1623142960566">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="203" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1623142960566" />
+    <state width="1877" height="203" key="GridCell.Tab.1.center" timestamp="1623142960566">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="203" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1623142960566" />
+    <state width="1877" height="203" key="GridCell.Tab.1.left" timestamp="1623142960566">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="203" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1623142960566" />
+    <state width="1877" height="203" key="GridCell.Tab.1.right" timestamp="1623142960566">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="203" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1623142960566" />
+    <state x="461" y="164" key="SettingsEditor" timestamp="1621892427481">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="164" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1621892427481" />
+    <state width="498" height="446" key="SwitcherDM" timestamp="1621935251012">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="498" height="446" key="SwitcherDM/0.0.1920.1040@0.0.1920.1040" timestamp="1621935251012" />
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1623078302045">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1623078302045" />
+    <state x="777" y="433" width="365" height="171" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1622734598653">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="777" y="433" width="365" height="171" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1622734598653" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1622650029237">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1622650029237" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/HFB$Main.coverage" NAME="Main Coverage Results" MODIFIED="1621425488798" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/HFB2$Main.coverage" NAME="Main Coverage Results" MODIFIED="1621427982892" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/units_py$main.coverage" NAME="main Coverage Results" MODIFIED="1621968398659" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/units_py$Main.coverage" NAME="Main Coverage Results" MODIFIED="1623151516365" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+  </component>
+</project>
