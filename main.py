@@ -40,7 +40,7 @@ class MyApp(ShowBase):
         self.taskMgr.add(self.handleQuit, "detect-escape")
 
         self.MouseNavDisabled = False
-
+        self.autoUpdatescene = True
         self.menu = MainMenu(self)
         self.menu.show()
         self.Frames = [[],[]]
@@ -221,31 +221,33 @@ class MyApp(ShowBase):
         self.GlobalState[2] = player
 
     def UpdateGameState(self, task):
-        for object in (self.UNSC.tokens + self.Covenant.tokens):
-            if (object in self.Frames[0]):
-                i = self.Frames[0].index(object)
-            else:
-                i = len(self.Frames[0])
-                self.Frames[0].append(object)
-                img = self.loadImageRealScaleWithFactor(object.image, render, SHIP_IMAGE_SCALE_FACTOR*object.sizeFactor)
-                img.setTransparency(TransparencyAttrib.MAlpha)
-                self.Frames[1].append(img)
-                self.Frames[1][i].setTag('clickable', str(id(self.Frames[0][i])))
-            ymodifier = 0
-            if issubclass(type(object), Spacecraft):
-                ymodifier = -1
-            self.Frames[1][i].setPos(object.xpos, -1 +ymodifier, object.ypos)
-            self.Frames[1][i].setHpr(0, 0, object.get_angle())
-        FrameLen = len(self.Frames[0])
-        i = 0
-        while i < FrameLen:
-            if (self.Frames[0][i] not in self.UNSC.tokens and self.Frames[0][i] not in self.Covenant.tokens):
-                self.Frames[1][i].destroy()
-                self.Frames[0].pop(i)
-                self.Frames[1].pop(i)
-                FrameLen = FrameLen - 1
-            i = i + 1
-        self.HUD.setGameInfo(self.GlobalState)
+        if self.autoUpdatescene:
+            for object in (self.UNSC.tokens + self.Covenant.tokens):
+                if (object in self.Frames[0]):
+                    i = self.Frames[0].index(object)
+                else:
+                    i = len(self.Frames[0])
+                    self.Frames[0].append(object)
+                    img = self.loadImageRealScaleWithFactor(object.image, render,
+                                                            SHIP_IMAGE_SCALE_FACTOR * object.sizeFactor)
+                    img.setTransparency(TransparencyAttrib.MAlpha)
+                    self.Frames[1].append(img)
+                    self.Frames[1][i].setTag('clickable', str(id(self.Frames[0][i])))
+                ymodifier = 0
+                if issubclass(type(object), Spacecraft):
+                    ymodifier = -1
+                self.Frames[1][i].setPos(object.xpos, -1 + ymodifier, object.ypos)
+                self.Frames[1][i].setHpr(0, 0, object.get_angle())
+            FrameLen = len(self.Frames[0])
+            i = 0
+            while i < FrameLen:
+                if (self.Frames[0][i] not in self.UNSC.tokens and self.Frames[0][i] not in self.Covenant.tokens):
+                    self.Frames[1][i].destroy()
+                    self.Frames[0].pop(i)
+                    self.Frames[1].pop(i)
+                    FrameLen = FrameLen - 1
+                i = i + 1
+            self.HUD.setGameInfo(self.GlobalState)
         return task.cont
 
 
@@ -933,55 +935,63 @@ class Fight:
         self.opponent2InitialPos = opponent2.pos
         self.opponent2InitialAim = opponent2.aim
 
+
         if (issubclass(type(opponent1), Spacecraft) and issubclass(type(opponent2), TheoryElement)):
             self.wing = opponent1
             self.ship = opponent2
+            self.FTYPE = "WingVsShip"
         elif(issubclass(type(opponent2), Spacecraft) and issubclass(type(opponent1), TheoryElement)):
             self.wing = opponent2
             self.ship = opponent1
+            self.FTYPE = "WingVsShip"
         elif(issubclass(type(opponent2), Spacecraft) and issubclass(type(opponent1), Spacecraft)):
             self.wing1 = opponent1
             self.wing2 = opponent2
+            self.FTYPE = "WingVsWing"
 
-        if(hasattr(self, "wing")):
+        if(self.FTYPE == "WingVsShip"):
             self.targetPoint = self.computeTargetWingPoint(self.wing, self.ship)
             self.wing.set_aim(self.ship.pos)
-            self.elapsed = 0
-        elif (hasattr(self, "wing1")):
+        elif(self.FTYPE == "WingVsWing"):
             self.targetPoint1, self.targetPoint2 = self.computeTargetWingPoint(self.wing1, self.wing2, dual=True)
             self.wing1.set_aim(self.wing2.pos)
             self.wing2.set_aim(self.wing1.pos)
-            self.elapsed = 0
+
+        self.elapsed = 0
+
+        self.setupFires()
+
+        if self.FTYPE == "WingVsShip" or self.FTYPE == "WingVsWing":
+            self.shots = self.GUI.loader.loadSfx("Assets/Sounds/Shots.mp3")
+            self.shots.play()
+            GUI.taskMgr.add(self.updateFightForWing, "update-fight", uponDeath=self.GUI.fightEnd)
+
+
+    def setupFires(self):
         fac = None
         self.Oponent1Weapons = []
-        for i in range(len(opponent1.weaponsPos)):
-            toWorldPos = self.transformObjectCoordsToWorldCoords(opponent1, opponent1.weaponsPos[i])
+        for i in range(len(self.opponent1.weaponsPos)):
+            toWorldPos = self.transformObjectCoordsToWorldCoords(self.opponent1, self.opponent1.weaponsPos[i])
             posInWordCoords = LVecBase3f(toWorldPos[0], -5 - i, toWorldPos[1])
             fac = opponent1.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
             self.Oponent1Weapons.append(
                 self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
-                                      -opponent1.get_angle()))
+                                      -self.opponent1.get_angle()))
 
-        self.Hits1 = self.loadVideoOnplane((opponent1.pos[0], -10, opponent1.pos[1]), (20, 20),
+        self.Hits1 = self.loadVideoOnplane((self.opponent1.pos[0], -10, self.opponent1.pos[1]), (20, 20),
                                            "Assets/Fights/Hits/Cork_Hit_03.mov")
 
         self.Oponent2Weapons = []
-        for i in range(len(opponent2.weaponsPos)):
-            toWorldPos = self.transformObjectCoordsToWorldCoords(opponent2, opponent2.weaponsPos[i])
+        for i in range(len(self.opponent2.weaponsPos)):
+            toWorldPos = self.transformObjectCoordsToWorldCoords(self.opponent2, self.opponent2.weaponsPos[i])
             posInWordCoords = LVecBase3f(toWorldPos[0], -5 - i, toWorldPos[1])
-            fac = opponent2.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
+            fac = self.opponent2.sizeFactor * SHIP_IMAGE_SCALE_FACTOR
             self.Oponent2Weapons.append(
                 self.loadVideoOnplane(posInWordCoords, (fac, fac), "Assets/Fights/WeaponsFlash/Automatic_Fire_05.mov",
-                                      -opponent2.get_angle()))
+                                      -self.opponent2.get_angle()))
 
-        self.Hits2 = self.loadVideoOnplane((opponent2.pos[0], -10, opponent2.pos[1]), (fac, fac),
+        self.Hits2 = self.loadVideoOnplane((self.opponent2.pos[0], -10, self.opponent2.pos[1]), (fac, fac),
                                            "Assets/Fights/Hits/Cork_Hit_03.mov")
-
-
-        if hasattr(self, "wing") or hasattr(self, "wing1"):
-            self.shots = self.GUI.loader.loadSfx("Assets/Sounds/Shots.mp3")
-            self.shots.play()
-            GUI.taskMgr.add(self.updateFightWing, "update-fight", uponDeath=self.GUI.fightEnd)
 
     def loadVideoOnplane(self, pos, scale, src, angle=0):
         plane = loader.loadModel("Assets/Fights/plane.egg")
@@ -996,8 +1006,7 @@ class Fight:
         video.play()
         return plane
 
-
-    def updateFightWing(self, task):
+    def updateFightForWing(self, task):
         if(self.elapsed >= 3.5):
             self.shots.stop()
             return task.done
@@ -1007,7 +1016,7 @@ class Fight:
             newPos1 = None
             newPos2 = None
 
-            if hasattr(self, "wing"):
+            if self.FTYPE == "WingVsShip":
                 newPos = self.GetAttackTrajectoryPoint(self.wing, self.targetPoint, self.elapsed / 50)
                 self.wing.set_pos(newPos)
                 self.wing.set_aim(self.GetAttackTrajectoryPoint(self.wing, self.targetPoint, (self.elapsed + 10) / 50))
@@ -1119,15 +1128,14 @@ class Fight:
         return  (object.pos[0] + coords[0] * fac * np.cos(angle) - coords[1] * fac * np.sin(angle) ,object.pos[1] + coords[1] * fac * np.cos(angle) + coords[0] * fac * np.sin(angle))
 
     def GetAttackTrajectoryPoint(self, attacker, TargetPoint, s):
-        # Ax = (attacker.pos[0] - TargetPoint[0]) / (1 - exp(1))
-        # Bx = (-attacker.pos[0] * exp(1) + TargetPoint[0]) / (1 - exp(1))
-        # Ay = (attacker.pos[1] - TargetPoint[1]) / (1 - exp(-1))
-        # By = (-attacker.pos[1] * exp(-1) + TargetPoint[1]) / (1 - exp(-1))
         Ax = (attacker.pos[0] - TargetPoint[0]) / (1 - exp(-1))
         Bx = (-attacker.pos[0] * exp(-1) + TargetPoint[0]) / (1 - exp(-1))
         Ay = (attacker.pos[1] - TargetPoint[1]) / (1 - exp(1))
         By = (-attacker.pos[1] * exp(1) + TargetPoint[1]) / (1 - exp(1))
         return (Ax * exp(-s) + Bx, Ay * exp(s) + By)
+
+    def GetLinearAttackTrajectoryPoint(self, attacker, TargetPoint, s):
+        return (s*TargetPoint[0] + (1-s)*attacker.pos[0], s*TargetPoint[1] + (1-s)*attacker.pos[1])
 
     def computeTargetWingPoint(self, wing, ship, dual = False):
         side = random.randint(-1000, 1000)/1000
