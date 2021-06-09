@@ -4,3 +4,5 @@ Assets/Music/Ambiant.mp3
 classes/__pycache__/*.*
 *.zip
 *.pdf
+__pycache__/*
+.idea/*
