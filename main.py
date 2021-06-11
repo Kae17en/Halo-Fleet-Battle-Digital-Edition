@@ -8,7 +8,7 @@ import sys, os
 from panda3d.core import loadPrcFileData
 from direct.filter.CommonFilters import CommonFilters
 from DirectGuiExtension.DirectBoxSizer import DirectBoxSizer
-from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs, Texture, TextureStage, TexGenAttrib, TextNode
+from panda3d.core import Filename, OrthographicLens, MouseWatcherGroup, MouseWatcher, MouseWatcherRegion, TransparencyAttrib, PNMImageHeader, Vec3, CollisionNode, GeomNode, CollisionRay, CollisionTraverser, CollisionHandlerQueue, LineSegs, Texture, TextureStage, TexGenAttrib, TextNode, PerspectiveLens
 from direct.actor.Actor import Actor
 from gameLogic import *
 import ctypes
