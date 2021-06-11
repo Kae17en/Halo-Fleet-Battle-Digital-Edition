@@ -340,7 +340,7 @@ class Covenant_Supported_CCS_Battlecruiser(TheoryElement):
         self.explosionLocation = [(0.4, 0)]
         self.set_aim(aim)
 
-        self.image='Assets/Drawable/Ships/Covenant/Elements\Covenant_Supported_CSS_BattleCruiser.png'
+        self.image='Assets/Drawable/Ships/Covenant/Elements/Covenant_Supported_CSS_BattleCruiser.png'
         self.__primary=weapons.Weapons("Plasma",18,32,12,["Forth","Port","Starboard"],"Plasma Lance",[loads.Plasma_Lance()])
         self.__secondary=weapons.Weapons("Plasma",10,20,10,["Forth","Port","Starboard"],"Plasma Cannon Arrays",[loads.Plasma_Weapon()])
         self.__secondarybis=weapons.Weapons("Plasma",12,24,5,["Forth"],"Plasma Torpedoes",[loads.Plasma_Weapon(),loads.Missile_Weapon()])
